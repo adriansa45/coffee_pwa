@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, MapPin, Star, Send, Loader2 } from "lucide-react";
+import { X, MapPin, Star, Send, Loader2, Tag } from "lucide-react";
 import { StarRating } from "./star-rating";
 import { authClient } from "@/lib/auth-client";
+import { getTags, createReview, getReviews } from "@/actions/reviews";
 
 interface Review {
     id: string;
@@ -11,7 +12,13 @@ interface Review {
     userImage: string | null;
     rating: string;
     comment: string | null;
-    createdAt: string;
+    createdAt: string; // or Date
+    tags?: string[];
+}
+
+interface TagType {
+    id: string;
+    name: string;
 }
 
 interface ShopDrawerProps {
@@ -30,49 +37,74 @@ interface ShopDrawerProps {
 export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDrawerProps) {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [loading, setLoading] = useState(false);
+
+    // Form state
     const [newRating, setNewRating] = useState(0);
     const [newComment, setNewComment] = useState("");
+    const [availableTags, setAvailableTags] = useState<TagType[]>([]);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
     const { data: session } = authClient.useSession();
 
     useEffect(() => {
+        if (isOpen) {
+            // Load tags only once or when drawer opens
+            loadTags();
+        }
         if (shop && isOpen) {
-            fetchReviews(shop.id);
+            fetchShopReviews(shop.id);
         }
     }, [shop, isOpen]);
 
-    const fetchReviews = async (shopId: string) => {
+    const loadTags = async () => {
+        const res = await getTags();
+        if (res.success && res.data) {
+            setAvailableTags(res.data);
+        }
+    };
+
+    const fetchShopReviews = async (shopId: string) => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/reviews?shopId=${shopId}`);
-            const data = await res.json();
-            if (Array.isArray(data)) {
-                setReviews(data);
+            const res = await getReviews(shopId);
+            if (res.success && res.data) {
+                // @ts-ignore - Date types mismatch from server action usually strings
+                setReviews(res.data);
             }
         } finally {
             setLoading(false);
         }
     };
 
+    const toggleTag = (tagId: string) => {
+        setSelectedTags(prev =>
+            prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId]
+        );
+    };
+
     const handleReviewSubmit = async () => {
         if (!shop || newRating === 0) return;
         setIsSubmitting(true);
         try {
-            const res = await fetch("/api/reviews", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    shopId: shop.id,
-                    rating: newRating,
-                    comment: newComment
-                }),
+            const res = await createReview({
+                shopId: shop.id,
+                rating: newRating,
+                comment: newComment,
+                tagIds: selectedTags
             });
-            if (res.ok) {
+
+            if (res.success) {
                 setNewRating(0);
                 setNewComment("");
-                fetchReviews(shop.id);
+                setSelectedTags([]);
+                fetchShopReviews(shop.id);
                 onReviewSubmitted();
+            } else {
+                alert("Error al enviar reseña");
             }
+        } catch (err) {
+            console.error(err);
         } finally {
             setIsSubmitting(false);
         }
@@ -159,6 +191,18 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                                                 <StarRating rating={Number(rev.rating)} size={10} />
                                             </div>
                                             <p className="text-sm text-gray-700 leading-relaxed">{rev.comment}</p>
+
+                                            {/* Tags Display */}
+                                            {rev.tags && rev.tags.length > 0 && (
+                                                <div className="flex flex-wrap gap-1 mt-2">
+                                                    {rev.tags.map(tag => (
+                                                        <span key={tag} className="px-2 py-0.5 bg-brand-50 text-brand-700 text-[10px] rounded-full font-medium border border-brand-100">
+                                                            {tag}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
+
                                             <p className="text-[10px] text-gray-400 mt-2">
                                                 {new Date(rev.createdAt).toLocaleDateString()}
                                             </p>
@@ -190,6 +234,26 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                                                         newRating === 1 ? "No me gustó" : "Toca para calificar"}
                                     </span>
                                 </div>
+
+                                {/* Tag Selector */}
+                                <div>
+                                    <p className="text-xs font-semibold text-gray-500 mb-2">¿Qué destacas?</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {availableTags.map(tag => (
+                                            <button
+                                                key={tag.id}
+                                                onClick={() => toggleTag(tag.id)}
+                                                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${selectedTags.includes(tag.id)
+                                                        ? "bg-brand-600 text-white border-brand-600"
+                                                        : "bg-white text-gray-600 border-gray-200 hover:border-brand-300"
+                                                    }`}
+                                            >
+                                                {tag.name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
                                 <div className="relative">
                                     <textarea
                                         className="w-full p-4 text-sm border-2 border-brand-100 rounded-2xl focus:border-brand-500 focus:ring-0 outline-none transition-all placeholder:text-gray-300 resize-none"

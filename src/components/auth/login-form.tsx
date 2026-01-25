@@ -27,13 +27,13 @@ export function LoginForm() {
             const { data, error } = await authClient.signIn.email({
                 email,
                 password,
-                callbackURL: "/dashboard/map",
+                callbackURL: "/dashboard/home",
             });
 
             if (error) {
                 setError(error.message || "Credenciales inválidas");
             } else {
-                router.push("/dashboard/map");
+                router.push("/dashboard/home");
             }
         } catch (err) {
             setError("Ocurrió un error inesperado");

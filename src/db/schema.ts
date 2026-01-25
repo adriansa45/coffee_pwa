@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, boolean, index, uuid, doublePrecision } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, index, uuid, doublePrecision, primaryKey } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
     id: text("id").primaryKey(),
@@ -120,12 +120,24 @@ export const reviews = pgTable("reviews", {
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const tags = pgTable("tags", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull().unique(),
+});
+
+export const reviewsTags = pgTable("reviews_tags", {
+    reviewId: uuid("review_id").notNull().references(() => reviews.id, { onDelete: 'cascade' }),
+    tagId: uuid("tag_id").notNull().references(() => tags.id, { onDelete: 'cascade' }),
+}, (t) => [
+    primaryKey({ columns: [t.reviewId, t.tagId] })
+]);
+
 export const coffeeShopsRelations = relations(coffeeShops, ({ many }) => ({
     visits: many(visits),
     reviews: many(reviews),
 }));
 
-export const reviewsRelations = relations(reviews, ({ one }) => ({
+export const reviewsRelations = relations(reviews, ({ one, many }) => ({
     user: one(user, {
         fields: [reviews.userId],
         references: [user.id],
@@ -134,6 +146,7 @@ export const reviewsRelations = relations(reviews, ({ one }) => ({
         fields: [reviews.shopId],
         references: [coffeeShops.id],
     }),
+    tags: many(reviewsTags),
 }));
 
 export const visitsRelations = relations(visits, ({ one }) => ({
@@ -144,5 +157,20 @@ export const visitsRelations = relations(visits, ({ one }) => ({
     shop: one(coffeeShops, {
         fields: [visits.shopId],
         references: [coffeeShops.id],
+    }),
+}));
+
+export const tagsRelations = relations(tags, ({ many }) => ({
+    reviews: many(reviewsTags),
+}));
+
+export const reviewsTagsRelations = relations(reviewsTags, ({ one }) => ({
+    review: one(reviews, {
+        fields: [reviewsTags.reviewId],
+        references: [reviews.id],
+    }),
+    tag: one(tags, {
+        fields: [reviewsTags.tagId],
+        references: [tags.id],
     }),
 }));
