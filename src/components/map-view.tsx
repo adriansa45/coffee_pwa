@@ -6,6 +6,7 @@ import L from "leaflet";
 import { useEffect, useState } from "react";
 import { StarRating } from "./star-rating";
 import { ShopDrawer } from "./shop-drawer";
+import { UserQRDrawer } from "./user-qr-drawer";
 import { MapPin, Filter, X } from "lucide-react";
 import { getCoffeeShops } from "@/actions/coffee-shops";
 import { getTags } from "@/actions/reviews";
@@ -183,6 +184,8 @@ export default function MapView() {
             </MapContainer>
 
             {/* FAB Filter Button */}
+            <UserQRDrawer />
+            
             <Drawer>
                 <DrawerTrigger asChild>
                     <button className="absolute bottom-24 right-5 z-[500] w-14 h-14 bg-brand-600 text-white rounded-full shadow-xl flex items-center justify-center transition-transform hover:scale-105 active:scale-95">

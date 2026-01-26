@@ -21,6 +21,10 @@ export function TopNav() {
     const { data, isPending } = authClient.useSession();
     const user = data?.user;
     const router = useRouter();
+    
+    // Get user role
+    const role = user ? (user as any).role : "customer";
+    const title = role === "coffee_shop" ? "Panel de Cafetería" : "Pasaporte de Café";
 
     const handleSignOut = async () => {
         await authClient.signOut({
@@ -39,7 +43,7 @@ export function TopNav() {
                     <Coffee className="w-5 h-5 text-white" strokeWidth={2.5} />
                 </div>
                 <h1 className="text-lg font-bold text-white tracking-tight">
-                    Pasaporte de Café
+                    {title}
                 </h1>
             </div>
 
