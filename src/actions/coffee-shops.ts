@@ -14,12 +14,20 @@ export async function getCoffeeShops({
     filter = "all",
     tagIds = [],
     search = "",
+    minCoffee = 0,
+    minFood = 0,
+    minPlace = 0,
+    minPrice = 0,
 }: {
     page?: number;
     limit?: number;
     filter?: FilterType;
     tagIds?: string[];
     search?: string;
+    minCoffee?: number;
+    minFood?: number;
+    minPlace?: number;
+    minPrice?: number;
 } = {}) {
     try {
         const session = await auth.api.getSession({
@@ -52,22 +60,9 @@ export async function getCoffeeShops({
             }
         }
 
-        // 2. Filter by Tags (if provided)
+        // 2. Filter by Tags (Desactivado temporalmente a favor de categorías)
+        /*
         if (tagIds.length > 0) {
-            // Find shops that have reviews with these tags
-            // We need shops where EXISTS (review -> reviewTags -> tagId IN tagIds)
-            // Or join reviews and reviewsTags.
-
-            // Subquery for shops matching ALL provided tags (strict) or ANY (loose)?
-            // Usually filters are "Any" or "All". Let's assume "Any" of selected tags for now, or "All"?
-            // "Motivo por el cual ir" implies attributes. "Good coffee" AND "Good bread". 
-            // If I check both, I usually want shops that have BOTH, or at least one?
-            // Let's do shops that have AT LEAST ONE of the selected tags for broader discovery first, 
-            // or we could do intersection.
-            // Let's go with "Any" (OR) logic for simplicity in SQL `IN`.
-            // If the user wants specific "Work" AND "Coffee", `IN` might show shops with just "Coffee".
-            // Let's stick to `IN` for now.
-
             const matchingShops = await db.selectDistinct({ shopId: reviews.shopId })
                 .from(reviews)
                 .innerJoin(reviewsTags, eq(reviews.id, reviewsTags.reviewId))
@@ -80,10 +75,18 @@ export async function getCoffeeShops({
             }
             conditions.push(inArray(coffeeShops.id, matchingShopIds));
         }
+        */
 
+        const havingConditions = [];
+        if (minCoffee > 0) havingConditions.push(sql`COALESCE(AVG(NULLIF(${reviews.coffeeRating}, 0)), 0) > ${minCoffee - 1}`);
+        if (minFood > 0) havingConditions.push(sql`COALESCE(AVG(NULLIF(${reviews.foodRating}, 0)), 0) > ${minFood - 1}`);
+        if (minPlace > 0) havingConditions.push(sql`COALESCE(AVG(NULLIF(${reviews.placeRating}, 0)), 0) > ${minPlace - 1}`);
+        if (minPrice > 0) havingConditions.push(sql`COALESCE(AVG(NULLIF(${reviews.priceRating}, 0)), 0) > ${minPrice - 1}`);
+
+        const havingClause = havingConditions.length > 0 ? and(...havingConditions) : undefined;
         const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-        // Main Query
+        // Main Query with Category Averages
         const shopsQuery = db.select({
             id: coffeeShops.id,
             name: coffeeShops.name,
@@ -92,7 +95,11 @@ export async function getCoffeeShops({
             longitude: coffeeShops.longitude,
             address: coffeeShops.address,
             googleMapsUrl: coffeeShops.googleMapsUrl,
-            avgRating: sql<number>`COALESCE(AVG(${reviews.rating}::numeric), 0)`,
+            avgRating: sql<number>`COALESCE(AVG(NULLIF(${reviews.rating}::numeric, 0)), 0)`,
+            avgCoffee: sql<number>`COALESCE(AVG(NULLIF(${reviews.coffeeRating}, 0)), 0)`,
+            avgFood: sql<number>`COALESCE(AVG(NULLIF(${reviews.foodRating}, 0)), 0)`,
+            avgPlace: sql<number>`COALESCE(AVG(NULLIF(${reviews.placeRating}, 0)), 0)`,
+            avgPrice: sql<number>`COALESCE(AVG(NULLIF(${reviews.priceRating}, 0)), 0)`,
             reviewCount: sql<number>`COUNT(${reviews.id})`,
         })
             .from(coffeeShops)
@@ -101,6 +108,10 @@ export async function getCoffeeShops({
             .groupBy(coffeeShops.id)
             .limit(limit)
             .offset(offset);
+
+        if (havingClause) {
+            shopsQuery.having(havingClause);
+        }
 
         // Sort collected first if 'all'
         if (filter === "all" && visitedShopIds.length > 0) {

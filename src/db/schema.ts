@@ -119,6 +119,10 @@ export const reviews = pgTable("reviews", {
     userId: text("user_id").notNull().references(() => user.id),
     shopId: uuid("shop_id").notNull().references(() => coffeeShops.id),
     rating: text("rating").notNull(), // Numeric string or int, let's use doublePrecision for flexibility or integer
+    coffeeRating: doublePrecision("coffee_rating").default(0),
+    foodRating: doublePrecision("food_rating").default(0),
+    placeRating: doublePrecision("place_rating").default(0),
+    priceRating: doublePrecision("price_rating").default(0),
     comment: text("comment"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });

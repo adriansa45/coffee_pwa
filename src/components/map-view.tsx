@@ -7,9 +7,10 @@ import { useEffect, useState } from "react";
 import { StarRating } from "./star-rating";
 import { ShopDrawer } from "./shop-drawer";
 import { UserQRDrawer } from "./user-qr-drawer";
-import { MapPin, Filter, X } from "lucide-react";
+import { MapPin, Filter, X, Coffee, Utensils, Map, CircleDollarSign } from "lucide-react";
 import { getCoffeeShops } from "@/actions/coffee-shops";
 import { getTags } from "@/actions/reviews";
+import { LikertRating } from "./likert-rating";
 import {
     Drawer,
     DrawerClose,
@@ -44,6 +45,10 @@ interface Shop {
     longitude: number;
     googleMapsUrl: string | null;
     avgRating: number;
+    avgCoffee?: number;
+    avgFood?: number;
+    avgPlace?: number;
+    avgPrice?: number;
     reviewCount: number;
     description: string | null;
     address: string | null;
@@ -74,9 +79,11 @@ export default function MapView() {
     const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-    // Tag Filters
-    const [tags, setTags] = useState<Tag[]>([]);
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    // Filters context
+    const [minCoffee, setMinCoffee] = useState(0);
+    const [minFood, setMinFood] = useState(0);
+    const [minPlace, setMinPlace] = useState(0);
+    const [minPrice, setMinPrice] = useState(0);
 
     const fetchShops = async () => {
         setLoading(true);
@@ -85,7 +92,10 @@ export default function MapView() {
             const res = await getCoffeeShops({
                 filter: "all",
                 limit: 100,
-                tagIds: selectedTags
+                minCoffee,
+                minFood,
+                minPlace,
+                minPrice
             });
 
             if (res.success && res.data) {
@@ -99,35 +109,24 @@ export default function MapView() {
         }
     };
 
-    const fetchTags = async () => {
-        const res = await getTags();
-        if (res.success && res.data) {
-            setTags(res.data);
-        }
-    };
-
-    useEffect(() => {
-        fetchTags();
-    }, []);
-
     useEffect(() => {
         fetchShops();
-    }, [selectedTags]);
+    }, [minCoffee, minFood, minPlace, minPrice]);
 
     const handleMarkerClick = (shop: Shop) => {
         setSelectedShop(shop);
         setIsDrawerOpen(true);
     };
 
-    const toggleTag = (tagId: string) => {
-        setSelectedTags(prev =>
-            prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId]
-        );
-    };
 
     const clearFilters = () => {
-        setSelectedTags([]);
+        setMinCoffee(0);
+        setMinFood(0);
+        setMinPlace(0);
+        setMinPrice(0);
     };
+
+    const hasFilters = minCoffee > 0 || minFood > 0 || minPlace > 0 || minPrice > 0;
 
     return (
         <div className="relative w-full h-full min-h-[60vh]">
@@ -190,9 +189,9 @@ export default function MapView() {
                 <DrawerTrigger asChild>
                     <button className="absolute bottom-24 right-5 z-[500] w-14 h-14 bg-brand-600 text-white rounded-full shadow-xl flex items-center justify-center transition-transform hover:scale-105 active:scale-95">
                         <Filter size={24} />
-                        {selectedTags.length > 0 && (
-                            <span className="absolute top-0 right-0 w-4 h-4 bg-white border-2 border-brand-600 rounded-full flex items-center justify-center">
-                                <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+                        {hasFilters && (
+                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-white border-2 border-brand-600 rounded-full flex items-center justify-center">
+                                <span className="w-2 h-2 bg-brand-600 rounded-full animate-pulse"></span>
                             </span>
                         )}
                     </button>
@@ -200,30 +199,42 @@ export default function MapView() {
                 <DrawerContent>
                     <div className="mx-auto w-full max-w-sm">
                         <DrawerHeader>
-                            <DrawerTitle className="text-xl font-bold text-brand-950">Filtrar Cafeterías</DrawerTitle>
+                            <DrawerTitle className="text-xl font-bold text-brand-950">Filtrar por Experiencia</DrawerTitle>
                             <DrawerDescription>
-                                Selecciona tags para encontrar tu café ideal.
+                                Encuentra lugares que cumplan con tus expectativas.
                             </DrawerDescription>
                         </DrawerHeader>
-                        <div className="p-4 pb-8">
-                            <h3 className="text-sm font-bold text-gray-500 mb-3 uppercase tracking-wider">Etiquetas</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {tags.map(tag => (
-                                    <button
-                                        key={tag.id}
-                                        onClick={() => toggleTag(tag.id)}
-                                        className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${selectedTags.includes(tag.id)
-                                            ? "bg-brand-600 text-white border-brand-600 shadow-md"
-                                            : "bg-white text-gray-500 border-gray-200 hover:border-brand-300"
-                                            }`}
-                                    >
-                                        {tag.name}
-                                    </button>
-                                ))}
+                        <div className="p-6 pb-8 space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
+                                    <Coffee size={14} className="text-brand-600" /> Café (Mínimo)
+                                </label>
+                                <LikertRating rating={minCoffee} interactive onRatingChange={setMinCoffee} size="md" />
                             </div>
 
-                            {selectedTags.length > 0 && (
-                                <div className="mt-8">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
+                                    <Utensils size={14} className="text-brand-600" /> Comida (Mínimo)
+                                </label>
+                                <LikertRating rating={minFood} interactive onRatingChange={setMinFood} size="md" />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
+                                    <Map size={14} className="text-brand-600" /> Lugar (Mínimo)
+                                </label>
+                                <LikertRating rating={minPlace} interactive onRatingChange={setMinPlace} size="md" />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
+                                    <CircleDollarSign size={14} className="text-brand-600" /> Costo (Mínimo)
+                                </label>
+                                <LikertRating rating={minPrice} interactive onRatingChange={setMinPrice} size="md" />
+                            </div>
+
+                            {hasFilters && (
+                                <div className="pt-4">
                                     <Button
                                         onClick={clearFilters}
                                         variant="outline"
@@ -237,7 +248,7 @@ export default function MapView() {
                         <DrawerFooter>
                             <DrawerClose asChild>
                                 <Button className="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold h-12 rounded-xl">
-                                    Ver Resultados
+                                    Aplicar Filtros
                                 </Button>
                             </DrawerClose>
                         </DrawerFooter>

@@ -24,7 +24,16 @@ export async function getTags() {
     }
 }
 
-export async function createReview(data: { shopId: string; rating: number; comment: string; tagIds: string[] }) {
+export async function createReview(data: { 
+    shopId: string; 
+    rating?: number; // Keep for compatibility if needed, but we'll calculate it
+    comment: string; 
+    tagIds?: string[];
+    coffeeRating?: number;
+    foodRating?: number;
+    placeRating?: number;
+    priceRating?: number;
+}) {
     try {
         const session = await auth.api.getSession({
             headers: await headers(),
@@ -34,20 +43,28 @@ export async function createReview(data: { shopId: string; rating: number; comme
             return { success: false, error: "Unauthorized" };
         }
 
-        const { shopId, rating, comment, tagIds } = data;
+        const { shopId, comment, tagIds, coffeeRating = 0, foodRating = 0, placeRating = 0, priceRating = 0 } = data;
 
-        // Transaction would be ideal but Drizzle-Kit sometimes has issues with transactions depending on driver/version in server actions? 
-        // PG driver supports it. Let's try simple sequential inserts first for robustness if not using `db.transaction`.
-        // Actually, db.transaction is standard.
+        // Calculate average rating from categories
+        const ratings = [coffeeRating, foodRating, placeRating, priceRating].filter(r => r > 0);
+        const avgRating = ratings.length > 0 
+            ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1)
+            : "0.0";
 
         const newReview = await db.transaction(async (tx) => {
             const [review] = await tx.insert(reviews).values({
                 userId: session.user.id,
                 shopId: shopId,
-                rating: rating.toString(),
+                rating: avgRating,
+                coffeeRating,
+                foodRating,
+                placeRating,
+                priceRating,
                 comment: comment,
             }).returning();
 
+            // Tags are deactivated for now as per user request
+            /*
             if (tagIds && tagIds.length > 0) {
                 await tx.insert(reviewsTags).values(
                     tagIds.map(tagId => ({
@@ -56,6 +73,7 @@ export async function createReview(data: { shopId: string; rating: number; comme
                     }))
                 );
             }
+            */
             return review;
         });
 
@@ -94,6 +112,10 @@ export async function getReviews(shopId: string) {
             userName: r.user.name,
             userImage: r.user.image,
             rating: r.rating,
+            coffeeRating: r.coffeeRating,
+            foodRating: r.foodRating,
+            placeRating: r.placeRating,
+            priceRating: r.priceRating,
             comment: r.comment,
             createdAt: r.createdAt,
             tags: r.tags.map(rt => rt.tag.name)

@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, MapPin, Star, Send, Loader2, Tag } from "lucide-react";
+import { X, MapPin, Star, Send, Loader2, Tag, Utensils, Coffee, Map, CircleDollarSign } from "lucide-react";
 import { StarRating } from "./star-rating";
+import { LikertRating } from "./likert-rating";
 import { authClient } from "@/lib/auth-client";
 import { getTags, createReview, getReviews } from "@/actions/reviews";
 
@@ -11,14 +12,13 @@ interface Review {
     userName: string;
     userImage: string | null;
     rating: string;
+    coffeeRating: number;
+    foodRating: number;
+    placeRating: number;
+    priceRating: number;
     comment: string | null;
     createdAt: string; // or Date
     tags?: string[];
-}
-
-interface TagType {
-    id: string;
-    name: string;
 }
 
 interface ShopDrawerProps {
@@ -26,6 +26,10 @@ interface ShopDrawerProps {
         id: string;
         name: string;
         avgRating: number;
+        avgCoffee?: number;
+        avgFood?: number;
+        avgPlace?: number;
+        avgPrice?: number;
         reviewCount: number;
         googleMapsUrl: string | null;
     } | null;
@@ -37,39 +41,30 @@ interface ShopDrawerProps {
 export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDrawerProps) {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [loading, setLoading] = useState(false);
+    const [isReviewDrawerOpen, setIsReviewDrawerOpen] = useState(false);
 
     // Form state
-    const [newRating, setNewRating] = useState(0);
+    const [coffeeRating, setCoffeeRating] = useState(0);
+    const [foodRating, setFoodRating] = useState(0);
+    const [placeRating, setPlaceRating] = useState(0);
+    const [priceRating, setPriceRating] = useState(0);
     const [newComment, setNewComment] = useState("");
-    const [availableTags, setAvailableTags] = useState<TagType[]>([]);
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const { data: session } = authClient.useSession();
 
     useEffect(() => {
-        if (isOpen) {
-            // Load tags only once or when drawer opens
-            loadTags();
-        }
         if (shop && isOpen) {
             fetchShopReviews(shop.id);
         }
     }, [shop, isOpen]);
-
-    const loadTags = async () => {
-        const res = await getTags();
-        if (res.success && res.data) {
-            setAvailableTags(res.data);
-        }
-    };
 
     const fetchShopReviews = async (shopId: string) => {
         setLoading(true);
         try {
             const res = await getReviews(shopId);
             if (res.success && res.data) {
-                // @ts-ignore - Date types mismatch from server action usually strings
+                // @ts-ignore
                 setReviews(res.data);
             }
         } finally {
@@ -77,27 +72,26 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
         }
     };
 
-    const toggleTag = (tagId: string) => {
-        setSelectedTags(prev =>
-            prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId]
-        );
-    };
-
     const handleReviewSubmit = async () => {
-        if (!shop || newRating === 0) return;
+        if (!shop || (coffeeRating === 0 && foodRating === 0 && placeRating === 0 && priceRating === 0)) return;
         setIsSubmitting(true);
         try {
             const res = await createReview({
                 shopId: shop.id,
-                rating: newRating,
+                coffeeRating,
+                foodRating,
+                placeRating,
+                priceRating,
                 comment: newComment,
-                tagIds: selectedTags
             });
 
             if (res.success) {
-                setNewRating(0);
+                setCoffeeRating(0);
+                setFoodRating(0);
+                setPlaceRating(0);
+                setPriceRating(0);
                 setNewComment("");
-                setSelectedTags([]);
+                setIsReviewDrawerOpen(false);
                 fetchShopReviews(shop.id);
                 onReviewSubmitted();
             } else {
@@ -113,58 +107,87 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[2000] flex flex-col justify-end overflow-hidden">
-            {/* Backdrop */}
-            <div
-                className="absolute inset-0 bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 ease-out animate-in fade-in"
-                onClick={onClose}
-            />
+        <>
+            <div className="fixed inset-0 z-[2000] flex flex-col justify-end overflow-hidden">
+                {/* Backdrop */}
+                <div
+                    className="absolute inset-0 bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 ease-out animate-in fade-in"
+                    onClick={onClose}
+                />
 
-            {/* Drawer */}
-            <div className="relative w-full max-w-lg mx-auto bg-white rounded-t-3xl shadow-2xl transition-transform duration-300 ease-out animate-in slide-in-from-bottom-full pb-safe">
-                {/* Drag Handle */}
-                <div className="flex justify-center p-3">
-                    <div className="w-12 h-1.5 bg-gray-200 rounded-full" />
-                </div>
+                {/* Main Shop Drawer */}
+                <div className="relative w-full max-w-lg mx-auto bg-white rounded-t-3xl shadow-2xl transition-transform duration-300 ease-out animate-in slide-in-from-bottom-full pb-safe h-[85vh] flex flex-col">
+                    {/* Drag Handle */}
+                    <div className="flex justify-center p-3">
+                        <div className="w-12 h-1.5 bg-gray-200 rounded-full" />
+                    </div>
 
-                {/* Header */}
-                <div className="px-6 pb-4 border-b border-gray-100">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <h2 className="text-xl font-bold text-brand-950 leading-tight">{shop?.name}</h2>
-                            <div className="flex items-center gap-2 mt-1">
-                                <StarRating rating={Number(shop?.avgRating || 0)} size={16} />
-                                <span className="text-xs font-semibold text-brand-800/70">
-                                    {Number(shop?.avgRating || 0).toFixed(1)} ({shop?.reviewCount} reseñas)
-                                </span>
+                    {/* Header */}
+                    <div className="px-6 pb-4 border-b border-gray-100">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <h2 className="text-xl font-bold text-brand-950 leading-tight">{shop?.name}</h2>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <StarRating rating={Number(shop?.avgRating || 0)} size={16} />
+                                    <span className="text-xs font-semibold text-brand-800/70">
+                                        {Number(shop?.avgRating || 0).toFixed(1)} ({shop?.reviewCount} reseñas)
+                                    </span>
+                                </div>
+                                
+                                {/* Summary Averages */}
+                                {shop && (Number(shop.avgCoffee) > 0 || Number(shop.avgFood) > 0) && (
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        {Number(shop.avgCoffee) > 0 && (
+                                            <div className="flex items-center gap-1.5 bg-brand-50 px-3 py-1 rounded-full border border-brand-100">
+                                                <Coffee size={12} className="text-brand-600" />
+                                                <span className="text-[11px] font-bold text-brand-800">{Number(shop.avgCoffee).toFixed(1)}</span>
+                                            </div>
+                                        )}
+                                        {Number(shop.avgFood) > 0 && (
+                                            <div className="flex items-center gap-1.5 bg-brand-50 px-3 py-1 rounded-full border border-brand-100">
+                                                <Utensils size={12} className="text-brand-600" />
+                                                <span className="text-[11px] font-bold text-brand-800">{Number(shop.avgFood).toFixed(1)}</span>
+                                            </div>
+                                        )}
+                                        {Number(shop.avgPlace) > 0 && (
+                                            <div className="flex items-center gap-1.5 bg-brand-50 px-3 py-1 rounded-full border border-brand-100">
+                                                <Map size={12} className="text-brand-600" />
+                                                <span className="text-[11px] font-bold text-brand-800">{Number(shop.avgPlace).toFixed(1)}</span>
+                                            </div>
+                                        )}
+                                        {Number(shop.avgPrice) > 0 && (
+                                            <div className="flex items-center gap-1.5 bg-brand-50 px-3 py-1 rounded-full border border-brand-100">
+                                                <CircleDollarSign size={12} className="text-brand-600" />
+                                                <span className="text-[11px] font-bold text-brand-800">{Number(shop.avgPrice).toFixed(1)}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
-                        </div>
-                        <button
-                            onClick={onClose}
-                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                        >
-                            <X size={20} className="text-gray-500" />
-                        </button>
-                    </div>
-
-                    <div className="flex gap-3 mt-4">
-                        {shop?.googleMapsUrl && (
-                            <a
-                                href={shop.googleMapsUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-xl transition-all shadow-md active:scale-95"
+                            <button
+                                onClick={onClose}
+                                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                             >
-                                <MapPin size={14} />
-                                CÓMO LLEGAR
-                            </a>
-                        )}
-                    </div>
-                </div>
+                                <X size={20} className="text-gray-500" />
+                            </button>
+                        </div>
 
-                {/* Content Area */}
-                <div className="flex flex-col h-[70vh] md:h-[60vh] overflow-hidden">
-                    {/* Scrollable Reviews Section */}
+                        <div className="flex gap-3 mt-4">
+                            {shop?.googleMapsUrl && (
+                                <a
+                                    href={shop.googleMapsUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-xl transition-all shadow-md active:scale-95"
+                                >
+                                    <MapPin size={14} />
+                                    CÓMO LLEGAR
+                                </a>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Content Area - Reviews Only */}
                     <div className="flex-1 overflow-y-auto px-6 py-4">
                         <h3 className="text-sm font-bold text-brand-950 mb-4 uppercase tracking-wider">Críticas y Comentarios</h3>
 
@@ -173,37 +196,49 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                                 <Loader2 className="animate-spin text-brand-600" size={32} />
                             </div>
                         ) : (
-                            <div className="space-y-4">
+                            <div className="space-y-4 pb-20">
                                 {reviews.length === 0 ? (
-                                    <div className="text-center py-8 bg-brand-50/30 rounded-2xl border-2 border-dashed border-brand-100">
-                                        <p className="text-sm text-gray-400">Sé el primero en calificar este lugar</p>
+                                    <div className="text-center py-12 bg-brand-50/30 rounded-3xl border-2 border-dashed border-brand-100">
+                                        <p className="text-sm text-gray-400">Sin reseñas aún. ¡Sé el primero!</p>
                                     </div>
                                 ) : (
                                     reviews.map((rev) => (
                                         <div key={rev.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-                                            <div className="flex justify-between items-center mb-2">
+                                            <div className="flex justify-between items-center mb-3">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-bold text-xs">
+                                                    <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-bold text-xs shadow-inner">
                                                         {rev.userName.charAt(0)}
                                                     </div>
                                                     <span className="text-xs font-bold text-brand-950">{rev.userName}</span>
                                                 </div>
-                                                <StarRating rating={Number(rev.rating)} size={10} />
-                                            </div>
-                                            <p className="text-sm text-gray-700 leading-relaxed">{rev.comment}</p>
-
-                                            {/* Tags Display */}
-                                            {rev.tags && rev.tags.length > 0 && (
-                                                <div className="flex flex-wrap gap-1 mt-2">
-                                                    {rev.tags.map(tag => (
-                                                        <span key={tag} className="px-2 py-0.5 bg-brand-50 text-brand-700 text-[10px] rounded-full font-medium border border-brand-100">
-                                                            {tag}
-                                                        </span>
-                                                    ))}
+                                                <div className="flex items-center gap-1">
+                                                    <StarRating rating={Number(rev.rating)} size={10} />
                                                 </div>
-                                            )}
+                                            </div>
 
-                                            <p className="text-[10px] text-gray-400 mt-2">
+                                            {/* Category Ratings Display */}
+                                            <div className="grid grid-cols-2 gap-2 mb-3 bg-gray-50/50 p-2 rounded-xl border border-gray-100">
+                                                <div className="flex items-center gap-2">
+                                                    <Coffee size={12} className="text-brand-600" />
+                                                    <LikertRating rating={rev.coffeeRating} size="sm" />
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Utensils size={12} className="text-brand-600" />
+                                                    <LikertRating rating={rev.foodRating} size="sm" />
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Map size={12} className="text-brand-600" />
+                                                    <LikertRating rating={rev.placeRating} size="sm" />
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <CircleDollarSign size={12} className="text-brand-600" />
+                                                    <LikertRating rating={rev.priceRating} size="sm" />
+                                                </div>
+                                            </div>
+
+                                            <p className="text-sm text-gray-700 leading-relaxed font-medium">{rev.comment}</p>
+
+                                            <p className="text-[10px] text-gray-400 mt-2 font-semibold">
                                                 {new Date(rev.createdAt).toLocaleDateString()}
                                             </p>
                                         </div>
@@ -213,74 +248,85 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                         )}
                     </div>
 
-                    {/* Fixed Bottom Review Form */}
-                    <div className="px-6 py-6 border-t border-gray-100 bg-white shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
-                        {session ? (
-                            <div className="space-y-4">
-                                <h4 className="text-sm font-bold text-brand-950">Tu experiencia</h4>
-                                <div className="flex flex-col items-center gap-2">
-                                    <StarRating
-                                        rating={newRating}
-                                        interactive
-                                        onRatingChange={setNewRating}
-                                        size={32}
-                                        className="gap-2"
-                                    />
-                                    <span className="text-xs text-brand-800 font-medium">
-                                        {newRating === 5 ? "¡Increíble!" :
-                                            newRating === 4 ? "Muy bueno" :
-                                                newRating === 3 ? "Aceptable" :
-                                                    newRating === 2 ? "Regular" :
-                                                        newRating === 1 ? "No me gustó" : "Toca para calificar"}
-                                    </span>
-                                </div>
+                    {/* Fixed Add Review Button at the bottom of the drawer */}
+                    <div className="p-6 bg-white border-t border-gray-100 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
+                        <button
+                            onClick={() => setIsReviewDrawerOpen(true)}
+                            className="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white font-black rounded-2xl shadow-xl shadow-brand-200 flex items-center justify-center gap-2 transition-all active:scale-95 text-sm uppercase tracking-widest"
+                        >
+                            <Send size={18} />
+                            AÑADIR RESEÑA
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-                                {/* Tag Selector */}
-                                <div>
-                                    <p className="text-xs font-semibold text-gray-500 mb-2">¿Qué destacas?</p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {availableTags.map(tag => (
-                                            <button
-                                                key={tag.id}
-                                                onClick={() => toggleTag(tag.id)}
-                                                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${selectedTags.includes(tag.id)
-                                                        ? "bg-brand-600 text-white border-brand-600"
-                                                        : "bg-white text-gray-600 border-gray-200 hover:border-brand-300"
-                                                    }`}
-                                            >
-                                                {tag.name}
-                                            </button>
-                                        ))}
+            {/* Review Form Modal (Nested Overlay/Drawer) */}
+            {isReviewDrawerOpen && (
+                <div className="fixed inset-0 z-[3000] flex flex-col justify-end">
+                    <div 
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in"
+                        onClick={() => setIsReviewDrawerOpen(false)}
+                    />
+                    <div className="relative w-full max-w-lg mx-auto bg-white rounded-t-3xl shadow-2xl p-6 animate-in slide-in-from-bottom-full duration-300">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-lg font-bold text-brand-950 uppercase">Tu experiencia</h3>
+                            <button onClick={() => setIsReviewDrawerOpen(false)} className="p-2 rounded-full hover:bg-gray-100">
+                                <X size={20} className="text-gray-400" />
+                            </button>
+                        </div>
+
+                        {session ? (
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-1 gap-5">
+                                    <div className="space-y-2">
+                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><Coffee size={14}/> CAFÉ</span>
+                                        <LikertRating rating={coffeeRating} interactive onRatingChange={setCoffeeRating} size="md" />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><Utensils size={14}/> COMIDA</span>
+                                        <LikertRating rating={foodRating} interactive onRatingChange={setFoodRating} size="md" />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><Map size={14}/> LUGAR</span>
+                                        <LikertRating rating={placeRating} interactive onRatingChange={setPlaceRating} size="md" />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><CircleDollarSign size={14}/> COSTO</span>
+                                        <LikertRating rating={priceRating} interactive onRatingChange={setPriceRating} size="md" />
                                     </div>
                                 </div>
 
-                                <div className="relative">
+                                <div className="relative pt-2">
                                     <textarea
-                                        className="w-full p-4 text-sm border-2 border-brand-100 rounded-2xl focus:border-brand-500 focus:ring-0 outline-none transition-all placeholder:text-gray-300 resize-none"
+                                        className="w-full p-4 text-sm border-2 border-brand-100 rounded-2xl focus:border-brand-500 focus:ring-0 outline-none transition-all placeholder:text-gray-300 resize-none bg-gray-50/50"
                                         placeholder="Comparte tu opinión con la comunidad..."
-                                        rows={2}
+                                        rows={3}
                                         value={newComment}
                                         onChange={(e) => setNewComment(e.target.value)}
                                     />
                                 </div>
                                 <button
                                     onClick={handleReviewSubmit}
-                                    disabled={isSubmitting || newRating === 0}
-                                    className="w-full py-4 bg-brand-600 hover:bg-brand-700 disabled:bg-brand-200 text-white font-bold rounded-2xl shadow-lg shadow-brand-200 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                                    disabled={isSubmitting || (coffeeRating === 0 && foodRating === 0 && placeRating === 0 && priceRating === 0)}
+                                    className="w-full py-5 bg-brand-600 hover:bg-brand-700 disabled:bg-brand-200 text-white font-black rounded-2xl shadow-xl shadow-brand-200 flex items-center justify-center gap-2 transition-all active:scale-[0.98] tracking-widest"
                                 >
                                     {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <Send size={18} />}
                                     PUBLICAR RESEÑA
                                 </button>
                             </div>
                         ) : (
-                            <div className="bg-brand-50 p-6 rounded-2xl text-center">
-                                <p className="text-sm text-brand-900 font-medium mb-2">¿Te gustó el café?</p>
-                                <p className="text-xs text-brand-800/60">Inicia sesión para compartir tu reseña con otros exploradores.</p>
+                            <div className="bg-brand-50 p-8 rounded-3xl text-center border border-brand-100">
+                                <p className="text-sm text-brand-900 font-bold mb-2 uppercase tracking-tight">¿Te gustó el café?</p>
+                                <p className="text-xs text-brand-800/60 font-medium">Inicia sesión para compartir tu reseña con otros exploradores.</p>
                             </div>
                         )}
                     </div>
                 </div>
-            </div>
-        </div>
+            )}
+        </>
     );
 }
