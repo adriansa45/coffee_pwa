@@ -3,6 +3,8 @@ import { getCoffeeShops } from "@/actions/coffee-shops";
 import { getUserVisits } from "@/actions/visits";
 import { PassportList } from "@/components/passport-list";
 
+export const dynamic = "force-dynamic";
+
 export default async function PassportPage() {
     // Initial fetch for "all"
     const { data: initialShops } = await getCoffeeShops({ page: 1, limit: 10, filter: "all" });
