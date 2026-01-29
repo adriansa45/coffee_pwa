@@ -37,7 +37,7 @@ export function TopNav() {
     };
 
     return (
-        <header className="fixed top-0 left-0 right-0 bg-brand-700 border-b border-brand-800 py-2 px-6 flex items-center justify-between z-[2000] shadow-md">
+        <header className="fixed top-0 left-0 right-0 bg-brand-600 border-b border-brand-800 py-2 px-6 flex items-center justify-between z-[2000] shadow-md">
             <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center shadow-sm">
                     <Coffee className="w-5 h-5 text-white" strokeWidth={2.5} />
