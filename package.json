@@ -7,7 +7,8 @@
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "payload": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.ts payload"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.73.0",
@@ -24,7 +25,9 @@
     "@types/leaflet": "^1.9.21",
     "better-auth": "^1.4.16",
     "class-variance-authority": "^0.7.1",
+    "cli-color": "^2.0.4",
     "clsx": "^2.1.1",
+    "cross-env": "^10.1.0",
     "drizzle-orm": "^0.45.1",
     "graphql-tag": "^2.12.6",
     "html5-qrcode": "^2.3.8",

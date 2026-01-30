@@ -33,7 +33,7 @@ export default async function HistoryPage() {
     return (
         <div className="p-6 pt-24 pb-28 space-y-6">
             <header className="flex items-center gap-3">
-                <Link href="/dashboard/home" className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+                <Link href="/home" className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
                     <ArrowLeft size={20} />
                 </Link>
                 <div>

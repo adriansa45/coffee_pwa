@@ -9,10 +9,10 @@ export default async function DashboardPage() {
 
     // Redirect based on role
     const role = session?.user ? (session.user as any).role : null;
-    
+
     if (role === "coffee_shop") {
-        redirect("/dashboard/shop");
+        redirect("/shop");
     }
-    
-    redirect("/dashboard/home");
+
+    redirect("/home");
 }

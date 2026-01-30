@@ -31,7 +31,7 @@ export const config = buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
-    push: true,
+    push: false,
   }),
   sharp,
 })

@@ -7,19 +7,19 @@ import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
 
 const customerNavItems = [
-    { name: "Mapa", href: "/dashboard/map", icon: Map },
-    { name: "Inicio", href: "/dashboard/home", icon: Home },
-    { name: "Pasaporte", href: "/dashboard/passport", icon: Stamp },
+    { name: "Mapa", href: "/map", icon: Map },
+    { name: "Inicio", href: "/home", icon: Home },
+    { name: "Pasaporte", href: "/passport", icon: Stamp },
 ];
 
 const shopNavItems = [
-    { name: "Escanear", href: "/dashboard/shop", icon: QrCode },
+    { name: "Escanear", href: "/shop", icon: QrCode },
 ];
 
 export function BottomNav() {
     const pathname = usePathname();
     const { data: session } = authClient.useSession();
-    
+
     // Determine which nav items to show based on role
     const role = session?.user ? (session.user as any).role : "customer";
     const navItems = role === "coffee_shop" ? shopNavItems : customerNavItems;
@@ -28,7 +28,7 @@ export function BottomNav() {
         <nav className="fixed bottom-0 left-0 right-0 bg-brand-600  flex justify-around items-center py-2 px-4 shadow-[0_-4px_20px_rgba(39,4,13,0.3)] z-[1000] pb-safe">
             {navItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href || (item.name === "Inicio" && pathname === "/dashboard");
+                const isActive = pathname === item.href || (item.name === "Inicio" && pathname === "/");
                 return (
                     <Link
                         key={item.href}

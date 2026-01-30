@@ -21,7 +21,7 @@ export function TopNav() {
     const { data, isPending } = authClient.useSession();
     const user = data?.user;
     const router = useRouter();
-    
+
     // Get user role
     const role = user ? (user as any).role : "customer";
     const title = role === "coffee_shop" ? "Panel de Cafetería" : "Pasaporte de Café";
@@ -89,7 +89,7 @@ export function TopNav() {
                                             variant="ghost"
                                             className="w-full justify-start text-brand-950 font-bold h-12 rounded-xl hover:bg-brand-50 hover:text-brand-700"
                                         >
-                                            <Link href="/dashboard/profile">
+                                            <Link href="/profile">
                                                 <User className="mr-3 h-5 w-5 text-brand-600" />
                                                 Mi Perfil
                                             </Link>
@@ -101,7 +101,7 @@ export function TopNav() {
                                             variant="ghost"
                                             className="w-full justify-start text-brand-950 font-bold h-12 rounded-xl hover:bg-brand-50 hover:text-brand-700"
                                         >
-                                            <Link href="/dashboard/profile">
+                                            <Link href="/profile">
                                                 <Settings className="mr-3 h-5 w-5 text-brand-600" />
                                                 Configuración
                                             </Link>

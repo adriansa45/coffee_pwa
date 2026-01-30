@@ -47,7 +47,7 @@ export async function registerVisitByCode(userCode: string) {
             },
         });
 
-        revalidatePath("/dashboard");
+        revalidatePath("/");
         return { success: true, message: `Visita registrada para ${targetUser.name}` };
     } catch (error) {
         console.error("Error registering visit:", error);

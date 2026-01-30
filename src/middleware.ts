@@ -24,12 +24,12 @@ export default async function authMiddleware(request: NextRequest) {
 
     // // If user is logged in and trying to access login/register
     // if (session && isPublicRoute) {
-    //     return NextResponse.redirect(new URL("/dashboard", request.url));
+    //     return NextResponse.redirect(new URL("/", request.url));
     // }
 
     // // If accessing root, redirect to dashboard (or login via the above check)
     // if (request.nextUrl.pathname === "/") {
-    //     return NextResponse.redirect(new URL("/dashboard", request.url));
+    //     return NextResponse.redirect(new URL("/", request.url));
     // }
 
     return NextResponse.next();

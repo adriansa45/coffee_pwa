@@ -29,13 +29,13 @@ export function SignUpForm() {
                 email,
                 password,
                 name,
-                callbackURL: "/dashboard/home",
+                callbackURL: "/home",
             });
 
             if (error) {
                 setError(error.message || "Ocurrió un error al registrarse");
             } else {
-                router.push("/dashboard/home");
+                router.push("/home");
             }
         } catch (err) {
             setError("Ocurrió un error inesperado");

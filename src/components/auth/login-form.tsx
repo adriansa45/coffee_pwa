@@ -27,13 +27,13 @@ export function LoginForm() {
             const { data, error } = await authClient.signIn.email({
                 email,
                 password,
-                callbackURL: "/dashboard/home",
+                callbackURL: "/home",
             });
 
             if (error) {
                 setError(error.message || "Credenciales inválidas");
             } else {
-                router.push("/dashboard/home");
+                router.push("/home");
             }
         } catch (err) {
             setError("Ocurrió un error inesperado");
@@ -45,7 +45,7 @@ export function LoginForm() {
     const handleGithubSignIn = async () => {
         await authClient.signIn.social({
             provider: "github",
-            callbackURL: "/dashboard/map",
+            callbackURL: "/map",
         });
     };
 

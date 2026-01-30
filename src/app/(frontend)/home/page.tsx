@@ -41,7 +41,7 @@ export default async function HomePage() {
             <section>
                 <div className="flex justify-between items-end mb-4">
                     <h3 className="text-lg font-bold text-brand-950">Top Exploradores</h3>
-                    <Link href="/dashboard/leaderboard" className="text-xs font-bold text-brand-600 flex items-center gap-1 hover:underline">
+                    <Link href="/leaderboard" className="text-xs font-bold text-brand-600 flex items-center gap-1 hover:underline">
                         Ver todo <ArrowRight size={12} />
                     </Link>
                 </div>
@@ -77,7 +77,7 @@ export default async function HomePage() {
             <section>
                 <div className="flex justify-between items-end mb-4">
                     <h3 className="text-lg font-bold text-brand-950">Actividad Reciente</h3>
-                    <Link href="/dashboard/history" className="text-xs font-bold text-brand-600 flex items-center gap-1 hover:underline">
+                    <Link href="/history" className="text-xs font-bold text-brand-600 flex items-center gap-1 hover:underline">
                         Ver historial <ArrowRight size={12} />
                     </Link>
                 </div>
