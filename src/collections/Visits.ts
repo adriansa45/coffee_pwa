@@ -5,6 +5,10 @@ export const Visits: CollectionConfig = {
   dbName: 'visits',
   fields: [
     {
+      name: 'id',
+      type: 'text',
+    },
+    {
       name: 'user',
       type: 'relationship',
       relationTo: 'users',

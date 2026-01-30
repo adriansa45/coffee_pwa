@@ -127,11 +127,13 @@ export interface UserAuthOperations {
  * via the `definition` "users".
  */
 export interface User {
-  id: number;
+  id: string;
   name: string;
-  role?: ('customer' | 'admin' | 'coffee_shop') | null;
+  role: 'customer' | 'admin' | 'coffee_shop';
+  emailVerified?: boolean | null;
+  image?: string | null;
   userCode?: string | null;
-  shopId?: (number | null) | CoffeeShop;
+  shopId?: (string | null) | CoffeeShop;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -155,7 +157,7 @@ export interface User {
  * via the `definition` "coffee-shops".
  */
 export interface CoffeeShop {
-  id: number;
+  id: string;
   name: string;
   description?: string | null;
   latitude: number;
@@ -171,9 +173,9 @@ export interface CoffeeShop {
  * via the `definition` "visits".
  */
 export interface Visit {
-  id: number;
-  user: number | User;
-  shop: number | CoffeeShop;
+  id: string;
+  user: string | User;
+  shop: string | CoffeeShop;
   visitedAt?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -183,16 +185,16 @@ export interface Visit {
  * via the `definition` "reviews".
  */
 export interface Review {
-  id: number;
-  user: number | User;
-  shop: number | CoffeeShop;
+  id: string;
+  user: string | User;
+  shop: string | CoffeeShop;
   rating: string;
   coffeeRating?: number | null;
   foodRating?: number | null;
   placeRating?: number | null;
   priceRating?: number | null;
   comment?: string | null;
-  tags?: (number | Tag)[] | null;
+  tags?: (string | Tag)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -201,7 +203,7 @@ export interface Review {
  * via the `definition` "tags".
  */
 export interface Tag {
-  id: number;
+  id: string;
   name: string;
   updatedAt: string;
   createdAt: string;
@@ -232,28 +234,28 @@ export interface PayloadLockedDocument {
   document?:
     | ({
         relationTo: 'users';
-        value: number | User;
+        value: string | User;
       } | null)
     | ({
         relationTo: 'coffee-shops';
-        value: number | CoffeeShop;
+        value: string | CoffeeShop;
       } | null)
     | ({
         relationTo: 'visits';
-        value: number | Visit;
+        value: string | Visit;
       } | null)
     | ({
         relationTo: 'reviews';
-        value: number | Review;
+        value: string | Review;
       } | null)
     | ({
         relationTo: 'tags';
-        value: number | Tag;
+        value: string | Tag;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -266,7 +268,7 @@ export interface PayloadPreference {
   id: number;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   key?: string | null;
   value?:
@@ -297,8 +299,11 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  id?: T;
   name?: T;
   role?: T;
+  emailVerified?: T;
+  image?: T;
   userCode?: T;
   shopId?: T;
   updatedAt?: T;
@@ -323,6 +328,7 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "coffee-shops_select".
  */
 export interface CoffeeShopsSelect<T extends boolean = true> {
+  id?: T;
   name?: T;
   description?: T;
   latitude?: T;
@@ -338,6 +344,7 @@ export interface CoffeeShopsSelect<T extends boolean = true> {
  * via the `definition` "visits_select".
  */
 export interface VisitsSelect<T extends boolean = true> {
+  id?: T;
   user?: T;
   shop?: T;
   visitedAt?: T;
@@ -349,6 +356,7 @@ export interface VisitsSelect<T extends boolean = true> {
  * via the `definition` "reviews_select".
  */
 export interface ReviewsSelect<T extends boolean = true> {
+  id?: T;
   user?: T;
   shop?: T;
   rating?: T;
@@ -366,6 +374,7 @@ export interface ReviewsSelect<T extends boolean = true> {
  * via the `definition` "tags_select".
  */
 export interface TagsSelect<T extends boolean = true> {
+  id?: T;
   name?: T;
   updatedAt?: T;
   createdAt?: T;

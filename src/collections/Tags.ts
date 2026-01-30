@@ -8,6 +8,10 @@ export const Tags: CollectionConfig = {
   dbName: 'tags',
   fields: [
     {
+      name: 'id',
+      type: 'text',
+    },
+    {
       name: 'name',
       type: 'text',
       required: true,

@@ -8,6 +8,10 @@ export const CoffeeShops: CollectionConfig = {
   dbName: 'coffee_shops',
   fields: [
     {
+      name: 'id',
+      type: 'text',
+    },
+    {
       name: 'name',
       type: 'text',
       required: true,
@@ -39,7 +43,7 @@ export const CoffeeShops: CollectionConfig = {
       type: 'number',
       defaultValue: 0,
       admin: {
-          readOnly: true,
+        readOnly: true,
       }
     },
   ],

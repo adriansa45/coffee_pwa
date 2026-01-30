@@ -14,7 +14,7 @@
         },
         "_parent_id": {
           "name": "_parent_id",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
@@ -96,7 +96,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar",
           "primaryKey": true,
           "notNull": true
         },
@@ -111,8 +111,21 @@
           "type": "enum_user_role",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "'customer'"
+        },
+        "email_verified": {
+          "name": "email_verified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "image": {
+          "name": "image",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
         },
         "user_code": {
           "name": "user_code",
@@ -122,7 +135,7 @@
         },
         "shop_id_id": {
           "name": "shop_id_id",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -288,7 +301,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar",
           "primaryKey": true,
           "notNull": true
         },
@@ -395,19 +408,19 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar",
           "primaryKey": true,
           "notNull": true
         },
         "user_id": {
           "name": "user_id",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
         "shop_id": {
           "name": "shop_id",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
@@ -534,19 +547,19 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar",
           "primaryKey": true,
           "notNull": true
         },
         "user_id": {
           "name": "user_id",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
         "shop_id": {
           "name": "shop_id",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
@@ -719,7 +732,7 @@
         },
         "parent_id": {
           "name": "parent_id",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
@@ -731,7 +744,7 @@
         },
         "tags_id": {
           "name": "tags_id",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         }
@@ -838,7 +851,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar",
           "primaryKey": true,
           "notNull": true
         },
@@ -1079,31 +1092,31 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "coffee_shops_id": {
           "name": "coffee_shops_id",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "visits_id": {
           "name": "visits_id",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "reviews_id": {
           "name": "reviews_id",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
         "tags_id": {
           "name": "tags_id",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         }
@@ -1437,7 +1450,7 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         }
@@ -1636,6 +1649,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "82822b82-6330-4089-a38c-5f94a009cd35",
+  "id": "2d4bdbc3-d1fb-48f0-8dc4-16e0aca593a9",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

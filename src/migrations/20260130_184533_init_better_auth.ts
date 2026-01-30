@@ -5,18 +5,20 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
    CREATE TYPE "public"."enum_user_role" AS ENUM('customer', 'admin', 'coffee_shop');
   CREATE TABLE "user_sessions" (
   	"_order" integer NOT NULL,
-  	"_parent_id" integer NOT NULL,
+  	"_parent_id" varchar NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
   	"created_at" timestamp(3) with time zone,
   	"expires_at" timestamp(3) with time zone NOT NULL
   );
   
   CREATE TABLE "user" (
-  	"id" serial PRIMARY KEY NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
   	"name" varchar NOT NULL,
-  	"role" "enum_user_role" DEFAULT 'customer',
+  	"role" "enum_user_role" DEFAULT 'customer' NOT NULL,
+  	"email_verified" boolean DEFAULT false,
+  	"image" varchar,
   	"user_code" varchar,
-  	"shop_id_id" integer,
+  	"shop_id_id" varchar,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"email" varchar NOT NULL,
@@ -29,7 +31,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   );
   
   CREATE TABLE "coffee_shops" (
-  	"id" serial PRIMARY KEY NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
   	"name" varchar NOT NULL,
   	"description" varchar,
   	"latitude" numeric NOT NULL,
@@ -42,18 +44,18 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   );
   
   CREATE TABLE "visits" (
-  	"id" serial PRIMARY KEY NOT NULL,
-  	"user_id" integer NOT NULL,
-  	"shop_id" integer NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"user_id" varchar NOT NULL,
+  	"shop_id" varchar NOT NULL,
   	"visited_at" timestamp(3) with time zone,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
   
   CREATE TABLE "reviews" (
-  	"id" serial PRIMARY KEY NOT NULL,
-  	"user_id" integer NOT NULL,
-  	"shop_id" integer NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"user_id" varchar NOT NULL,
+  	"shop_id" varchar NOT NULL,
   	"rating" varchar NOT NULL,
   	"coffee_rating" numeric DEFAULT 0,
   	"food_rating" numeric DEFAULT 0,
@@ -67,13 +69,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TABLE "reviews_rels" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"order" integer,
-  	"parent_id" integer NOT NULL,
+  	"parent_id" varchar NOT NULL,
   	"path" varchar NOT NULL,
-  	"tags_id" integer
+  	"tags_id" varchar
   );
   
   CREATE TABLE "tags" (
-  	"id" serial PRIMARY KEY NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
   	"name" varchar NOT NULL,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
@@ -97,11 +99,11 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"order" integer,
   	"parent_id" integer NOT NULL,
   	"path" varchar NOT NULL,
-  	"user_id" integer,
-  	"coffee_shops_id" integer,
-  	"visits_id" integer,
-  	"reviews_id" integer,
-  	"tags_id" integer
+  	"user_id" varchar,
+  	"coffee_shops_id" varchar,
+  	"visits_id" varchar,
+  	"reviews_id" varchar,
+  	"tags_id" varchar
   );
   
   CREATE TABLE "payload_preferences" (
@@ -117,7 +119,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"order" integer,
   	"parent_id" integer NOT NULL,
   	"path" varchar NOT NULL,
-  	"user_id" integer
+  	"user_id" varchar
   );
   
   CREATE TABLE "payload_migrations" (

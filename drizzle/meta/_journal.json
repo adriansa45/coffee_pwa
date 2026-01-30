@@ -8,6 +8,13 @@
       "when": 1768941069306,
       "tag": "0000_omniscient_cable",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1769797711387,
+      "tag": "0001_violet_arachne",
+      "breakpoints": true
     }
   ]
 }

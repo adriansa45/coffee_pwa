@@ -32,6 +32,7 @@ export const config = buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
     push: false,
+    allowIDOnCreate: true,
   }),
   sharp,
 })

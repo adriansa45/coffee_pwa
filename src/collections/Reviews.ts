@@ -5,6 +5,10 @@ export const Reviews: CollectionConfig = {
   dbName: 'reviews',
   fields: [
     {
+      name: 'id',
+      type: 'text',
+    },
+    {
       name: 'user',
       type: 'relationship',
       relationTo: 'users',
@@ -17,9 +21,9 @@ export const Reviews: CollectionConfig = {
       required: true,
     },
     {
-        name: 'rating',
-        type: 'text', // Keeping as text to match current schema, but could be number
-        required: true,
+      name: 'rating',
+      type: 'text', // Keeping as text to match current schema, but could be number
+      required: true,
     },
     {
       name: 'coffeeRating',
@@ -27,29 +31,29 @@ export const Reviews: CollectionConfig = {
       defaultValue: 0,
     },
     {
-        name: 'foodRating',
-        type: 'number',
-        defaultValue: 0,
+      name: 'foodRating',
+      type: 'number',
+      defaultValue: 0,
     },
     {
-        name: 'placeRating',
-        type: 'number',
-        defaultValue: 0,
+      name: 'placeRating',
+      type: 'number',
+      defaultValue: 0,
     },
     {
-        name: 'priceRating',
-        type: 'number',
-        defaultValue: 0,
+      name: 'priceRating',
+      type: 'number',
+      defaultValue: 0,
     },
     {
       name: 'comment',
       type: 'textarea',
     },
     {
-        name: 'tags',
-        type: 'relationship',
-        relationTo: 'tags',
-        hasMany: true,
+      name: 'tags',
+      type: 'relationship',
+      relationTo: 'tags',
+      hasMany: true,
     }
   ],
 }

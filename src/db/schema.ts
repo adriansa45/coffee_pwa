@@ -9,7 +9,7 @@ export const user = pgTable("user", {
     image: text("image"),
     role: text("role").default("customer").notNull(), //$type<"customer" | "admin" | "coffee_shop">(),
     userCode: text("user_code").unique().$defaultFn(() => Math.random().toString(36).substring(2, 10).toUpperCase()),
-    shopId: uuid("shop_id").references(() => coffeeShops.id),
+    shopId: text("shop_id").references(() => coffeeShops.id),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
         .defaultNow()
@@ -96,7 +96,7 @@ export const accountRelations = relations(account, ({ one }) => ({
 }));
 
 export const coffeeShops = pgTable("coffee_shops", {
-    id: uuid("id").primaryKey().defaultRandom(),
+    id: text("id").primaryKey(),
     name: text("name").notNull(),
     description: text("description"),
     latitude: doublePrecision("latitude").notNull(),
@@ -108,16 +108,16 @@ export const coffeeShops = pgTable("coffee_shops", {
 });
 
 export const visits = pgTable("visits", {
-    id: uuid("id").primaryKey().defaultRandom(),
+    id: text("id").primaryKey(),
     userId: text("user_id").notNull().references(() => user.id),
-    shopId: uuid("shop_id").notNull().references(() => coffeeShops.id),
+    shopId: text("shop_id").notNull().references(() => coffeeShops.id),
     visitedAt: timestamp("visited_at").defaultNow(),
 });
 
 export const reviews = pgTable("reviews", {
-    id: uuid("id").primaryKey().defaultRandom(),
+    id: text("id").primaryKey(),
     userId: text("user_id").notNull().references(() => user.id),
-    shopId: uuid("shop_id").notNull().references(() => coffeeShops.id),
+    shopId: text("shop_id").notNull().references(() => coffeeShops.id),
     rating: text("rating").notNull(), // Numeric string or int, let's use doublePrecision for flexibility or integer
     coffeeRating: doublePrecision("coffee_rating").default(0),
     foodRating: doublePrecision("food_rating").default(0),
@@ -128,13 +128,13 @@ export const reviews = pgTable("reviews", {
 });
 
 export const tags = pgTable("tags", {
-    id: uuid("id").primaryKey().defaultRandom(),
+    id: text("id").primaryKey(),
     name: text("name").notNull().unique(),
 });
 
 export const reviewsTags = pgTable("reviews_tags", {
-    reviewId: uuid("review_id").notNull().references(() => reviews.id, { onDelete: 'cascade' }),
-    tagId: uuid("tag_id").notNull().references(() => tags.id, { onDelete: 'cascade' }),
+    reviewId: text("review_id").notNull().references(() => reviews.id, { onDelete: 'cascade' }),
+    tagId: text("tag_id").notNull().references(() => tags.id, { onDelete: 'cascade' }),
 }, (t) => [
     primaryKey({ columns: [t.reviewId, t.tagId] })
 ]);
