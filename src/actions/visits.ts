@@ -1,10 +1,6 @@
-"use server";
-
 import { auth } from "@/lib/auth";
-import { db } from "@/db";
-import { visits, user, coffeeShops } from "@/db/schema";
-import { eq, and, sql } from "drizzle-orm";
 import { headers } from "next/headers";
+import { getPayload } from "@/lib/payload";
 import { revalidatePath } from "next/cache";
 
 export async function registerVisitByCode(userCode: string) {
@@ -16,8 +12,6 @@ export async function registerVisitByCode(userCode: string) {
         return { success: false, message: "No autorizado" };
     }
 
-    // Role check: must be coffee_shop
-    // We need to cast or access the role if it's in additionalFields
     const role = (session.user as any).role;
     const shopId = (session.user as any).shopId;
 
@@ -25,24 +19,32 @@ export async function registerVisitByCode(userCode: string) {
         return { success: false, message: "No tienes permisos de cafetería" };
     }
 
+    const payload = await getPayload();
+
     // Find the user by code
-    const targetUser = await db.query.user.findFirst({
-        where: eq(user.userCode, userCode)
+    const users = await payload.find({
+        collection: 'users',
+        where: {
+            userCode: {
+                equals: userCode,
+            },
+        },
     });
+
+    const targetUser = users.docs[0];
 
     if (!targetUser) {
         return { success: false, message: "Código de usuario inválido" };
     }
 
-    // Optional: Check if already visited today? Or just allow multiple stamps?
-    // Let's allow multiple for now, or maybe limit to 1 per day per shop.
-    // For simplicity: just insert.
-
     try {
-        await db.insert(visits).values({
-            userId: targetUser.id,
-            shopId: shopId,
-            visitedAt: new Date(),
+        await payload.create({
+            collection: 'visits',
+            data: {
+                user: targetUser.id,
+                shop: shopId,
+                visitedAt: new Date().toISOString(),
+            },
         });
 
         revalidatePath("/dashboard");
@@ -63,15 +65,19 @@ export async function getUserVisits() {
     }
 
     try {
-        const userVisits = await db.query.visits.findMany({
-            where: eq(visits.userId, session.user.id),
-            with: {
-                shop: true
+        const payload = await getPayload();
+        const userVisits = await payload.find({
+            collection: 'visits',
+            where: {
+                user: {
+                    equals: session.user.id,
+                },
             },
-            orderBy: (visits, { desc }) => [desc(visits.visitedAt)]
+            sort: '-visitedAt',
+            depth: 1, // Populate shop
         });
 
-        return { success: true, data: userVisits };
+        return { success: true, data: userVisits.docs };
     } catch (error) {
         console.error("Error fetching visits:", error);
         return { success: false, data: [] };

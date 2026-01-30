@@ -1,23 +1,16 @@
-"use server";
-
-import { db } from "@/db";
-import { reviews, tags, reviewsTags, user } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { eq, desc, inArray } from "drizzle-orm";
+import { getPayload } from "@/lib/payload";
 
 export async function getTags() {
     try {
-        const allTags = await db.select().from(tags);
+        const payload = await getPayload();
+        const allTags = await payload.find({
+            collection: 'tags',
+            limit: 100,
+        });
 
-        // // Seed if empty (auto-seed for now, should be a separate script but this is convenient for the user)
-        // if (allTags.length === 0) {
-        //     const defaultTags = ["Buen café", "Buen pan", "Para leer", "Para trabajar", "Aesthetic"];
-        //     const inserted = await db.insert(tags).values(defaultTags.map(name => ({ name }))).returning();
-        //     return { success: true, data: inserted };
-        // }
-
-        return { success: true, data: allTags };
+        return { success: true, data: allTags.docs };
     } catch (error) {
         console.error("Error fetching tags:", error);
         return { success: false, error: "Failed to fetch tags" };
@@ -26,7 +19,7 @@ export async function getTags() {
 
 export async function createReview(data: { 
     shopId: string; 
-    rating?: number; // Keep for compatibility if needed, but we'll calculate it
+    rating?: number; 
     comment: string; 
     tagIds?: string[];
     coffeeRating?: number;
@@ -45,36 +38,25 @@ export async function createReview(data: {
 
         const { shopId, comment, tagIds, coffeeRating = 0, foodRating = 0, placeRating = 0, priceRating = 0 } = data;
 
-        // Calculate average rating from categories
         const ratings = [coffeeRating, foodRating, placeRating, priceRating].filter(r => r > 0);
         const avgRating = ratings.length > 0 
             ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1)
             : "0.0";
 
-        const newReview = await db.transaction(async (tx) => {
-            const [review] = await tx.insert(reviews).values({
-                userId: session.user.id,
-                shopId: shopId,
+        const payload = await getPayload();
+        const newReview = await payload.create({
+            collection: 'reviews',
+            data: {
+                user: session.user.id,
+                shop: shopId,
                 rating: avgRating,
                 coffeeRating,
                 foodRating,
                 placeRating,
                 priceRating,
                 comment: comment,
-            }).returning();
-
-            // Tags are deactivated for now as per user request
-            /*
-            if (tagIds && tagIds.length > 0) {
-                await tx.insert(reviewsTags).values(
-                    tagIds.map(tagId => ({
-                        reviewId: review.id,
-                        tagId: tagId
-                    }))
-                );
-            }
-            */
-            return review;
+                tags: tagIds || [],
+            },
         });
 
         return { success: true, data: newReview };
@@ -86,31 +68,22 @@ export async function createReview(data: {
 
 export async function getReviews(shopId: string) {
     try {
-        // Fetch reviews with user info and tags
-        // This is a bit complex with Drizzle's query builder for relation arrays without `with`.
-        // `drizzle-orm` query builder `query.reviews.findMany` is easier if set up?
-        // We set up relations, so we can use `db.query.reviews.findMany`.
-
-        const shopReviews = await db.query.reviews.findMany({
-            where: eq(reviews.shopId, shopId),
-            orderBy: [desc(reviews.createdAt)],
-            with: {
-                user: true,
-                tags: {
-                    with: {
-                        tag: true
-                    }
-                }
-            }
+        const payload = await getPayload();
+        const shopReviews = await payload.find({
+            collection: 'reviews',
+            where: {
+                shop: {
+                    equals: shopId,
+                },
+            },
+            sort: '-createdAt',
+            depth: 1, // Populate user and tags
         });
 
-        // Map to simpler format if needed by UI, or usage in UI adapts.
-        // UI expects: { id, userName, userImage, rating, comment, createdAt, tags?: string[] }
-
-        const mappedReviews = shopReviews.map(r => ({
+        const mappedReviews = shopReviews.docs.map((r: any) => ({
             id: r.id,
-            userName: r.user.name,
-            userImage: r.user.image,
+            userName: r.user?.name || 'Usuario',
+            userImage: r.user?.image,
             rating: r.rating,
             coffeeRating: r.coffeeRating,
             foodRating: r.foodRating,
@@ -118,7 +91,7 @@ export async function getReviews(shopId: string) {
             priceRating: r.priceRating,
             comment: r.comment,
             createdAt: r.createdAt,
-            tags: r.tags.map(rt => rt.tag.name)
+            tags: r.tags?.map((t: any) => t.name) || []
         }));
 
         return { success: true, data: mappedReviews };
