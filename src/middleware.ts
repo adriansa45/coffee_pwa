@@ -14,23 +14,23 @@ export default async function authMiddleware(request: NextRequest) {
         },
     );
 
-    const isAuthRoute = request.nextUrl.pathname.startsWith("/auth");
-    const isPublicRoute = request.nextUrl.pathname === "/auth/login" || request.nextUrl.pathname === "/auth/register";
+    // const isAuthRoute = request.nextUrl.pathname.startsWith("/auth");
+    // const isPublicRoute = request.nextUrl.pathname === "/auth/login" || request.nextUrl.pathname === "/auth/register";
 
-    // If user is not logged in and trying to access a protected route
-    if (!session && !isAuthRoute) {
-        return NextResponse.redirect(new URL("/auth/login", request.url));
-    }
+    // // If user is not logged in and trying to access a protected route
+    // if (!session && !isAuthRoute) {
+    //     return NextResponse.redirect(new URL("/auth/login", request.url));
+    // }
 
-    // If user is logged in and trying to access login/register
-    if (session && isPublicRoute) {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
+    // // If user is logged in and trying to access login/register
+    // if (session && isPublicRoute) {
+    //     return NextResponse.redirect(new URL("/dashboard", request.url));
+    // }
 
-    // If accessing root, redirect to dashboard (or login via the above check)
-    if (request.nextUrl.pathname === "/") {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
+    // // If accessing root, redirect to dashboard (or login via the above check)
+    // if (request.nextUrl.pathname === "/") {
+    //     return NextResponse.redirect(new URL("/dashboard", request.url));
+    // }
 
     return NextResponse.next();
 }
