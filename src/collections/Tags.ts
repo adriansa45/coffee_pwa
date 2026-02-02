@@ -5,7 +5,6 @@ export const Tags: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
   },
-  dbName: 'tags',
   fields: [
     {
       name: 'id',

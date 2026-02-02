@@ -5,7 +5,6 @@ export const CoffeeShops: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
   },
-  dbName: 'coffee_shops',
   fields: [
     {
       name: 'id',

@@ -2,7 +2,6 @@ import type { CollectionConfig } from 'payload'
 
 export const Reviews: CollectionConfig = {
   slug: 'reviews',
-  dbName: 'reviews',
   fields: [
     {
       name: 'id',

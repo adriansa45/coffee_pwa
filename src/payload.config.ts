@@ -23,7 +23,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users],
+  collections: [Users, CoffeeShops, Visits, Reviews, Tags],
   editor: lexicalEditor({}),
   secret: process.env.PAYLOAD_SECRET,
   typescript: {
@@ -34,17 +34,17 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL,
     },
     generateSchemaOutputFile: 'src/db/schema/payload-generated-schema.ts',
-    push: true,
+    push: false,
     allowIDOnCreate: true,
-    //schemaName: 'payload',
+    schemaName: 'payload',
     migrationDir: 'src/db/migrations'
   }),
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
   cors: [getServerSideURL()].filter(Boolean),
   sharp,
-  logger: {
-    options: {
-      level: 'trace',
-    }
-  }
+  // logger: {
+  //   options: {
+  //     level: 'trace',
+  //   }
+  // }
 });

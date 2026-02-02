@@ -2,7 +2,6 @@ import type { CollectionConfig } from 'payload'
 
 export const Visits: CollectionConfig = {
   slug: 'visits',
-  dbName: 'visits',
   fields: [
     {
       name: 'id',
