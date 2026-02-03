@@ -15,8 +15,8 @@ import {
   integer,
   varchar,
   timestamp,
-  serial,
   numeric,
+  serial,
   jsonb,
 } from "@payloadcms/db-postgres/drizzle/pg-core";
 import { sql, relations } from "@payloadcms/db-postgres/drizzle";
@@ -26,7 +26,7 @@ export const users_sessions = db_schema.table(
   "users_sessions",
   {
     _order: integer("_order").notNull(),
-    _parentID: integer("_parent_id").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
     id: varchar("id").primaryKey(),
     createdAt: timestamp("created_at", {
       mode: "string",
@@ -53,8 +53,9 @@ export const users_sessions = db_schema.table(
 export const users = db_schema.table(
   "users",
   {
-    id: serial("id").primaryKey(),
+    id: varchar("id").primaryKey(),
     name: varchar("name"),
+    image: varchar("image"),
     updatedAt: timestamp("updated_at", {
       mode: "string",
       withTimezone: true,
@@ -128,7 +129,7 @@ export const visits = db_schema.table(
   "visits",
   {
     id: varchar("id").primaryKey(),
-    user: integer("user_id")
+    user: varchar("user_id")
       .notNull()
       .references(() => users.id, {
         onDelete: "set null",
@@ -170,7 +171,7 @@ export const reviews = db_schema.table(
   "reviews",
   {
     id: varchar("id").primaryKey(),
-    user: integer("user_id")
+    user: varchar("user_id")
       .notNull()
       .references(() => users.id, {
         onDelete: "set null",
@@ -307,7 +308,7 @@ export const payload_locked_documents_rels = db_schema.table(
     order: integer("order"),
     parent: integer("parent_id").notNull(),
     path: varchar("path").notNull(),
-    usersID: integer("users_id"),
+    usersID: varchar("users_id"),
     "coffee-shopsID": varchar("coffee_shops_id"),
     visitsID: varchar("visits_id"),
     reviewsID: varchar("reviews_id"),
@@ -392,7 +393,7 @@ export const payload_preferences_rels = db_schema.table(
     order: integer("order"),
     parent: integer("parent_id").notNull(),
     path: varchar("path").notNull(),
-    usersID: integer("users_id"),
+    usersID: varchar("users_id"),
   },
   (columns) => [
     index("payload_preferences_rels_order_idx").on(columns.order),

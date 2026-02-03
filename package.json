@@ -28,7 +28,7 @@
     "cli-color": "^2.0.4",
     "clsx": "^2.1.1",
     "cross-env": "^10.1.0",
-    "drizzle-orm": "^0.45.1",
+    "drizzle-orm": "^0.44.7",
     "graphql": "^16.12.0",
     "graphql-tag": "^2.12.6",
     "html5-qrcode": "^2.3.8",

@@ -1,0 +1,77 @@
+﻿[dotenv@17.2.3] injecting env (7) from .env.local -- tip: ­ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+USERS_COLUMNS_START
+[
+  {
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "column_name": "email",
+    "data_type": "character varying"
+  },
+  {
+    "column_name": "hash",
+    "data_type": "character varying"
+  },
+  {
+    "column_name": "id",
+    "data_type": "integer"
+  },
+  {
+    "column_name": "image",
+    "data_type": "character varying"
+  },
+  {
+    "column_name": "lock_until",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "column_name": "login_attempts",
+    "data_type": "numeric"
+  },
+  {
+    "column_name": "name",
+    "data_type": "character varying"
+  },
+  {
+    "column_name": "reset_password_expiration",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "column_name": "reset_password_token",
+    "data_type": "character varying"
+  },
+  {
+    "column_name": "salt",
+    "data_type": "character varying"
+  },
+  {
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone"
+  }
+]
+USERS_COLUMNS_END
+SESSIONS_COLUMNS_START
+[
+  {
+    "column_name": "_order",
+    "data_type": "integer"
+  },
+  {
+    "column_name": "_parent_id",
+    "data_type": "integer"
+  },
+  {
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "column_name": "expires_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "column_name": "id",
+    "data_type": "character varying"
+  }
+]
+SESSIONS_COLUMNS_END

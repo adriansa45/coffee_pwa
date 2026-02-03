@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { coffeeShops, reviews } from "@/db/schema";
+import { coffee_shops as coffeeShops, reviews } from "@payload-schema";
 import { eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -15,7 +15,7 @@ export async function GET() {
             reviewCount: sql<number>`COUNT(${reviews.id})`,
         })
             .from(coffeeShops)
-            .leftJoin(reviews, eq(coffeeShops.id, reviews.shopId))
+            .leftJoin(reviews, eq(coffeeShops.id, reviews.shop))
             .groupBy(
                 coffeeShops.id,
                 coffeeShops.name,

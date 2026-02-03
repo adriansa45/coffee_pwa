@@ -1,7 +1,9 @@
 "use server";
 
+"use server";
+
 import { db } from "@/db";
-import { visits, coffeeShops, user } from "@/db/schema";
+import { visits, coffee_shops as coffeeShops, users as user } from "@payload-schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, desc, count, and, sql } from "drizzle-orm";
@@ -22,7 +24,7 @@ export async function getVisitStats() {
         const [totalVisitsResult] = await db
             .select({ count: count() })
             .from(visits)
-            .where(eq(visits.userId, userId));
+            .where(eq(visits.user, userId));
 
         const totalVisits = totalVisitsResult.count;
 
@@ -36,22 +38,22 @@ export async function getVisitStats() {
                 shopAddress: coffeeShops.address,
             })
             .from(visits)
-            .innerJoin(coffeeShops, eq(visits.shopId, coffeeShops.id))
-            .where(eq(visits.userId, userId))
+            .innerJoin(coffeeShops, eq(visits.shop, coffeeShops.id))
+            .where(eq(visits.user, userId))
             .orderBy(desc(visits.visitedAt))
             .limit(5);
 
         // Frequent Visits (Top 5 shops visited by user)
         const frequentVisits = await db
             .select({
-                shopId: visits.shopId,
+                shopId: visits.shop,
                 shopName: coffeeShops.name,
                 visitCount: count(visits.id),
             })
             .from(visits)
-            .innerJoin(coffeeShops, eq(visits.shopId, coffeeShops.id))
-            .where(eq(visits.userId, userId))
-            .groupBy(visits.shopId, coffeeShops.name)
+            .innerJoin(coffeeShops, eq(visits.shop, coffeeShops.id))
+            .where(eq(visits.user, userId))
+            .groupBy(visits.shop, coffeeShops.name)
             .orderBy(desc(count(visits.id)))
             .limit(5);
 
@@ -74,20 +76,20 @@ export async function getLeaderboard({ shopId }: { shopId?: string } = {}) {
     try {
         const query = db
             .select({
-                userId: visits.userId,
+                userId: visits.user,
                 userName: user.name,
                 userImage: user.image,
                 visitCount: count(visits.id),
             })
             .from(visits)
-            .innerJoin(user, eq(visits.userId, user.id));
+            .innerJoin(user, eq(visits.user, user.id));
 
         if (shopId && shopId !== 'all') {
-            query.where(eq(visits.shopId, shopId));
+            query.where(eq(visits.shop, shopId));
         }
 
         const leaderboard = await query
-            .groupBy(visits.userId, user.name, user.image)
+            .groupBy(visits.user, user.name, user.image)
             .orderBy(desc(count(visits.id)))
             .limit(20); // Top 20
 

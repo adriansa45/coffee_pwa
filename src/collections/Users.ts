@@ -18,7 +18,15 @@ export const Users: CollectionConfig = {
   auth: true,
   fields: [
     {
+      name: 'id',
+      type: 'text',
+    },
+    {
       name: 'name',
+      type: 'text',
+    },
+    {
+      name: 'image',
       type: 'text',
     },
   ],

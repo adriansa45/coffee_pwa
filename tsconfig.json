@@ -31,6 +31,9 @@
       ],
       "react": [
         "./node_modules/@types/react"
+      ],
+      "@payload-schema": [
+        "./src/db/schema/payload-generated-schema.ts"
       ]
     }
   },

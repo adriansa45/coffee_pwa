@@ -1,9 +1,10 @@
 import { db } from "@/db";
-import { reviews, user } from "@/db/schema";
+import { reviews, users as user, coffee_shops as coffeeShops } from "@payload-schema";
 import { eq, desc } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { getPayload } from "@/lib/payload";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -20,11 +21,10 @@ export async function GET(request: Request) {
             comment: reviews.comment,
             createdAt: reviews.createdAt,
             userName: user.name,
-            userImage: user.image,
         })
             .from(reviews)
-            .leftJoin(user, eq(reviews.userId, user.id))
-            .where(eq(reviews.shopId, shopId))
+            .leftJoin(user, eq(reviews.user, user.id))
+            .where(eq(reviews.shop, shopId))
             .orderBy(desc(reviews.createdAt));
 
         return NextResponse.json(result);
@@ -50,14 +50,18 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
-        const newReview = await db.insert(reviews).values({
-            userId: session.user.id,
-            shopId: shopId,
-            rating: rating.toString(),
-            comment: comment,
-        }).returning();
+        const payload = await getPayload();
+        const newReview = await payload.create({
+            collection: 'reviews',
+            data: {
+                user: session.user.id,
+                shop: shopId,
+                rating: rating.toString(),
+                comment: comment,
+            },
+        });
 
-        return NextResponse.json(newReview[0]);
+        return NextResponse.json(newReview);
     } catch (error) {
         console.error("Error creating review:", error);
         return NextResponse.json({ error: "Failed to create review" }, { status: 500 });

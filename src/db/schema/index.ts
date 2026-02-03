@@ -1,3 +1,2 @@
-//export * as schema from "./schema";
-export * as payloadGeneratedSchema from "./payload-generated-schema";
-// export * as authSchema from "./auth-schema";
+export * from "./payload-generated-schema";
+export * from "./auth-schema";

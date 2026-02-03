@@ -127,8 +127,9 @@ export interface UserAuthOperations {
  * via the `definition` "users".
  */
 export interface User {
-  id: number;
+  id: string;
   name?: string | null;
+  image?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -169,7 +170,7 @@ export interface CoffeeShop {
  */
 export interface Visit {
   id: string;
-  user: number | User;
+  user: string | User;
   shop: string | CoffeeShop;
   visitedAt?: string | null;
   updatedAt: string;
@@ -181,7 +182,7 @@ export interface Visit {
  */
 export interface Review {
   id: string;
-  user: number | User;
+  user: string | User;
   shop: string | CoffeeShop;
   rating: string;
   coffeeRating?: number | null;
@@ -229,7 +230,7 @@ export interface PayloadLockedDocument {
   document?:
     | ({
         relationTo: 'users';
-        value: number | User;
+        value: string | User;
       } | null)
     | ({
         relationTo: 'coffee-shops';
@@ -250,7 +251,7 @@ export interface PayloadLockedDocument {
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -263,7 +264,7 @@ export interface PayloadPreference {
   id: number;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   key?: string | null;
   value?:
@@ -294,7 +295,9 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  id?: T;
   name?: T;
+  image?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

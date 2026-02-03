@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { coffeeShops, reviews, visits, reviewsTags } from "@/db/schema";
+import { coffee_shops as coffeeShops, reviews, visits } from "@payload-schema";
 import { auth } from "@/lib/auth";
 import { eq, sql, and, desc, asc, notInArray, inArray } from "drizzle-orm";
 import { headers } from "next/headers";
@@ -39,7 +39,7 @@ export async function getCoffeeShops({
 
         // Fetch visited shop IDs
         const visitedShopIds = currentUserId
-            ? (await db.select({ shopId: visits.shopId }).from(visits).where(eq(visits.userId, currentUserId))).map(v => v.shopId)
+            ? (await db.select({ shopId: visits.shop }).from(visits).where(eq(visits.user, currentUserId))).map(v => v.shopId)
             : [];
 
         // Build Where Clause
@@ -59,23 +59,6 @@ export async function getCoffeeShops({
                 conditions.push(notInArray(coffeeShops.id, visitedShopIds));
             }
         }
-
-        // 2. Filter by Tags (Desactivado temporalmente a favor de categorías)
-        /*
-        if (tagIds.length > 0) {
-            const matchingShops = await db.selectDistinct({ shopId: reviews.shopId })
-                .from(reviews)
-                .innerJoin(reviewsTags, eq(reviews.id, reviewsTags.reviewId))
-                .where(inArray(reviewsTags.tagId, tagIds));
-
-            const matchingShopIds = matchingShops.map(s => s.shopId).filter((id): id is string => id !== null);
-
-            if (matchingShopIds.length === 0) {
-                return { success: true, data: [], hasMore: false };
-            }
-            conditions.push(inArray(coffeeShops.id, matchingShopIds));
-        }
-        */
 
         const havingConditions = [];
         if (minCoffee > 0) havingConditions.push(sql`COALESCE(AVG(NULLIF(${reviews.coffeeRating}, 0)), 0) > ${minCoffee - 1}`);
@@ -103,7 +86,7 @@ export async function getCoffeeShops({
             reviewCount: sql<number>`COUNT(${reviews.id})`,
         })
             .from(coffeeShops)
-            .leftJoin(reviews, eq(coffeeShops.id, reviews.shopId))
+            .leftJoin(reviews, eq(coffeeShops.id, reviews.shop))
             .where(whereClause)
             .groupBy(coffeeShops.id)
             .limit(limit)
@@ -125,8 +108,8 @@ export async function getCoffeeShops({
         // Visits Map
         const visitsMap = new Map();
         if (currentUserId && visitedShopIds.length > 0) {
-            const v = await db.select().from(visits).where(eq(visits.userId, currentUserId));
-            v.forEach(visit => visitsMap.set(visit.shopId, visit.visitedAt));
+            const v = await db.select().from(visits).where(eq(visits.user, currentUserId));
+            v.forEach(visit => visitsMap.set(visit.shop, visit.visitedAt));
         }
 
         const finalResults = shops.map(shop => ({
