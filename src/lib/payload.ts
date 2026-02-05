@@ -1,3 +1,4 @@
+import 'server-only'
 import { getPayload as getPayloadLocal } from 'payload'
 import config from '@payload-config'
 

@@ -125,118 +125,6 @@ export const coffee_shops = db_schema.table(
   ],
 );
 
-export const visits = db_schema.table(
-  "visits",
-  {
-    id: varchar("id").primaryKey(),
-    user: varchar("user_id")
-      .notNull()
-      .references(() => users.id, {
-        onDelete: "set null",
-      }),
-    shop: varchar("shop_id")
-      .notNull()
-      .references(() => coffee_shops.id, {
-        onDelete: "set null",
-      }),
-    visitedAt: timestamp("visited_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    }),
-    updatedAt: timestamp("updated_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    })
-      .defaultNow()
-      .notNull(),
-    createdAt: timestamp("created_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    })
-      .defaultNow()
-      .notNull(),
-  },
-  (columns) => [
-    index("visits_user_idx").on(columns.user),
-    index("visits_shop_idx").on(columns.shop),
-    index("visits_updated_at_idx").on(columns.updatedAt),
-    index("visits_created_at_idx").on(columns.createdAt),
-  ],
-);
-
-export const reviews = db_schema.table(
-  "reviews",
-  {
-    id: varchar("id").primaryKey(),
-    user: varchar("user_id")
-      .notNull()
-      .references(() => users.id, {
-        onDelete: "set null",
-      }),
-    shop: varchar("shop_id")
-      .notNull()
-      .references(() => coffee_shops.id, {
-        onDelete: "set null",
-      }),
-    rating: varchar("rating").notNull(),
-    coffeeRating: numeric("coffee_rating", { mode: "number" }).default(0),
-    foodRating: numeric("food_rating", { mode: "number" }).default(0),
-    placeRating: numeric("place_rating", { mode: "number" }).default(0),
-    priceRating: numeric("price_rating", { mode: "number" }).default(0),
-    comment: varchar("comment"),
-    updatedAt: timestamp("updated_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    })
-      .defaultNow()
-      .notNull(),
-    createdAt: timestamp("created_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    })
-      .defaultNow()
-      .notNull(),
-  },
-  (columns) => [
-    index("reviews_user_idx").on(columns.user),
-    index("reviews_shop_idx").on(columns.shop),
-    index("reviews_updated_at_idx").on(columns.updatedAt),
-    index("reviews_created_at_idx").on(columns.createdAt),
-  ],
-);
-
-export const reviews_rels = db_schema.table(
-  "reviews_rels",
-  {
-    id: serial("id").primaryKey(),
-    order: integer("order"),
-    parent: varchar("parent_id").notNull(),
-    path: varchar("path").notNull(),
-    tagsID: varchar("tags_id"),
-  },
-  (columns) => [
-    index("reviews_rels_order_idx").on(columns.order),
-    index("reviews_rels_parent_idx").on(columns.parent),
-    index("reviews_rels_path_idx").on(columns.path),
-    index("reviews_rels_tags_id_idx").on(columns.tagsID),
-    foreignKey({
-      columns: [columns["parent"]],
-      foreignColumns: [reviews.id],
-      name: "reviews_rels_parent_fk",
-    }).onDelete("cascade"),
-    foreignKey({
-      columns: [columns["tagsID"]],
-      foreignColumns: [tags.id],
-      name: "reviews_rels_tags_fk",
-    }).onDelete("cascade"),
-  ],
-);
-
 export const tags = db_schema.table(
   "tags",
   {
@@ -310,8 +198,6 @@ export const payload_locked_documents_rels = db_schema.table(
     path: varchar("path").notNull(),
     usersID: varchar("users_id"),
     "coffee-shopsID": varchar("coffee_shops_id"),
-    visitsID: varchar("visits_id"),
-    reviewsID: varchar("reviews_id"),
     tagsID: varchar("tags_id"),
   },
   (columns) => [
@@ -322,8 +208,6 @@ export const payload_locked_documents_rels = db_schema.table(
     index("payload_locked_documents_rels_coffee_shops_id_idx").on(
       columns["coffee-shopsID"],
     ),
-    index("payload_locked_documents_rels_visits_id_idx").on(columns.visitsID),
-    index("payload_locked_documents_rels_reviews_id_idx").on(columns.reviewsID),
     index("payload_locked_documents_rels_tags_id_idx").on(columns.tagsID),
     foreignKey({
       columns: [columns["parent"]],
@@ -339,16 +223,6 @@ export const payload_locked_documents_rels = db_schema.table(
       columns: [columns["coffee-shopsID"]],
       foreignColumns: [coffee_shops.id],
       name: "payload_locked_documents_rels_coffee_shops_fk",
-    }).onDelete("cascade"),
-    foreignKey({
-      columns: [columns["visitsID"]],
-      foreignColumns: [visits.id],
-      name: "payload_locked_documents_rels_visits_fk",
-    }).onDelete("cascade"),
-    foreignKey({
-      columns: [columns["reviewsID"]],
-      foreignColumns: [reviews.id],
-      name: "payload_locked_documents_rels_reviews_fk",
     }).onDelete("cascade"),
     foreignKey({
       columns: [columns["tagsID"]],
@@ -456,45 +330,6 @@ export const relations_users = relations(users, ({ many }) => ({
   }),
 }));
 export const relations_coffee_shops = relations(coffee_shops, () => ({}));
-export const relations_visits = relations(visits, ({ one }) => ({
-  user: one(users, {
-    fields: [visits.user],
-    references: [users.id],
-    relationName: "user",
-  }),
-  shop: one(coffee_shops, {
-    fields: [visits.shop],
-    references: [coffee_shops.id],
-    relationName: "shop",
-  }),
-}));
-export const relations_reviews_rels = relations(reviews_rels, ({ one }) => ({
-  parent: one(reviews, {
-    fields: [reviews_rels.parent],
-    references: [reviews.id],
-    relationName: "_rels",
-  }),
-  tagsID: one(tags, {
-    fields: [reviews_rels.tagsID],
-    references: [tags.id],
-    relationName: "tags",
-  }),
-}));
-export const relations_reviews = relations(reviews, ({ one, many }) => ({
-  user: one(users, {
-    fields: [reviews.user],
-    references: [users.id],
-    relationName: "user",
-  }),
-  shop: one(coffee_shops, {
-    fields: [reviews.shop],
-    references: [coffee_shops.id],
-    relationName: "shop",
-  }),
-  _rels: many(reviews_rels, {
-    relationName: "_rels",
-  }),
-}));
 export const relations_tags = relations(tags, () => ({}));
 export const relations_payload_kv = relations(payload_kv, () => ({}));
 export const relations_payload_locked_documents_rels = relations(
@@ -514,16 +349,6 @@ export const relations_payload_locked_documents_rels = relations(
       fields: [payload_locked_documents_rels["coffee-shopsID"]],
       references: [coffee_shops.id],
       relationName: "coffee-shops",
-    }),
-    visitsID: one(visits, {
-      fields: [payload_locked_documents_rels.visitsID],
-      references: [visits.id],
-      relationName: "visits",
-    }),
-    reviewsID: one(reviews, {
-      fields: [payload_locked_documents_rels.reviewsID],
-      references: [reviews.id],
-      relationName: "reviews",
     }),
     tagsID: one(tags, {
       fields: [payload_locked_documents_rels.tagsID],
@@ -573,9 +398,6 @@ type DatabaseSchema = {
   users_sessions: typeof users_sessions;
   users: typeof users;
   coffee_shops: typeof coffee_shops;
-  visits: typeof visits;
-  reviews: typeof reviews;
-  reviews_rels: typeof reviews_rels;
   tags: typeof tags;
   payload_kv: typeof payload_kv;
   payload_locked_documents: typeof payload_locked_documents;
@@ -586,9 +408,6 @@ type DatabaseSchema = {
   relations_users_sessions: typeof relations_users_sessions;
   relations_users: typeof relations_users;
   relations_coffee_shops: typeof relations_coffee_shops;
-  relations_visits: typeof relations_visits;
-  relations_reviews_rels: typeof relations_reviews_rels;
-  relations_reviews: typeof relations_reviews;
   relations_tags: typeof relations_tags;
   relations_payload_kv: typeof relations_payload_kv;
   relations_payload_locked_documents_rels: typeof relations_payload_locked_documents_rels;

@@ -23,7 +23,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, CoffeeShops, Visits, Reviews, Tags],
+  collections: [Users, CoffeeShops, Tags],
   editor: lexicalEditor({}),
   secret: process.env.PAYLOAD_SECRET,
   typescript: {

@@ -1,7 +1,13 @@
+"use server";
+
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { getPayload } from "@/lib/payload";
 import { revalidatePath } from "next/cache";
+import { db } from "@/db";
+import { visits } from "@/db/schema";
+import { eq, desc } from "drizzle-orm";
+import crypto from "crypto";
 
 export async function registerVisitByCode(userCode: string) {
     const session = await auth.api.getSession({
@@ -21,7 +27,7 @@ export async function registerVisitByCode(userCode: string) {
 
     const payload = await getPayload();
 
-    // Find the user by code
+    // Find the user by code (User catalog is still in Payload)
     const users = await payload.find({
         collection: 'users',
         where: {
@@ -38,13 +44,11 @@ export async function registerVisitByCode(userCode: string) {
     }
 
     try {
-        await payload.create({
-            collection: 'visits',
-            data: {
-                user: targetUser.id,
-                shop: shopId,
-                visitedAt: new Date().toISOString(),
-            },
+        await db.insert(visits).values({
+            id: crypto.randomUUID(),
+            userId: targetUser.id,
+            shopId: shopId,
+            visitedAt: new Date(),
         });
 
         revalidatePath("/");
@@ -65,19 +69,15 @@ export async function getUserVisits() {
     }
 
     try {
-        const payload = await getPayload();
-        const userVisits = await payload.find({
-            collection: 'visits',
-            where: {
-                user: {
-                    equals: session.user.id,
-                },
-            },
-            sort: '-visitedAt',
-            depth: 1, // Populate shop
+        const results = await db.query.visits.findMany({
+            where: eq(visits.userId, session.user.id),
+            orderBy: [desc(visits.visitedAt)],
+            with: {
+                shop: true
+            }
         });
 
-        return { success: true, data: userVisits.docs };
+        return { success: true, data: results };
     } catch (error) {
         console.error("Error fetching visits:", error);
         return { success: false, data: [] };

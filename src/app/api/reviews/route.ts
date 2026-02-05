@@ -1,10 +1,10 @@
 import { db } from "@/db";
-import { reviews, users as user, coffee_shops as coffeeShops } from "@payload-schema";
+import { reviews, user, coffee_shops as coffeeShops } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { getPayload } from "@/lib/payload";
+import crypto from "crypto";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -23,8 +23,8 @@ export async function GET(request: Request) {
             userName: user.name,
         })
             .from(reviews)
-            .leftJoin(user, eq(reviews.user, user.id))
-            .where(eq(reviews.shop, shopId))
+            .leftJoin(user, eq(reviews.userId, user.id))
+            .where(eq(reviews.shopId, shopId))
             .orderBy(desc(reviews.createdAt));
 
         return NextResponse.json(result);
@@ -50,18 +50,16 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
-        const payload = await getPayload();
-        const newReview = await payload.create({
-            collection: 'reviews',
-            data: {
-                user: session.user.id,
-                shop: shopId,
-                rating: rating.toString(),
-                comment: comment,
-            },
-        });
+        const reviewId = crypto.randomUUID();
+        const newReview = await db.insert(reviews).values({
+            id: reviewId,
+            userId: session.user.id,
+            shopId: shopId,
+            rating: rating.toString(),
+            comment: comment,
+        }).returning();
 
-        return NextResponse.json(newReview);
+        return NextResponse.json(newReview[0]);
     } catch (error) {
         console.error("Error creating review:", error);
         return NextResponse.json({ error: "Failed to create review" }, { status: 500 });

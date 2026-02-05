@@ -1,9 +1,9 @@
 "use server";
 
 import { db } from "@/db";
-import { coffee_shops as coffeeShops, reviews, visits } from "@payload-schema";
+import { coffee_shops as coffeeShops, reviews, visits } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { eq, sql, and, desc, asc, notInArray, inArray } from "drizzle-orm";
+import { eq, sql, and, asc, notInArray, inArray } from "drizzle-orm";
 import { headers } from "next/headers";
 
 type FilterType = "all" | "collected" | "missing";
@@ -39,7 +39,7 @@ export async function getCoffeeShops({
 
         // Fetch visited shop IDs
         const visitedShopIds = currentUserId
-            ? (await db.select({ shopId: visits.shop }).from(visits).where(eq(visits.user, currentUserId))).map(v => v.shopId)
+            ? (await db.select({ shopId: visits.shopId }).from(visits).where(eq(visits.userId, currentUserId))).map(v => v.shopId)
             : [];
 
         // Build Where Clause
@@ -86,7 +86,7 @@ export async function getCoffeeShops({
             reviewCount: sql<number>`COUNT(${reviews.id})`,
         })
             .from(coffeeShops)
-            .leftJoin(reviews, eq(coffeeShops.id, reviews.shop))
+            .leftJoin(reviews, eq(coffeeShops.id, reviews.shopId))
             .where(whereClause)
             .groupBy(coffeeShops.id)
             .limit(limit)
@@ -108,8 +108,8 @@ export async function getCoffeeShops({
         // Visits Map
         const visitsMap = new Map();
         if (currentUserId && visitedShopIds.length > 0) {
-            const v = await db.select().from(visits).where(eq(visits.user, currentUserId));
-            v.forEach(visit => visitsMap.set(visit.shop, visit.visitedAt));
+            const v = await db.select().from(visits).where(eq(visits.userId, currentUserId));
+            v.forEach(visit => visitsMap.set(visit.shopId, visit.visitedAt));
         }
 
         const finalResults = shops.map(shop => ({
