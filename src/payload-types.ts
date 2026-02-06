@@ -69,9 +69,8 @@ export interface Config {
   collections: {
     users: User;
     'coffee-shops': CoffeeShop;
-    visits: Visit;
-    reviews: Review;
     tags: Tag;
+    media: Media;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -81,9 +80,8 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     'coffee-shops': CoffeeShopsSelect<false> | CoffeeShopsSelect<true>;
-    visits: VisitsSelect<false> | VisitsSelect<true>;
-    reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -155,7 +153,22 @@ export interface User {
 export interface CoffeeShop {
   id: string;
   name: string;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  gallery?: (number | Media)[] | null;
   latitude: number;
   longitude: number;
   address?: string | null;
@@ -166,33 +179,48 @@ export interface CoffeeShop {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "visits".
+ * via the `definition` "media".
  */
-export interface Visit {
-  id: string;
-  user: string | User;
-  shop: string | CoffeeShop;
-  visitedAt?: string | null;
+export interface Media {
+  id: number;
+  alt: string;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "reviews".
- */
-export interface Review {
-  id: string;
-  user: string | User;
-  shop: string | CoffeeShop;
-  rating: string;
-  coffeeRating?: number | null;
-  foodRating?: number | null;
-  placeRating?: number | null;
-  priceRating?: number | null;
-  comment?: string | null;
-  tags?: (string | Tag)[] | null;
-  updatedAt: string;
-  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    tablet?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -237,16 +265,12 @@ export interface PayloadLockedDocument {
         value: string | CoffeeShop;
       } | null)
     | ({
-        relationTo: 'visits';
-        value: string | Visit;
-      } | null)
-    | ({
-        relationTo: 'reviews';
-        value: string | Review;
-      } | null)
-    | ({
         relationTo: 'tags';
         value: string | Tag;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: number | Media;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -323,41 +347,12 @@ export interface CoffeeShopsSelect<T extends boolean = true> {
   id?: T;
   name?: T;
   description?: T;
+  gallery?: T;
   latitude?: T;
   longitude?: T;
   address?: T;
   googleMapsUrl?: T;
   rating?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "visits_select".
- */
-export interface VisitsSelect<T extends boolean = true> {
-  id?: T;
-  user?: T;
-  shop?: T;
-  visitedAt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "reviews_select".
- */
-export interface ReviewsSelect<T extends boolean = true> {
-  id?: T;
-  user?: T;
-  shop?: T;
-  rating?: T;
-  coffeeRating?: T;
-  foodRating?: T;
-  placeRating?: T;
-  priceRating?: T;
-  comment?: T;
-  tags?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -370,6 +365,58 @@ export interface TagsSelect<T extends boolean = true> {
   name?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        tablet?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

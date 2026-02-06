@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1770007993383,
-      "tag": "0000_sticky_umar",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1770008417249,
-      "tag": "0001_jittery_tarantula",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1770331287644,
-      "tag": "0002_move_transactional_tables",
+      "when": 1770406627288,
+      "tag": "0000_initial_social_setup",
       "breakpoints": true
     }
   ]

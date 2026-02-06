@@ -7,9 +7,8 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { CoffeeShops } from './collections/CoffeeShops'
-import { Visits } from './collections/Visits'
-import { Reviews } from './collections/Reviews'
 import { Tags } from './collections/Tags'
+import { Media } from './collections/Media'
 
 import { getServerSideURL } from './utilities/getURL'
 
@@ -23,7 +22,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, CoffeeShops, Tags],
+  collections: [Users, CoffeeShops, Tags, Media],
   editor: lexicalEditor({}),
   secret: process.env.PAYLOAD_SECRET,
   typescript: {

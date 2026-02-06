@@ -4,19 +4,14 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { getPayload } from "@/lib/payload";
 import { db } from "@/db";
-import { reviews, reviewTags } from "@/db/schema";
+import { reviews, reviewTags, tags as tagsTable } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import crypto from "crypto";
 
 export async function getTags() {
     try {
-        const payload = await getPayload();
-        const allTags = await payload.find({
-            collection: 'tags',
-            limit: 100,
-        });
-
-        return { success: true, data: allTags.docs };
+        const results = await db.select().from(tagsTable).limit(100);
+        return { success: true, data: results };
     } catch (error) {
         console.error("Error fetching tags:", error);
         return { success: false, error: "Failed to fetch tags" };

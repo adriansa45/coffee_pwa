@@ -17,7 +17,13 @@ export const CoffeeShops: CollectionConfig = {
     },
     {
       name: 'description',
-      type: 'textarea',
+      type: 'richText',
+    },
+    {
+      name: 'gallery',
+      type: 'relationship',
+      relationTo: 'media',
+      hasMany: true,
     },
     {
       name: 'latitude',

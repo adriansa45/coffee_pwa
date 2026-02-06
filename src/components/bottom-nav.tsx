@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Coffee, Map, Stamp, Home, QrCode } from "lucide-react";
+import { Coffee, Map, Users, Home, QrCode, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
 
 const customerNavItems = [
-    { name: "Mapa", href: "/map", icon: Map },
     { name: "Inicio", href: "/home", icon: Home },
-    { name: "Pasaporte", href: "/passport", icon: Stamp },
+    { name: "Mapa", href: "/map", icon: Map },
+    { name: "Cafeterías", href: "/shops", icon: Coffee },
+    { name: "Descubrir", href: "/discover", icon: Search },
 ];
 
 const shopNavItems = [

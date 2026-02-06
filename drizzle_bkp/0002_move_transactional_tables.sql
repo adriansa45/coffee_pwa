@@ -32,9 +32,9 @@ ALTER TABLE "payload"."visits" DISABLE ROW LEVEL SECURITY;--> statement-breakpoi
 DROP TABLE "payload"."reviews" CASCADE;--> statement-breakpoint
 DROP TABLE "payload"."reviews_rels" CASCADE;--> statement-breakpoint
 DROP TABLE "payload"."visits" CASCADE;--> statement-breakpoint
-ALTER TABLE "payload"."payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_visits_fk";
+ALTER TABLE "payload"."payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_visits_fk";
 --> statement-breakpoint
-ALTER TABLE "payload"."payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_reviews_fk";
+ALTER TABLE "payload"."payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_reviews_fk";
 --> statement-breakpoint
 DROP INDEX "payload"."payload_locked_documents_rels_visits_id_idx";--> statement-breakpoint
 DROP INDEX "payload"."payload_locked_documents_rels_reviews_id_idx";--> statement-breakpoint

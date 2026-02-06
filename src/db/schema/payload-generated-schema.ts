@@ -16,8 +16,8 @@ import {
   varchar,
   timestamp,
   numeric,
-  serial,
   jsonb,
+  serial,
 } from "@payloadcms/db-postgres/drizzle/pg-core";
 import { sql, relations } from "@payloadcms/db-postgres/drizzle";
 export const db_schema = pgSchema("payload");
@@ -98,7 +98,7 @@ export const coffee_shops = db_schema.table(
   {
     id: varchar("id").primaryKey(),
     name: varchar("name").notNull(),
-    description: varchar("description"),
+    description: jsonb("description"),
     latitude: numeric("latitude", { mode: "number" }).notNull(),
     longitude: numeric("longitude", { mode: "number" }).notNull(),
     address: varchar("address"),
@@ -122,6 +122,33 @@ export const coffee_shops = db_schema.table(
   (columns) => [
     index("coffee_shops_updated_at_idx").on(columns.updatedAt),
     index("coffee_shops_created_at_idx").on(columns.createdAt),
+  ],
+);
+
+export const coffee_shops_rels = db_schema.table(
+  "coffee_shops_rels",
+  {
+    id: serial("id").primaryKey(),
+    order: integer("order"),
+    parent: varchar("parent_id").notNull(),
+    path: varchar("path").notNull(),
+    mediaID: integer("media_id"),
+  },
+  (columns) => [
+    index("coffee_shops_rels_order_idx").on(columns.order),
+    index("coffee_shops_rels_parent_idx").on(columns.parent),
+    index("coffee_shops_rels_path_idx").on(columns.path),
+    index("coffee_shops_rels_media_id_idx").on(columns.mediaID),
+    foreignKey({
+      columns: [columns["parent"]],
+      foreignColumns: [coffee_shops.id],
+      name: "coffee_shops_rels_parent_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["mediaID"]],
+      foreignColumns: [media.id],
+      name: "coffee_shops_rels_media_fk",
+    }).onDelete("cascade"),
   ],
 );
 
@@ -149,6 +176,73 @@ export const tags = db_schema.table(
     uniqueIndex("tags_name_idx").on(columns.name),
     index("tags_updated_at_idx").on(columns.updatedAt),
     index("tags_created_at_idx").on(columns.createdAt),
+  ],
+);
+
+export const media = db_schema.table(
+  "media",
+  {
+    id: serial("id").primaryKey(),
+    alt: varchar("alt").notNull(),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    url: varchar("url"),
+    thumbnailURL: varchar("thumbnail_u_r_l"),
+    filename: varchar("filename"),
+    mimeType: varchar("mime_type"),
+    filesize: numeric("filesize", { mode: "number" }),
+    width: numeric("width", { mode: "number" }),
+    height: numeric("height", { mode: "number" }),
+    focalX: numeric("focal_x", { mode: "number" }),
+    focalY: numeric("focal_y", { mode: "number" }),
+    sizes_thumbnail_url: varchar("sizes_thumbnail_url"),
+    sizes_thumbnail_width: numeric("sizes_thumbnail_width", { mode: "number" }),
+    sizes_thumbnail_height: numeric("sizes_thumbnail_height", {
+      mode: "number",
+    }),
+    sizes_thumbnail_mimeType: varchar("sizes_thumbnail_mime_type"),
+    sizes_thumbnail_filesize: numeric("sizes_thumbnail_filesize", {
+      mode: "number",
+    }),
+    sizes_thumbnail_filename: varchar("sizes_thumbnail_filename"),
+    sizes_card_url: varchar("sizes_card_url"),
+    sizes_card_width: numeric("sizes_card_width", { mode: "number" }),
+    sizes_card_height: numeric("sizes_card_height", { mode: "number" }),
+    sizes_card_mimeType: varchar("sizes_card_mime_type"),
+    sizes_card_filesize: numeric("sizes_card_filesize", { mode: "number" }),
+    sizes_card_filename: varchar("sizes_card_filename"),
+    sizes_tablet_url: varchar("sizes_tablet_url"),
+    sizes_tablet_width: numeric("sizes_tablet_width", { mode: "number" }),
+    sizes_tablet_height: numeric("sizes_tablet_height", { mode: "number" }),
+    sizes_tablet_mimeType: varchar("sizes_tablet_mime_type"),
+    sizes_tablet_filesize: numeric("sizes_tablet_filesize", { mode: "number" }),
+    sizes_tablet_filename: varchar("sizes_tablet_filename"),
+  },
+  (columns) => [
+    index("media_updated_at_idx").on(columns.updatedAt),
+    index("media_created_at_idx").on(columns.createdAt),
+    uniqueIndex("media_filename_idx").on(columns.filename),
+    index("media_sizes_thumbnail_sizes_thumbnail_filename_idx").on(
+      columns.sizes_thumbnail_filename,
+    ),
+    index("media_sizes_card_sizes_card_filename_idx").on(
+      columns.sizes_card_filename,
+    ),
+    index("media_sizes_tablet_sizes_tablet_filename_idx").on(
+      columns.sizes_tablet_filename,
+    ),
   ],
 );
 
@@ -199,6 +293,7 @@ export const payload_locked_documents_rels = db_schema.table(
     usersID: varchar("users_id"),
     "coffee-shopsID": varchar("coffee_shops_id"),
     tagsID: varchar("tags_id"),
+    mediaID: integer("media_id"),
   },
   (columns) => [
     index("payload_locked_documents_rels_order_idx").on(columns.order),
@@ -209,6 +304,7 @@ export const payload_locked_documents_rels = db_schema.table(
       columns["coffee-shopsID"],
     ),
     index("payload_locked_documents_rels_tags_id_idx").on(columns.tagsID),
+    index("payload_locked_documents_rels_media_id_idx").on(columns.mediaID),
     foreignKey({
       columns: [columns["parent"]],
       foreignColumns: [payload_locked_documents.id],
@@ -228,6 +324,11 @@ export const payload_locked_documents_rels = db_schema.table(
       columns: [columns["tagsID"]],
       foreignColumns: [tags.id],
       name: "payload_locked_documents_rels_tags_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["mediaID"]],
+      foreignColumns: [media.id],
+      name: "payload_locked_documents_rels_media_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -329,8 +430,28 @@ export const relations_users = relations(users, ({ many }) => ({
     relationName: "sessions",
   }),
 }));
-export const relations_coffee_shops = relations(coffee_shops, () => ({}));
+export const relations_coffee_shops_rels = relations(
+  coffee_shops_rels,
+  ({ one }) => ({
+    parent: one(coffee_shops, {
+      fields: [coffee_shops_rels.parent],
+      references: [coffee_shops.id],
+      relationName: "_rels",
+    }),
+    mediaID: one(media, {
+      fields: [coffee_shops_rels.mediaID],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations_coffee_shops = relations(coffee_shops, ({ many }) => ({
+  _rels: many(coffee_shops_rels, {
+    relationName: "_rels",
+  }),
+}));
 export const relations_tags = relations(tags, () => ({}));
+export const relations_media = relations(media, () => ({}));
 export const relations_payload_kv = relations(payload_kv, () => ({}));
 export const relations_payload_locked_documents_rels = relations(
   payload_locked_documents_rels,
@@ -354,6 +475,11 @@ export const relations_payload_locked_documents_rels = relations(
       fields: [payload_locked_documents_rels.tagsID],
       references: [tags.id],
       relationName: "tags",
+    }),
+    mediaID: one(media, {
+      fields: [payload_locked_documents_rels.mediaID],
+      references: [media.id],
+      relationName: "media",
     }),
   }),
 );
@@ -398,7 +524,9 @@ type DatabaseSchema = {
   users_sessions: typeof users_sessions;
   users: typeof users;
   coffee_shops: typeof coffee_shops;
+  coffee_shops_rels: typeof coffee_shops_rels;
   tags: typeof tags;
+  media: typeof media;
   payload_kv: typeof payload_kv;
   payload_locked_documents: typeof payload_locked_documents;
   payload_locked_documents_rels: typeof payload_locked_documents_rels;
@@ -407,8 +535,10 @@ type DatabaseSchema = {
   payload_migrations: typeof payload_migrations;
   relations_users_sessions: typeof relations_users_sessions;
   relations_users: typeof relations_users;
+  relations_coffee_shops_rels: typeof relations_coffee_shops_rels;
   relations_coffee_shops: typeof relations_coffee_shops;
   relations_tags: typeof relations_tags;
+  relations_media: typeof relations_media;
   relations_payload_kv: typeof relations_payload_kv;
   relations_payload_locked_documents_rels: typeof relations_payload_locked_documents_rels;
   relations_payload_locked_documents: typeof relations_payload_locked_documents;

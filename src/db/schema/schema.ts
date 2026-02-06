@@ -62,6 +62,21 @@ export const reviewTags = pgTable("review_tags", {
     index("review_tags_tag_idx").on(table.tagId),
 ]);
 
+export const follows = pgTable("follows", {
+    followerId: text("follower_id")
+        .notNull()
+        .references(() => user.id, { onDelete: "cascade" }),
+    followingId: text("following_id")
+        .notNull()
+        .references(() => user.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true, precision: 3 })
+        .defaultNow()
+        .notNull(),
+}, (table) => [
+    index("follower_idx").on(table.followerId),
+    index("following_idx").on(table.followingId),
+]);
+
 export const visitsRelations = relations(visits, ({ one }) => ({
     user: one(user, {
         fields: [visits.userId],
@@ -94,4 +109,22 @@ export const reviewTagsRelations = relations(reviewTags, ({ one }) => ({
         fields: [reviewTags.tagId],
         references: [tags.id],
     }),
+}));
+
+export const followsRelations = relations(follows, ({ one }) => ({
+    follower: one(user, {
+        fields: [follows.followerId],
+        references: [user.id],
+        relationName: "following",
+    }),
+    following: one(user, {
+        fields: [follows.followingId],
+        references: [user.id],
+        relationName: "followedBy",
+    }),
+}));
+
+export const userSocialRelations = relations(user, ({ many }) => ({
+    following: many(follows, { relationName: "following" }),
+    followers: many(follows, { relationName: "followedBy" }),
 }));
