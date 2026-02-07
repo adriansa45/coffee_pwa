@@ -35,6 +35,11 @@ export const auth = betterAuth({
                 required: false,
                 input: false,
             },
+            brandColor: {
+                type: "string",
+                required: false,
+                defaultValue: "#820E2B",
+            }
         },
     },
     session: {

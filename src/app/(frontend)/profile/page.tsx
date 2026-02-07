@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { User, Settings, LogOut, ChevronRight, Bell, Shield, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ColorPicker } from "@/components/profile/color-picker";
 
 export default function ProfilePage() {
     const { data: session, isPending } = authClient.useSession();
@@ -42,7 +43,7 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="p-6 pt-24 pb-28 space-y-8">
+        <div className="p-6 pb-28 space-y-8">
             <header className="flex items-center gap-4">
                 <Avatar className="w-16 h-16 border-2 border-brand-100 shadow-sm">
                     <AvatarImage src={user.image || ""} alt={user.name || "Usuario"} />
@@ -89,6 +90,8 @@ export default function ProfilePage() {
                         <ChevronRight className="w-4 h-4 text-brand-900/20 group-hover:translate-x-1 transition-transform" />
                     </button>
                 </div>
+
+                <ColorPicker />
             </div>
 
             <div className="pt-4">

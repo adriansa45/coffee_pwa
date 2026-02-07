@@ -7,7 +7,8 @@ import { FollowButton } from "@/components/social/follow-button";
 import { Coffee, MapPin, Calendar, Star, Users } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export default async function UserProfilePage({ params }: { params: { id: string } }) {
+export default async function UserProfilePage(props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     const userId = params.id;
     const { data: profile } = await getUserProfile(userId);
     const following = await isFollowing(userId);
@@ -17,7 +18,7 @@ export default async function UserProfilePage({ params }: { params: { id: string
     return (
         <div className="min-h-screen bg-brand-50/20 pb-28">
             {/* Profile Header */}
-            <div className="bg-brand-600 px-6 pt-24 pb-12 rounded-b-[48px] shadow-lg relative overflow-hidden">
+            <div className="bg-brand-600 px-6 pt-12 pb-12 rounded-b-[48px] shadow-lg relative overflow-hidden">
                 <Coffee className="absolute -right-6 -bottom-6 w-48 h-48 opacity-10 rotate-12 text-white" />
 
                 <div className="relative z-10 flex flex-col items-center text-center">

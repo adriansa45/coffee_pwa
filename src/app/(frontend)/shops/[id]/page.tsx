@@ -6,7 +6,8 @@ import { ReviewList } from "@/components/shops/review-list";
 import { ShopGallery } from "@/components/shops/shop-gallery";
 import { RichText } from "@/components/payload/rich-text";
 
-export default async function ShopDetailPage({ params }: { params: { id: string } }) {
+export default async function ShopDetailPage(props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     const { data: shop } = await getCoffeeShopById(params.id);
     const { data: reviews } = await getReviews(params.id);
 
@@ -30,7 +31,7 @@ export default async function ShopDetailPage({ params }: { params: { id: string 
             </div>
 
             {/* Gallery / Cover */}
-            <div className="px-4 pt-20">
+            <div className="px-4 pt-12">
                 <ShopGallery images={displayImages} />
             </div>
 

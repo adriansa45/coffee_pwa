@@ -128,6 +128,10 @@ export interface User {
   id: string;
   name?: string | null;
   image?: string | null;
+  /**
+   * Color hexadecimal preferido del usuario
+   */
+  brandColor?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -322,6 +326,7 @@ export interface UsersSelect<T extends boolean = true> {
   id?: T;
   name?: T;
   image?: T;
+  brandColor?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

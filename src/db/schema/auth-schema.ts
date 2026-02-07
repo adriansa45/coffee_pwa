@@ -15,6 +15,7 @@ export const user = pgTable("user", {
   role: text("role").default("customer"),
   userCode: text("user_code"),
   shopId: text("shop_id"),
+  brandColor: text("brand_color").default("#820E2B"),
 });
 
 export const session = pgTable(

@@ -3,11 +3,10 @@ import { getTags } from "@/actions/reviews";
 import { CoffeeShopList } from "@/components/shops/shop-list";
 import { Search, Filter } from "lucide-react";
 
-export default async function ShopsPage({
-    searchParams,
-}: {
-    searchParams: { [key: string]: string | string[] | undefined };
+export default async function ShopsPage(props: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+    const searchParams = await props.searchParams;
     const search = typeof searchParams.search === 'string' ? searchParams.search : "";
     const filter = typeof searchParams.filter === 'string' ? searchParams.filter as any : "all";
 
@@ -15,7 +14,7 @@ export default async function ShopsPage({
     const { data: tags } = await getTags();
 
     return (
-        <div className="min-h-screen bg-brand-50/30 pb-28 pt-20">
+        <div className="min-h-screen bg-brand-50/30 pb-28">
             {/* Header / Search */}
             <div className="bg-brand-600 px-6 pt-4 pb-12 rounded-b-[40px] shadow-lg sticky top-0 z-50">
                 <h1 className="text-2xl font-bold text-white mb-6">Explorar Cafeterías</h1>

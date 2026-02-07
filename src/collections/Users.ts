@@ -29,6 +29,14 @@ export const Users: CollectionConfig = {
       name: 'image',
       type: 'text',
     },
+    {
+      name: 'brandColor',
+      type: 'text',
+      defaultValue: '#820E2B',
+      admin: {
+        description: 'Color hexadecimal preferido del usuario',
+      },
+    },
   ],
   timestamps: true,
 }

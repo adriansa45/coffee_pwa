@@ -1,0 +1,1 @@
+ALTER TABLE "user" ADD COLUMN "brand_color" text DEFAULT '#820E2B';

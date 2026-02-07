@@ -14,7 +14,7 @@ export async function getCoffeeShopById(id: string) {
 
         // Fetch gallery images through relations
         const galleryResults = await db.query.coffee_shops_rels.findMany({
-            where: and(eq(rels.parentId, id), eq(rels.path, "gallery")),
+            where: and(eq(rels.parent, id), eq(rels.path, "gallery")),
             with: {
                 mediaID: true
             }

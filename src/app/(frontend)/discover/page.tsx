@@ -2,13 +2,12 @@ import { searchUsers } from "@/actions/user";
 import { UserSearchList } from "@/components/social/user-search-list";
 import { Search } from "lucide-react";
 
-export default async function DiscoverPage({
-    searchParams,
-}: {
-    searchParams: { [key: string]: string | string[] | undefined };
+export default async function DiscoverPage(props: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+    const searchParams = await props.searchParams;
     const query = typeof searchParams.q === 'string' ? searchParams.q : "";
-    let users = [];
+    let users: any[] = [];
 
     if (query) {
         const { data } = await searchUsers(query);
@@ -16,7 +15,7 @@ export default async function DiscoverPage({
     }
 
     return (
-        <div className="min-h-screen bg-brand-50/20 pb-28 pt-20">
+        <div className="min-h-screen bg-brand-50/20 pb-28">
             {/* Header / Search */}
             <div className="bg-brand-600 px-6 pt-4 pb-12 rounded-b-[40px] shadow-lg sticky top-0 z-50">
                 <h1 className="text-2xl font-bold text-white mb-6">Descubrir Personas</h1>
