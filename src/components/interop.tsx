@@ -1,12 +1,16 @@
 "use client"
 
 import { toast } from "sonner"
+import { useEffect } from "react"
 
 export function Interop() {
-    function sendFCM(token: string) {
-        toast.success("TOKEN: " + token);
-        alert(token);
-    }
+    useEffect(() => {
+        (window as any).sendFCM = (token: string) => {
+            toast.success("TOKEN: " + token);
+            alert(token);
+        }
+    }, []);
+
     return (
         <></>
     );
