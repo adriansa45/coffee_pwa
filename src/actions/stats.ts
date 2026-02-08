@@ -1,10 +1,10 @@
 "use server";
 
 import { db } from "@/db";
-import { visits, coffeeShops, user } from "@/db/schema";
+import { visits, coffee_shops as coffeeShops, user } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { eq, desc, count, and, sql } from "drizzle-orm";
+import { eq, desc, count, sql } from "drizzle-orm";
 
 export async function getVisitStats() {
     const session = await auth.api.getSession({

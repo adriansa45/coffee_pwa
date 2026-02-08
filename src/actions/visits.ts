@@ -1,11 +1,13 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { db } from "@/db";
-import { visits, user, coffeeShops } from "@/db/schema";
-import { eq, and, sql } from "drizzle-orm";
 import { headers } from "next/headers";
+import { getPayload } from "@/lib/payload";
 import { revalidatePath } from "next/cache";
+import { db } from "@/db";
+import { visits } from "@/db/schema";
+import { eq, desc } from "drizzle-orm";
+import crypto from "crypto";
 
 export async function registerVisitByCode(userCode: string) {
     const session = await auth.api.getSession({
@@ -16,8 +18,6 @@ export async function registerVisitByCode(userCode: string) {
         return { success: false, message: "No autorizado" };
     }
 
-    // Role check: must be coffee_shop
-    // We need to cast or access the role if it's in additionalFields
     const role = (session.user as any).role;
     const shopId = (session.user as any).shopId;
 
@@ -25,27 +25,33 @@ export async function registerVisitByCode(userCode: string) {
         return { success: false, message: "No tienes permisos de cafetería" };
     }
 
-    // Find the user by code
-    const targetUser = await db.query.user.findFirst({
-        where: eq(user.userCode, userCode)
+    const payload = await getPayload();
+
+    // Find the user by code (User catalog is still in Payload)
+    const users = await payload.find({
+        collection: 'users',
+        where: {
+            userCode: {
+                equals: userCode,
+            },
+        },
     });
+
+    const targetUser = users.docs[0];
 
     if (!targetUser) {
         return { success: false, message: "Código de usuario inválido" };
     }
 
-    // Optional: Check if already visited today? Or just allow multiple stamps?
-    // Let's allow multiple for now, or maybe limit to 1 per day per shop.
-    // For simplicity: just insert.
-
     try {
         await db.insert(visits).values({
+            id: crypto.randomUUID(),
             userId: targetUser.id,
             shopId: shopId,
             visitedAt: new Date(),
         });
 
-        revalidatePath("/dashboard");
+        revalidatePath("/");
         return { success: true, message: `Visita registrada para ${targetUser.name}` };
     } catch (error) {
         console.error("Error registering visit:", error);
@@ -63,15 +69,15 @@ export async function getUserVisits() {
     }
 
     try {
-        const userVisits = await db.query.visits.findMany({
+        const results = await db.query.visits.findMany({
             where: eq(visits.userId, session.user.id),
+            orderBy: [desc(visits.visitedAt)],
             with: {
                 shop: true
-            },
-            orderBy: (visits, { desc }) => [desc(visits.visitedAt)]
+            }
         });
 
-        return { success: true, data: userVisits };
+        return { success: true, data: results };
     } catch (error) {
         console.error("Error fetching visits:", error);
         return { success: false, data: [] };
