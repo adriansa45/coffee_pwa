@@ -4,7 +4,6 @@ import { Coffee } from "lucide-react";
 export default function SignUpPage() {
     return (
         <div className="relative flex min-h-screen items-center justify-center px-4 overflow-hidden py-12">
-            {/* Background Image with Blur */}
             <div
                 className="absolute inset-0 z-0 scale-110"
                 style={{

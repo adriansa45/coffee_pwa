@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import { BottomNav } from "@/components/bottom-nav";
 import { ThemeProvider } from "@/components/theme-provider";
 import "@/app/globals.css";
+import { Interop } from "@/components/interop";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta-sans",
@@ -10,8 +11,8 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Pasaporte del café",
-  description: "Pasaporte del café",
+  title: "Espresso",
+  description: "Espresso",
 };
 
 export default function RootLayout({
@@ -32,6 +33,7 @@ export default function RootLayout({
             <BottomNav />
           </div>
         </ThemeProvider>
+        <Interop />
       </body>
     </html>
   );

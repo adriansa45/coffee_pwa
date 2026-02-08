@@ -26,7 +26,7 @@ export default async function PassportPage() {
                 <p className="text-sm text-foreground/60">Llevas {collectedCount} sellos coleccionados</p>
             </header>
 
-            <PassportList initialShops={initialShops} />
+            {/* <PassportList initialShops={initialShops} /> */}
 
             {/* <div className="bg-primary rounded-3xl p-6 text-white shadow-lg overflow-hidden relative">
                 <Coffee className="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 rotate-12" />

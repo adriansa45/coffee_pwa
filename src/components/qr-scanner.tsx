@@ -30,7 +30,7 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
                     },
                     async (decodedText) => {
                         // Success callback
-                        await stopScanner();
+                        // await stopScanner();
                         onScan(decodedText);
                     },
                     (errorMessage) => {
@@ -49,27 +49,27 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
         startScanner();
 
         return () => {
-            stopScanner();
+            // stopScanner();
         };
     }, []);
 
-    const stopScanner = async () => {
-        if (scannerRef.current) {
-            try {
-                const state = await scannerRef.current.getState();
-                if (state === 2) { // 2 = SCANNING state
-                    await scannerRef.current.stop();
-                }
-                scannerRef.current.clear();
-                setIsScanning(false);
-            } catch (err) {
-                console.error("Error stopping scanner:", err);
-            }
-        }
-    };
+    // const stopScanner = async () => {
+    //     if (scannerRef.current) {
+    //         try {
+    //             const state = await scannerRef.current.getState();
+    //             if (state === 2) { // 2 = SCANNING state
+    //                 await scannerRef.current.stop();
+    //             }
+    //             scannerRef.current.clear();
+    //             setIsScanning(false);
+    //         } catch (err) {
+    //             console.error("Error stopping scanner:", err);
+    //         }
+    //     }
+    // };
 
     const handleClose = async () => {
-        await stopScanner();
+        // await stopScanner();
         onClose();
     };
 

@@ -34,7 +34,7 @@ export default async function UserProfilePage(props: { params: Promise<{ id: str
                         <MapPin size={14} /> Entusiasta del Café
                     </p>
 
-                    <div className="flex gap-8 mb-8">
+                    {/* <div className="flex gap-8 mb-8">
                         <div className="text-center">
                             <p className="text-white text-xl font-bold">{profile.stats.followers}</p>
                             <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest">Seguidores</p>
@@ -43,7 +43,7 @@ export default async function UserProfilePage(props: { params: Promise<{ id: str
                             <p className="text-white text-xl font-bold">{profile.stats.following}</p>
                             <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest">Siguiendo</p>
                         </div>
-                    </div>
+                    </div> */}
 
                     <FollowButton userId={userId} initialIsFollowing={following} variant="profile" />
                 </div>

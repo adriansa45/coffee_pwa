@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Github } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTheme } from "@/components/theme-provider";
 
 export function LoginForm() {
     const [email, setEmail] = useState("");
@@ -17,6 +18,7 @@ export function LoginForm() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const { setBrandColor } = useTheme();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,6 +31,8 @@ export function LoginForm() {
                 password,
                 callbackURL: "/home",
             });
+
+            //setBrandColor(data.brandColor);
 
             if (error) {
                 setError(error.message || "Credenciales inválidas");
