@@ -64,8 +64,8 @@ export async function getUserProfile(userId: string) {
                 stats: {
                     visits: stats?.visitCount || 0,
                     reviews: stats?.reviewCount || 0,
-                    followers: profile.followers.length,
-                    following: profile.following.length,
+                    // followers: profile.followers.length,
+                    // following: profile.following.length,
                 }
             }
         };

@@ -85,7 +85,7 @@ const HoursField: React.FC<any> = ({ path }) => {
                 }
             });
 
-            setHoursState(newState);
+            //setHoursState(newState);
         }
     }, []);
 
@@ -196,13 +196,13 @@ const HoursField: React.FC<any> = ({ path }) => {
                 </div>
 
                 {/* Day Rows */}
-                <DayRow day="monday" />
+                {/* <DayRow day="monday" />
                 <DayRow day="tuesday" />
                 <DayRow day="wednesday" />
                 <DayRow day="thursday" />
                 <DayRow day="friday" />
                 <DayRow day="saturday" />
-                <DayRow day="sunday" />
+                <DayRow day="sunday" /> */}
             </Card>
         </div>
     );

@@ -133,7 +133,7 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                                         {Number(shop?.avgRating || 0).toFixed(1)} ({shop?.reviewCount} reseñas)
                                     </span>
                                 </div>
-                                
+
                                 {/* Summary Averages */}
                                 {shop && (Number(shop.avgCoffee) > 0 || Number(shop.avgFood) > 0) && (
                                     <div className="flex flex-wrap gap-2 mt-2">
@@ -264,7 +264,7 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
             {/* Review Form Modal (Nested Overlay/Drawer) */}
             {isReviewDrawerOpen && (
                 <div className="fixed inset-0 z-[3000] flex flex-col justify-end">
-                    <div 
+                    <div
                         className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in"
                         onClick={() => setIsReviewDrawerOpen(false)}
                     />
@@ -280,22 +280,22 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 gap-5">
                                     <div className="space-y-2">
-                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><Coffee size={14}/> CAFÉ</span>
+                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><Coffee size={14} /> CAFÉ</span>
                                         <LikertRating rating={coffeeRating} interactive onRatingChange={setCoffeeRating} size="md" />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><Utensils size={14}/> COMIDA</span>
+                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><Utensils size={14} /> COMIDA</span>
                                         <LikertRating rating={foodRating} interactive onRatingChange={setFoodRating} size="md" />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><Map size={14}/> LUGAR</span>
+                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><Map size={14} /> LUGAR</span>
                                         <LikertRating rating={placeRating} interactive onRatingChange={setPlaceRating} size="md" />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><CircleDollarSign size={14}/> COSTO</span>
+                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><CircleDollarSign size={14} /> COSTO</span>
                                         <LikertRating rating={priceRating} interactive onRatingChange={setPriceRating} size="md" />
                                     </div>
                                 </div>

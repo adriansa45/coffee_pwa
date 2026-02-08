@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { visits, coffee_shops as coffeeShops } from "@payload-schema";
+import { visits, coffee_shops as coffeeShops } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, desc } from "drizzle-orm";
@@ -22,8 +22,8 @@ async function getFullHistory() {
             shopAddress: coffeeShops.address,
         })
         .from(visits)
-        .innerJoin(coffeeShops, eq(visits.shop, coffeeShops.id))
-        .where(eq(visits.user, session.user.id))
+        .innerJoin(coffeeShops, eq(visits.shopId, coffeeShops.id))
+        .where(eq(visits.userId, session.user.id))
         .orderBy(desc(visits.visitedAt));
 }
 
