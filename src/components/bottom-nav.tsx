@@ -11,6 +11,7 @@ const customerNavItems = [
     { name: "Mapa", href: "/map", icon: Map },
     { name: "Cafeterías", href: "/shops", icon: Coffee },
     { name: "Descubrir", href: "/discover", icon: Search },
+    { name: "Perfil", href: "/profile", icon: Users },
 ];
 
 const shopNavItems = [
@@ -53,7 +54,7 @@ export function BottomNav() {
     };
 
     return (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[min(calc(100%-3rem),400px)] glass rounded-full px-6 py-3 flex justify-around items-center z-[1000] shadow-2xl border-white/5">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[min(calc(100%-3rem),400px)] glass rounded-full px-6 py-3 flex justify-around items-center z-[1000] shadow-2xl border-white/10">
             {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href || (item.name === "Inicio" && pathname === "/");
@@ -72,14 +73,14 @@ export function BottomNav() {
                         )}>
                             <Icon className={cn("w-5 h-5", isActive ? "stroke-[2.5px]" : "stroke-2")} />
                         </div>
-                        {isActive && (
+                        {/* {isActive && (
                             <span className="absolute -bottom-1 w-1 h-1 rounded-full bg-primary animate-in fade-in zoom-in duration-300" />
-                        )}
+                        )} */}
                     </Link>
                 );
             })}
 
-            {user && (
+            {/* {user && (
                 <Drawer>
                     <DrawerTrigger asChild>
                         <button className={cn(
@@ -154,7 +155,7 @@ export function BottomNav() {
                         </div>
                     </DrawerContent>
                 </Drawer>
-            )}
+            )} */}
         </div>
     );
 }
