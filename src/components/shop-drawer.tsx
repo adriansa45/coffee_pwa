@@ -178,7 +178,7 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                                     href={shop.googleMapsUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-xl transition-all shadow-md active:scale-95"
+                                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary hover:bg-primary/80 text-white text-xs font-bold rounded-xl transition-all shadow-md active:scale-95"
                                 >
                                     <MapPin size={14} />
                                     CÓMO LLEGAR
