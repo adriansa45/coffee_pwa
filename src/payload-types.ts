@@ -177,6 +177,17 @@ export interface CoffeeShop {
   longitude: number;
   address?: string | null;
   googleMapsUrl?: string | null;
+  phone?: string | null;
+  website?: string | null;
+  hours?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   rating?: number | null;
   updatedAt: string;
   createdAt: string;
@@ -357,6 +368,9 @@ export interface CoffeeShopsSelect<T extends boolean = true> {
   longitude?: T;
   address?: T;
   googleMapsUrl?: T;
+  phone?: T;
+  website?: T;
+  hours?: T;
   rating?: T;
   updatedAt?: T;
   createdAt?: T;

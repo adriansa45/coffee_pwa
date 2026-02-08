@@ -28,8 +28,8 @@ const coffeeIcon = L.divIcon({
     className: "custom-div-icon",
     html: `
         <div class="relative flex items-center justify-center">
-            <div class="absolute w-8 h-8 bg-brand-600 rounded-full animate-ping opacity-20"></div>
-            <div class="relative w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center border-2 border-white shadow-lg transition-all duration-500 hover:scale-125 scale-100 animate-in zoom-in-50">
+            <div class="absolute w-8 h-8 bg-primary rounded-full animate-ping opacity-20"></div>
+            <div class="relative w-8 h-8 bg-primary rounded-full flex items-center justify-center border-2 border-white shadow-lg transition-all duration-500 hover:scale-125 scale-100 animate-in zoom-in-50">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
             </div>
         </div>
@@ -92,10 +92,10 @@ export default function MapView() {
             const res = await getCoffeeShops({
                 filter: "all",
                 limit: 100,
-                minCoffee,
-                minFood,
-                minPlace,
-                minPrice
+                // minCoffee,
+                // minFood,
+                // minPlace,
+                // minPrice
             });
 
             if (res.success && res.data) {
@@ -152,10 +152,10 @@ export default function MapView() {
                     >
                         <Popup className="custom-popup">
                             <div className="p-1 w-48">
-                                <h3 className="font-bold text-brand-950 text-xs mb-1">{loc.name}</h3>
+                                <h3 className="font-bold text-foreground text-xs mb-1">{loc.name}</h3>
                                 <div className="flex items-center gap-1.5 mb-2">
                                     <StarRating rating={Number(loc.avgRating)} size={10} />
-                                    <span className="text-[9px] text-brand-800/60">({loc.reviewCount})</span>
+                                    <span className="text-[9px]">({loc.reviewCount})</span>
                                 </div>
 
                                 <div className="flex flex-col gap-1.5">
@@ -164,13 +164,13 @@ export default function MapView() {
                                             href={loc.googleMapsUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className=" w-full py-1.5 bg-brand-600 text-[9px] !text-white font-bold rounded-lg uppercase text-center shadow-sm"
+                                            className=" w-full py-1.5 bg-primary text-[9px] !text-white font-bold rounded-lg uppercase text-center shadow-sm"
                                         >
                                             Abrir Mapa
                                         </a>
                                     )}
                                     <button
-                                        className="w-full py-1.5 bg-brand-600 text-[9px] text-white font-bold rounded-lg uppercase shadow-sm"
+                                        className="w-full py-1.5 bg-primary text-[9px] text-white font-bold rounded-lg uppercase shadow-sm"
                                         onClick={() => handleMarkerClick(loc)}
                                     >
                                         ⭐ Ver Reseñas
@@ -184,14 +184,14 @@ export default function MapView() {
 
             {/* FAB Filter Button */}
             <UserQRDrawer />
-            
+
             <Drawer>
                 <DrawerTrigger asChild>
-                    <button className="absolute bottom-24 right-5 z-[500] w-14 h-14 bg-brand-600 text-white rounded-full shadow-xl flex items-center justify-center transition-transform hover:scale-105 active:scale-95">
+                    <button className="absolute bottom-24 right-5 z-[500] w-14 h-14 bg-primary text-white rounded-full shadow-xl flex items-center justify-center transition-transform hover:scale-105 active:scale-95">
                         <Filter size={24} />
                         {hasFilters && (
-                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-white border-2 border-brand-600 rounded-full flex items-center justify-center">
-                                <span className="w-2 h-2 bg-brand-600 rounded-full animate-pulse"></span>
+                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-white border-2 border-primary rounded-full flex items-center justify-center">
+                                <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
                             </span>
                         )}
                     </button>
@@ -199,7 +199,7 @@ export default function MapView() {
                 <DrawerContent>
                     <div className="mx-auto w-full max-w-sm">
                         <DrawerHeader>
-                            <DrawerTitle className="text-xl font-bold text-brand-950">Filtrar por Experiencia</DrawerTitle>
+                            <DrawerTitle className="text-xl font-bold text-foreground">Filtrar por Experiencia</DrawerTitle>
                             <DrawerDescription>
                                 Encuentra lugares que cumplan con tus expectativas.
                             </DrawerDescription>
@@ -207,28 +207,28 @@ export default function MapView() {
                         <div className="p-6 pb-8 space-y-6">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
-                                    <Coffee size={14} className="text-brand-600" /> Café (Mínimo)
+                                    <Coffee size={14} className="text-primary" /> Café (Mínimo)
                                 </label>
                                 <LikertRating rating={minCoffee} interactive onRatingChange={setMinCoffee} size="md" />
                             </div>
 
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
-                                    <Utensils size={14} className="text-brand-600" /> Comida (Mínimo)
+                                    <Utensils size={14} className="text-primary" /> Comida (Mínimo)
                                 </label>
                                 <LikertRating rating={minFood} interactive onRatingChange={setMinFood} size="md" />
                             </div>
 
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
-                                    <Map size={14} className="text-brand-600" /> Lugar (Mínimo)
+                                    <Map size={14} className="text-primary" /> Lugar (Mínimo)
                                 </label>
                                 <LikertRating rating={minPlace} interactive onRatingChange={setMinPlace} size="md" />
                             </div>
 
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-2">
-                                    <CircleDollarSign size={14} className="text-brand-600" /> Costo (Mínimo)
+                                    <CircleDollarSign size={14} className="text-primary" /> Costo (Mínimo)
                                 </label>
                                 <LikertRating rating={minPrice} interactive onRatingChange={setMinPrice} size="md" />
                             </div>
@@ -247,7 +247,7 @@ export default function MapView() {
                         </div>
                         <DrawerFooter>
                             <DrawerClose asChild>
-                                <Button className="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold h-12 rounded-xl">
+                                <Button className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl">
                                     Aplicar Filtros
                                 </Button>
                             </DrawerClose>
@@ -258,7 +258,7 @@ export default function MapView() {
 
             {loading && (
                 <div className="absolute inset-0 z-[1001] flex items-center justify-center bg-white/50 backdrop-blur-sm pointer-events-none">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
             )}
 

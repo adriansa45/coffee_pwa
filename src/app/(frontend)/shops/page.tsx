@@ -14,22 +14,22 @@ export default async function ShopsPage(props: {
     const { data: tags } = await getTags();
 
     return (
-        <div className="min-h-screen bg-brand-50/30 pb-28">
+        <div className="min-h-screen bg-background pb-28">
             {/* Header / Search */}
-            <div className="bg-brand-600 px-6 pt-4 pb-12 rounded-b-[40px] shadow-lg sticky top-0 z-50">
-                <h1 className="text-2xl font-bold text-white mb-6">Explorar Cafeterías</h1>
+            <div className="bg-primary px-6 pt-6 pb-10 rounded-b-[40px] shadow-lg">
+                <h1 className="text-3xl font-bold text-white mb-6">Explorar Cafeterías</h1>
                 <div className="relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-400 group-focus-within:text-brand-600 transition-colors" size={20} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40" size={20} />
                     <input
                         type="text"
                         placeholder="Busca por nombre o dirección..."
-                        className="w-full bg-white/95 backdrop-blur-md rounded-2xl py-4 pl-12 pr-4 text-brand-950 font-medium placeholder:text-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-400 shadow-inner"
+                        className="w-full bg-white rounded-3xl py-4 pl-12 pr-4 text-foreground font-medium placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-white/20 shadow-sm border-0"
                     />
                 </div>
             </div>
 
             {/* Content */}
-            <div className="px-6 -mt-6">
+            <div className="px-6 -mt-4">
                 <CoffeeShopList initialShops={shops || []} tags={tags || []} />
             </div>
         </div>

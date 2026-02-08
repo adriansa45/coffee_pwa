@@ -56,6 +56,7 @@ export const users = db_schema.table(
     id: varchar("id").primaryKey(),
     name: varchar("name"),
     image: varchar("image"),
+    brandColor: varchar("brand_color").default("#820E2B"),
     updatedAt: timestamp("updated_at", {
       mode: "string",
       withTimezone: true,
@@ -103,6 +104,9 @@ export const coffee_shops = db_schema.table(
     longitude: numeric("longitude", { mode: "number" }).notNull(),
     address: varchar("address"),
     googleMapsUrl: varchar("google_maps_url"),
+    phone: varchar("phone"),
+    website: varchar("website"),
+    hours: jsonb("hours"),
     rating: numeric("rating", { mode: "number" }).default(0),
     updatedAt: timestamp("updated_at", {
       mode: "string",

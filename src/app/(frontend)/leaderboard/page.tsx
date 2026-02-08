@@ -80,14 +80,14 @@ export default function LeaderboardPage() {
                         <ArrowLeft size={20} />
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-brand-950">Leaderboard</h1>
-                        <p className="text-brand-900/60 text-sm">Top exploradores - <span className="text-brand-600 font-bold">{selectedShopName}</span></p>
+                        <h1 className="text-2xl font-bold text-foreground">Leaderboard</h1>
+                        <p className="text-foreground/60 text-sm">Top exploradores - <span className="text-primary font-bold">{selectedShopName}</span></p>
                     </div>
                 </div>
 
                 <Drawer>
                     <DrawerTrigger asChild>
-                        <button className="w-10 h-10 rounded-xl bg-white border border-gray-200 shadow-sm flex items-center justify-center text-brand-600 hover:bg-brand-50 transition-colors">
+                        <button className="w-10 h-10 rounded-xl bg-white border border-gray-200 shadow-sm flex items-center justify-center text-primary hover:bg-primary/5 transition-colors">
                             <Filter size={20} />
                         </button>
                     </DrawerTrigger>
@@ -103,7 +103,7 @@ export default function LeaderboardPage() {
                                         onClick={() => handleShopSelect("all", "Global")}
                                         className={cn(
                                             "w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors",
-                                            selectedShopId === 'all' ? "bg-brand-600 text-white shadow-md" : "bg-gray-50 text-gray-700 hover:bg-gray-100"
+                                            selectedShopId === 'all' ? "bg-primary text-white shadow-md" : "bg-gray-50 text-gray-700 hover:bg-gray-100"
                                         )}
                                     >
                                         🌍 Global (Todas las cafeterías)
@@ -115,7 +115,7 @@ export default function LeaderboardPage() {
                                             onClick={() => handleShopSelect(shop.id, shop.name)}
                                             className={cn(
                                                 "w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors truncate",
-                                                selectedShopId === shop.id ? "bg-brand-600 text-white shadow-md" : "bg-white border border-gray-100 text-gray-700 hover:bg-gray-50"
+                                                selectedShopId === shop.id ? "bg-primary text-white shadow-md" : "bg-white border border-gray-100 text-gray-700 hover:bg-gray-50"
                                             )}
                                         >
                                             {shop.name}
@@ -125,7 +125,7 @@ export default function LeaderboardPage() {
                             </div>
                             <DrawerFooter>
                                 <DrawerClose asChild>
-                                    <Button className="w-full bg-brand-600 text-white font-bold h-12 rounded-xl">Listo</Button>
+                                    <Button className="w-full bg-primary text-white font-bold h-12 rounded-xl">Listo</Button>
                                 </DrawerClose>
                             </DrawerFooter>
                         </div>
@@ -135,7 +135,7 @@ export default function LeaderboardPage() {
 
             {loading ? (
                 <div className="flex justify-center py-20">
-                    <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
                 </div>
             ) : (
                 <div className="space-y-4">
@@ -152,7 +152,7 @@ export default function LeaderboardPage() {
                                     <span className="text-2xl font-bold text-gray-500">2</span>
                                 </div>
                                 <div className="text-center mt-2">
-                                    <p className="text-xs font-bold text-brand-950 w-20 truncate">{leaderboard[1].userName}</p>
+                                    <p className="text-xs font-bold text-foreground w-20 truncate">{leaderboard[1].userName}</p>
                                     <p className="text-[10px] text-gray-500 font-bold">{leaderboard[1].visitCount} pts</p>
                                 </div>
                             </div>
@@ -170,8 +170,8 @@ export default function LeaderboardPage() {
                                     <span className="text-4xl font-bold text-yellow-700/50">1</span>
                                 </div>
                                 <div className="text-center mt-2">
-                                    <p className="text-sm font-bold text-brand-950 w-24 truncate">{leaderboard[0].userName}</p>
-                                    <p className="text-xs text-brand-600 font-bold">{leaderboard[0].visitCount} pts</p>
+                                    <p className="text-sm font-bold text-foreground w-24 truncate">{leaderboard[0].userName}</p>
+                                    <p className="text-xs text-primary font-bold">{leaderboard[0].visitCount} pts</p>
                                 </div>
                             </div>
 
@@ -185,7 +185,7 @@ export default function LeaderboardPage() {
                                     <span className="text-2xl font-bold text-orange-700/50">3</span>
                                 </div>
                                 <div className="text-center mt-2">
-                                    <p className="text-xs font-bold text-brand-950 w-20 truncate">{leaderboard[2].userName}</p>
+                                    <p className="text-xs font-bold text-foreground w-20 truncate">{leaderboard[2].userName}</p>
                                     <p className="text-[10px] text-gray-500 font-bold">{leaderboard[2].visitCount} pts</p>
                                 </div>
                             </div>
@@ -197,7 +197,7 @@ export default function LeaderboardPage() {
                         {leaderboard.map((user, index) => (
                             <div key={user.userId} className={cn(
                                 "flex items-center gap-4 p-3 rounded-2xl transition-colors",
-                                index < 3 ? "bg-brand-50/50 mb-1" : "hover:bg-gray-50"
+                                index < 3 ? "bg-primary/5 mb-1" : "hover:bg-gray-50"
                             )}>
                                 <span className={cn(
                                     "text-lg font-bold w-6 text-center",
@@ -214,16 +214,16 @@ export default function LeaderboardPage() {
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1">
-                                    <h4 className="font-bold text-brand-950 text-sm">{user.userName}</h4>
+                                    <h4 className="font-bold text-foreground text-sm">{user.userName}</h4>
                                     <div className="w-full bg-gray-100 h-1.5 rounded-full mt-1.5 overflow-hidden">
                                         <div
-                                            className="bg-brand-500 h-full rounded-full"
+                                            className="bg-primary/60 h-full rounded-full"
                                             style={{ width: `${(user.visitCount / (leaderboard[0]?.visitCount || 1)) * 100}%` }}
                                         />
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-end">
-                                    <span className="font-bold text-brand-950">{user.visitCount}</span>
+                                    <span className="font-bold text-foreground">{user.visitCount}</span>
                                     <span className="text-[10px] text-gray-400 uppercase font-bold">Visitas</span>
                                 </div>
                             </div>

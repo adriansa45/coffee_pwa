@@ -124,7 +124,7 @@ export function PassportList({ initialShops }: { initialShops?: Shop[] }) {
                     placeholder="Buscar cafetería..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-4 py-3 rounded-2xl bg-white border border-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow shadow-sm"
+                    className="w-full pl-9 pr-4 py-3 rounded-2xl bg-white border border-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60/20 transition-shadow shadow-sm"
                 />
                 {searchQuery && (
                     <button
@@ -136,25 +136,25 @@ export function PassportList({ initialShops }: { initialShops?: Shop[] }) {
                 )}
             </div>
 
-            <div className="grid w-full grid-cols-3 bg-brand-100/50 p-1 rounded-2xl mb-6 text-sm">
+            <div className="grid w-full grid-cols-3 bg-primary/10/50 p-1 rounded-2xl mb-6 text-sm">
                 <button
                     type="button"
                     onClick={() => handleFilterChange("all")}
-                    className={`rounded-xl py-1.5 font-medium ${filter === 'all' ? 'bg-white text-brand-900 shadow-sm' : ''}`}
+                    className={`rounded-xl py-1.5 font-medium ${filter === 'all' ? 'bg-white text-foreground/90 shadow-sm' : ''}`}
                 >
                     Todos
                 </button>
                 <button
                     type="button"
                     onClick={() => handleFilterChange("collected")}
-                    className={`rounded-xl py-1.5 font-medium ${filter === 'collected' ? 'bg-white text-brand-900 shadow-sm' : ''}`}
+                    className={`rounded-xl py-1.5 font-medium ${filter === 'collected' ? 'bg-white text-foreground/90 shadow-sm' : ''}`}
                 >
                     Coleccionados
                 </button>
                 <button
                     type="button"
                     onClick={() => handleFilterChange("missing")}
-                    className={`rounded-xl py-1.5 font-medium ${filter === 'missing' ? 'bg-white text-brand-900 shadow-sm' : ''}`}
+                    className={`rounded-xl py-1.5 font-medium ${filter === 'missing' ? 'bg-white text-foreground/90 shadow-sm' : ''}`}
                 >
                     Faltantes
                 </button>
@@ -178,7 +178,7 @@ export function PassportList({ initialShops }: { initialShops?: Shop[] }) {
 
             {loading && (
                 <div className="flex justify-center p-4">
-                    <Loader2 className="w-6 h-6 animate-spin text-brand-500" />
+                    <Loader2 className="w-6 h-6 animate-spin text-primary/60" />
                 </div>
             )}
 
@@ -186,7 +186,7 @@ export function PassportList({ initialShops }: { initialShops?: Shop[] }) {
             <button
                 onClick={scrollToTop}
                 className={cn(
-                    "fixed bottom-24 right-4 z-50 w-12 h-12 bg-white/80 backdrop-blur-md border border-gray-200 text-brand-600 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95",
+                    "fixed bottom-24 right-4 z-50 w-12 h-12 bg-white/80 backdrop-blur-md border border-gray-200 text-primary rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95",
                     showScrollTop ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0 pointer-events-none"
                 )}
             >

@@ -37,7 +37,7 @@ export default async function HistoryPage() {
                     <ArrowLeft size={20} />
                 </Link>
                 <div>
-                    <h1 className="text-2xl font-bold text-brand-950">Historial de Visitas</h1>
+                    <h1 className="text-2xl font-bold text-foreground">Historial de Visitas</h1>
                     <p className="text-sm text-gray-500">Tus aventuras cafeteras</p>
                 </div>
             </header>
@@ -46,17 +46,17 @@ export default async function HistoryPage() {
                 {history.map((visit) => (
                     <div key={visit.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex gap-4">
                         <div className="flex flex-col items-center">
-                            <div className="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-600 border border-brand-100">
+                            <div className="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center text-primary border border-primary/10">
                                 <Calendar size={18} />
                             </div>
                             <div className="w-0.5 flex-1 bg-gray-100 my-2"></div>
                         </div>
                         <div className="pb-4">
-                            <h3 className="font-bold text-brand-950">{visit.shopName}</h3>
+                            <h3 className="font-bold text-foreground">{visit.shopName}</h3>
                             <p className="text-xs text-gray-500 mb-1 flex items-center gap-1">
                                 <MapPin size={10} /> {visit.shopAddress || "Ubicación no disponible"}
                             </p>
-                            <p className="text-xs font-semibold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-md inline-block">
+                            <p className="text-xs font-semibold text-primary bg-primary/5 px-2 py-0.5 rounded-md inline-block">
                                 {visit.visitedAt ? new Date(visit.visitedAt).toLocaleDateString(undefined, {
                                     weekday: 'long',
                                     year: 'numeric',

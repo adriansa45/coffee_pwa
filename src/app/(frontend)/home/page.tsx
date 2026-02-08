@@ -1,140 +1,156 @@
-import { getVisitStats, getLeaderboard } from "@/actions/stats";
-import { Coffee, Trophy, User, Calendar, ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+"use client";
 
-export default async function HomePage() {
-    const { data: stats } = await getVisitStats();
-    // Get global leaderboard preview (top 3)
-    const { data: leaderboard } = await getLeaderboard();
+import { Coffee, MapPin, Star, TrendingUp } from "lucide-react";
+import { CoffeeCard } from "@/components/CoffeeCard";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
-    if (!stats) return null; // Or skeleton
+const categories = ["Todos", "Cerca de ti", "Populares", "Nuevos"];
 
-    const { totalVisits, recentVisits, frequentVisits, userName } = stats;
+// Mock data - replace with real data from your API
+const coffeeShops = [
+    {
+        id: 1,
+        name: "Café Aroma",
+        image: "/images/coffee-1.jpg",
+        rating: 4.8,
+        distance: "0.5 km",
+        status: "open" as const,
+    },
+    {
+        id: 2,
+        name: "Espresso House",
+        image: "/images/coffee-2.jpg",
+        rating: 4.6,
+        distance: "1.2 km",
+        status: "open" as const,
+    },
+    {
+        id: 3,
+        name: "Bean & Brew",
+        image: "/images/coffee-3.jpg",
+        rating: 4.9,
+        distance: "2.1 km",
+        status: "closed" as const,
+    },
+    {
+        id: 4,
+        name: "Morning Cup",
+        image: "/images/coffee-4.jpg",
+        rating: 4.7,
+        distance: "0.8 km",
+        status: "open" as const,
+    },
+];
+
+export default function HomePage() {
+    const [selectedCategory, setSelectedCategory] = useState("Todos");
 
     return (
-        <div className="p-6 pt-24 pb-28 space-y-8">
-            {/* Header */}
-            <div>
-                <h1 className="text-3xl font-bold text-brand-950">
-                    Hola, <span className="text-brand-600">{userName}</span> 👋
-                </h1>
-                <p className="text-brand-900/60 font-medium mt-1">
-                    ¿Listo para tu próxima taza de café?
-                </p>
-            </div>
+        <div className="min-h-screen bg-background">
+            {/* Hero Section */}
+            <section className="relative h-[40vh] overflow-hidden">
+                {/* Background with gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900" />
+                <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5" />
 
-            {/* Main Stats Card */}
-            <div className="bg-gradient-to-br from-brand-600 to-brand-800 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
-                <Coffee className="absolute -right-6 -bottom-6 w-40 h-40 opacity-10 rotate-12" />
-                <div className="relative z-10">
-                    <p className="text-brand-100 text-sm font-medium mb-1">Total de Visitas</p>
-                    <h2 className="text-5xl font-bold mb-4">{totalVisits}</h2>
-                    <div className="flex items-center gap-2 text-xs bg-white/20 w-fit px-3 py-1.5 rounded-full backdrop-blur-sm">
-                        <Trophy size={12} className="text-yellow-300" />
-                        <span>¡Sigue explorando!</span>
+                {/* Content */}
+                <div className="relative h-full flex flex-col justify-end p-6 pb-8">
+                    <div className="space-y-4">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm w-fit">
+                            <TrendingUp className="w-4 h-4 text-primary" />
+                            <span className="text-xs font-bold text-primary">Descubre cafeterías cerca</span>
+                        </div>
+
+                        <h1 className="text-5xl font-bold text-white leading-tight">
+                            Tu pasaporte
+                            <br />
+                            al mejor café
+                        </h1>
+
+                        <p className="text-zinc-400 text-lg max-w-md">
+                            Explora, visita y colecciona experiencias en las mejores cafeterías de tu ciudad
+                        </p>
                     </div>
                 </div>
-            </div>
 
-            {/* Leaderboard Preview */}
-            <section>
-                <div className="flex justify-between items-end mb-4">
-                    <h3 className="text-lg font-bold text-brand-950">Top Exploradores</h3>
-                    <Link href="/leaderboard" className="text-xs font-bold text-brand-600 flex items-center gap-1 hover:underline">
-                        Ver todo <ArrowRight size={12} />
-                    </Link>
-                </div>
-
-                <div className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 space-y-4">
-                    {leaderboard?.slice(0, 3).map((user, index) => (
-                        <div key={user.userId} className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shadow-sm ${index === 0 ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
-                                index === 1 ? 'bg-gray-100 text-gray-700 border border-gray-200' :
-                                    'bg-orange-100 text-orange-800 border border-orange-200'
-                                }`}>
-                                #{index + 1}
-                            </div>
-                            <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
-                                <AvatarImage src={user.userImage || ""} />
-                                <AvatarFallback className="bg-brand-100 text-brand-700 font-bold text-xs">
-                                    {user.userName?.charAt(0)}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1">
-                                <p className="text-sm font-bold text-brand-950 truncate">{user.userName}</p>
-                                <p className="text-xs text-brand-500 font-semibold">{user.visitCount} visitas</p>
-                            </div>
-                            {index === 0 && <Trophy className="text-yellow-500 w-5 h-5 fill-current" />}
-                        </div>
-                    ))}
-                    {!leaderboard?.length && <p className="text-sm text-gray-400 text-center py-2">No hay datos aún.</p>}
-                </div>
+                {/* Bottom fade */}
+                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
             </section>
 
-
-            {/* Recent Activity Timeline Card */}
-            <section>
-                <div className="flex justify-between items-end mb-4">
-                    <h3 className="text-lg font-bold text-brand-950">Actividad Reciente</h3>
-                    <Link href="/history" className="text-xs font-bold text-brand-600 flex items-center gap-1 hover:underline">
-                        Ver historial <ArrowRight size={12} />
-                    </Link>
-                </div>
-
-                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-                    <div className="relative pl-2">
-                        {/* Vertical Line */}
-                        <div className="absolute left-[27px] top-2 bottom-4 w-0.5 bg-gray-100"></div>
-
-                        <div className="space-y-6">
-                            {recentVisits?.slice(0, 5).map((visit) => (
-                                <div key={visit.id} className="relative flex items-start gap-4">
-                                    {/* Timeline Dot */}
-                                    <div className="z-10 w-10 h-10 rounded-full bg-brand-50 border-1 border-white flex items-center justify-center shrink-0 shadow-sm"> {/* slight fix border-4 -> border-1 visually maybe? No user didn't ask, keep border-4 */}
-                                        <div className="w-10 h-10 rounded-full bg-brand-50 border-4 border-white flex items-center justify-center shrink-0 shadow-sm">
-                                            <Calendar size={16} className="text-brand-600" />
-                                        </div>
-                                    </div>
-
-                                    {/* Logic for item mapping same as before, just need to be careful with structure */}
-                                    {/* Content */}
-                                    <div className="flex-1 pt-1">
-                                        <h4 className="font-bold text-brand-950 text-sm">{visit.shopName}</h4>
-                                        <p className="text-xs text-gray-500 capitalize">
-                                            {visit.visitedAt ? new Date(visit.visitedAt).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'short' }) : ''}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
-                            {(!recentVisits || recentVisits.length === 0) && (
-                                <p className="text-sm text-gray-500 text-center py-4">
-                                    Aún no has registrado visitas.
-                                </p>
+            {/* Category Filters */}
+            <section className="px-6 -mt-6 relative z-10">
+                <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
+                    {categories.map((category) => (
+                        <button
+                            key={category}
+                            onClick={() => setSelectedCategory(category)}
+                            className={cn(
+                                "px-6 py-3 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-300 border",
+                                selectedCategory === category
+                                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
+                                    : "glass text-foreground border-white/5 hover:border-primary/30"
                             )}
-                        </div>
-                    </div>
+                        >
+                            {category}
+                        </button>
+                    ))}
                 </div>
             </section>
 
-            {/* Frequent Shops */}
-            <section>
-                <h3 className="text-lg font-bold text-brand-950 mb-4">Tus Favoritos</h3>
-                <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none]">
-                    {frequentVisits?.map((shop) => (
-                        <div key={shop.shopId} className="min-w-[140px] bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
-                            <div className="w-12 h-12 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center mb-3 shadow-sm">
-                                <Coffee size={24} />
-                            </div>
-                            <h4 className="font-bold text-brand-950 text-xs line-clamp-2 h-8">{shop.shopName}</h4>
-                            <span className="mt-2 text-[10px] font-bold bg-brand-50 text-brand-700 px-2 py-1 rounded-full border border-brand-100">
-                                {Number(shop.visitCount)} Visitas
-                            </span>
-                        </div>
+            {/* Coffee Shops Grid */}
+            <section className="px-6 py-8 space-y-6">
+                <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold">Cafeterías destacadas</h2>
+                    <button className="text-sm font-bold text-primary hover:underline">
+                        Ver todas
+                    </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    {coffeeShops.map((shop) => (
+                        <CoffeeCard
+                            key={shop.id}
+                            name={shop.name}
+                            image={shop.image}
+                            rating={shop.rating}
+                            distance={shop.distance}
+                            status={shop.status}
+                        />
                     ))}
-                    {(!frequentVisits || frequentVisits.length === 0) && (
-                        <p className="text-sm text-gray-500 w-full text-center py-4">No hay favoritos aún.</p>
-                    )}
+                </div>
+            </section>
+
+            {/* Stats Section */}
+            <section className="px-6 py-8">
+                <div className="glass rounded-4xl p-8 space-y-6">
+                    <h3 className="text-xl font-bold">Tu progreso</h3>
+
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="text-center space-y-2">
+                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                                <Coffee className="w-6 h-6 text-primary" />
+                            </div>
+                            <div className="text-2xl font-bold">12</div>
+                            <div className="text-xs text-muted-foreground">Visitas</div>
+                        </div>
+
+                        <div className="text-center space-y-2">
+                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                                <MapPin className="w-6 h-6 text-primary" />
+                            </div>
+                            <div className="text-2xl font-bold">8</div>
+                            <div className="text-xs text-muted-foreground">Lugares</div>
+                        </div>
+
+                        <div className="text-center space-y-2">
+                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                                <Star className="w-6 h-6 text-primary" />
+                            </div>
+                            <div className="text-2xl font-bold">4.8</div>
+                            <div className="text-xs text-muted-foreground">Promedio</div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>

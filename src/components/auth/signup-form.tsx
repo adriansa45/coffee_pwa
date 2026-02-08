@@ -67,7 +67,7 @@ export function SignUpForm() {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
-                            className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12 rounded-xl focus:ring-brand-500 focus:border-brand-500 transition-all font-medium"
+                            className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12 rounded-xl focus:ring-primary/60 focus:border-primary/60 transition-all font-medium"
                         />
                     </div>
                     <div className="space-y-2">
@@ -79,7 +79,7 @@ export function SignUpForm() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12 rounded-xl focus:ring-brand-500 focus:border-brand-500 transition-all font-medium"
+                            className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12 rounded-xl focus:ring-primary/60 focus:border-primary/60 transition-all font-medium"
                         />
                     </div>
                     <div className="space-y-2">
@@ -90,14 +90,14 @@ export function SignUpForm() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12 rounded-xl focus:ring-brand-500 focus:border-brand-500 transition-all font-medium"
+                            className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12 rounded-xl focus:ring-primary/60 focus:border-primary/60 transition-all font-medium"
                         />
                     </div>
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-4 pb-8">
                     <Button
                         type="submit"
-                        className="w-full h-14 mt-4 bg-brand-600 hover:bg-brand-700 text-white font-bold text-lg rounded-2xl shadow-lg shadow-brand-900/40 transition-all hover:scale-[1.02] active:scale-[0.98] border-none"
+                        className="w-full h-14 mt-4 bg-primary hover:bg-primary/90 text-white font-bold text-lg rounded-2xl shadow-lg shadow-primary/90 transition-all hover:scale-[1.02] active:scale-[0.98] border-none"
                         disabled={loading}
                     >
                         {loading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
@@ -105,7 +105,7 @@ export function SignUpForm() {
                     </Button>
                     <div className="text-sm text-center text-white/60 font-medium">
                         ¿Ya tienes cuenta?{" "}
-                        <Link href="/auth/login" className="text-brand-400 hover:text-brand-300 font-bold hover:underline transition-colors ml-1">
+                        <Link href="/auth/login" className="text-primary/40 hover:text-brand-300 font-bold hover:underline transition-colors ml-1">
                             Inicia sesión
                         </Link>
                     </div>

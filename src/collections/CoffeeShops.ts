@@ -44,6 +44,26 @@ export const CoffeeShops: CollectionConfig = {
       type: 'text',
     },
     {
+      name: 'phone',
+      type: 'text',
+      label: 'Teléfono',
+    },
+    {
+      name: 'website',
+      type: 'text',
+      label: 'Sitio Web',
+    },
+    {
+      name: 'hours',
+      type: 'json',
+      label: 'Horarios',
+      admin: {
+        components: {
+          Field: '@/components/payload/HoursField',
+        },
+      },
+    },
+    {
       name: 'rating',
       type: 'number',
       defaultValue: 0,

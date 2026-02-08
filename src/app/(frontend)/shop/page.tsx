@@ -78,12 +78,12 @@ export default function ShopDashboardPage() {
             )}
 
             <div className="p-6 pt-24 pb-28 flex items-center justify-center min-h-screen">
-                <Card className="w-full max-w-md border-brand-100 shadow-xl bg-white">
+                <Card className="w-full max-w-md border-primary/10 shadow-xl bg-white">
                     <CardHeader className="text-center">
-                        <div className="mx-auto w-16 h-16 bg-brand-600 rounded-full flex items-center justify-center mb-4 text-white">
+                        <div className="mx-auto w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4 text-white">
                             <Coffee size={32} />
                         </div>
-                        <CardTitle className="text-2xl font-bold text-brand-950">Panel de Cafetería</CardTitle>
+                        <CardTitle className="text-2xl font-bold text-foreground">Panel de Cafetería</CardTitle>
                         <CardDescription>
                             Escanea el QR o ingresa el código del cliente.
                         </CardDescription>
@@ -94,7 +94,7 @@ export default function ShopDashboardPage() {
                             <Button
                                 type="button"
                                 onClick={() => setShowScanner(true)}
-                                className="w-full h-14 text-lg font-bold bg-brand-600 hover:bg-brand-700 flex items-center justify-center gap-2"
+                                className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 flex items-center justify-center gap-2"
                             >
                                 <Camera size={24} />
                                 Escanear QR
@@ -110,20 +110,20 @@ export default function ShopDashboardPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="code" className="text-brand-900 font-bold">Código del Cliente</Label>
+                                <Label htmlFor="code" className="text-foreground/90 font-bold">Código del Cliente</Label>
                                 <Input
                                     id="code"
                                     placeholder="Ej. A1B2C3D4"
                                     value={code}
                                     onChange={(e) => setCode(e.target.value.toUpperCase())}
-                                    className="text-center text-2xl font-mono tracking-widest uppercase h-14 border-2 focus-visible:ring-brand-500"
+                                    className="text-center text-2xl font-mono tracking-widest uppercase h-14 border-2 focus-visible:ring-primary/60"
                                     maxLength={8}
                                 />
                             </div>
 
                             <Button 
                                 type="submit" 
-                                className="w-full h-12 text-lg font-bold bg-brand-700 hover:bg-brand-800"
+                                className="w-full h-12 text-lg font-bold bg-primary/90 hover:bg-primary/80"
                                 disabled={loading || code.length < 8}
                             >
                                 {loading ? <Loader2 className="animate-spin mr-2" /> : <Keyboard className="mr-2" size={20} />}

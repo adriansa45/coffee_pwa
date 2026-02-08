@@ -26,8 +26,8 @@ export function ColorPicker() {
     };
 
     return (
-        <div className="space-y-4 p-4 bg-white rounded-3xl border border-brand-100 shadow-sm">
-            <h3 className="text-sm font-bold text-brand-950 px-2 uppercase tracking-wider opacity-60">Color de Marca</h3>
+        <div className="space-y-4 p-4 bg-white rounded-3xl border border-primary/10 shadow-sm">
+            <h3 className="text-sm font-bold text-foreground px-2 uppercase tracking-wider opacity-60">Color de Marca</h3>
             <div className="grid grid-cols-4 gap-3">
                 {PRESET_COLORS.map((color) => (
                     <button

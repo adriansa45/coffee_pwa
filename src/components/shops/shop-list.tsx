@@ -19,8 +19,8 @@ export function CoffeeShopList({ initialShops, tags }: { initialShops: any[], ta
                         className={cn(
                             "px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all border shrink-0",
                             filter === f
-                                ? "bg-brand-600 text-white border-brand-600 shadow-md"
-                                : "bg-white text-brand-900/60 border-brand-100 hover:border-brand-300"
+                                ? "bg-primary text-white border-primary shadow-md"
+                                : "bg-white text-foreground/60 border-primary/10 hover:border-brand-300"
                         )}
                     >
                         {f === "all" ? "Todas" : f === "collected" ? "Visitadas" : "Por visitar"}
@@ -34,8 +34,8 @@ export function CoffeeShopList({ initialShops, tags }: { initialShops: any[], ta
                     <CoffeeShopCard key={shop.id} shop={shop} />
                 ))}
                 {initialShops.length === 0 && (
-                    <div className="text-center py-20 bg-white rounded-[32px] border border-brand-100/50">
-                        <p className="text-brand-900/40 font-medium">No se encontraron cafeterías</p>
+                    <div className="text-center py-20 bg-white rounded-[32px] border border-primary/10/50">
+                        <p className="text-foreground/40 font-medium">No se encontraron cafeterías</p>
                     </div>
                 )}
             </div>

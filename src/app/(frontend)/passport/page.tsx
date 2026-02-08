@@ -22,13 +22,13 @@ export default async function PassportPage() {
     return (
         <div className="p-6 pt-24 pb-28 space-y-6">
             <header className="space-y-1">
-                <h1 className="text-2xl font-bold text-brand-950">Tu Pasaporte</h1>
-                <p className="text-sm text-brand-900/60">Llevas {collectedCount} sellos coleccionados</p>
+                <h1 className="text-2xl font-bold text-foreground">Tu Pasaporte</h1>
+                <p className="text-sm text-foreground/60">Llevas {collectedCount} sellos coleccionados</p>
             </header>
 
             <PassportList initialShops={initialShops} />
 
-            {/* <div className="bg-brand-600 rounded-3xl p-6 text-white shadow-lg overflow-hidden relative">
+            {/* <div className="bg-primary rounded-3xl p-6 text-white shadow-lg overflow-hidden relative">
                 <Coffee className="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 rotate-12" />
                 <h3 className="text-lg font-bold mb-1">Próxima Recompensa</h3>
                 <p className="text-sm opacity-90 mb-4">A solo {remaining} sellos de un café gratis</p>

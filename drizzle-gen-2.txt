@@ -1,9 +1,0 @@
-﻿No config path provided, using default 'drizzle.config.ts'
-Reading config file 'C:\Users\l03573076\Documents\Proyectos\mamadas\flutter-web\app_web\drizzle.config.ts'
-[dotenv@17.2.3] injecting env (7) from .env.local -- tip: ­ƒöÉ encrypt with Dotenvx: https://dotenvx.com
-[?25l
-Is review_tags table created or renamed from another table?
-ÔØ» + review_tags                        create table
-  ~ payload.reviews ÔÇ║ review_tags      rename table
-  ~ payload.reviews_rels ÔÇ║ review_tags rename table
-  ~ payload.visits ÔÇ║ review_tags       rename table

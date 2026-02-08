@@ -37,7 +37,7 @@ export function TopNav() {
     };
 
     return (
-        <header className="fixed top-0 left-0 right-0 bg-brand-600 border-b border-brand-800 py-2 px-6 flex items-center justify-between z-[2000] shadow-md">
+        <header className="fixed top-0 left-0 right-0 bg-primary border-b border-primary/80 py-2 px-6 flex items-center justify-between z-[2000] shadow-md">
             <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center shadow-sm">
                     <Coffee className="w-5 h-5 text-white" strokeWidth={2.5} />
@@ -66,17 +66,17 @@ export function TopNav() {
                             <div className="mx-auto w-full max-w-sm">
                                 <DrawerHeader className="text-left border-b border-gray-100 pb-6">
                                     <div className="flex items-center gap-4">
-                                        <Avatar className="h-14 w-14 border-2 border-brand-100">
+                                        <Avatar className="h-14 w-14 border-2 border-primary/10">
                                             <AvatarImage src={user.image || ""} alt={user.name || "Usuario"} />
-                                            <AvatarFallback className="bg-brand-50 text-brand-700 text-xl font-bold">
+                                            <AvatarFallback className="bg-primary/5 text-primary/90 text-xl font-bold">
                                                 {(user.name || "U").charAt(0).toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div className="flex flex-col">
-                                            <DrawerTitle className="text-xl font-bold text-brand-950">
+                                            <DrawerTitle className="text-xl font-bold text-foreground">
                                                 {user.name || "Usuario"}
                                             </DrawerTitle>
-                                            <DrawerDescription className="text-brand-800/60 font-medium truncate max-w-[200px]">
+                                            <DrawerDescription className="text-foreground/80/60 font-medium truncate max-w-[200px]">
                                                 {user.email}
                                             </DrawerDescription>
                                         </div>
@@ -87,10 +87,10 @@ export function TopNav() {
                                         <Button
                                             asChild
                                             variant="ghost"
-                                            className="w-full justify-start text-brand-950 font-bold h-12 rounded-xl hover:bg-brand-50 hover:text-brand-700"
+                                            className="w-full justify-start text-foreground font-bold h-12 rounded-xl hover:bg-primary/5 hover:text-primary/90"
                                         >
                                             <Link href="/profile">
-                                                <User className="mr-3 h-5 w-5 text-brand-600" />
+                                                <User className="mr-3 h-5 w-5 text-primary" />
                                                 Mi Perfil
                                             </Link>
                                         </Button>
@@ -99,10 +99,10 @@ export function TopNav() {
                                         <Button
                                             asChild
                                             variant="ghost"
-                                            className="w-full justify-start text-brand-950 font-bold h-12 rounded-xl hover:bg-brand-50 hover:text-brand-700"
+                                            className="w-full justify-start text-foreground font-bold h-12 rounded-xl hover:bg-primary/5 hover:text-primary/90"
                                         >
                                             <Link href="/profile">
-                                                <Settings className="mr-3 h-5 w-5 text-brand-600" />
+                                                <Settings className="mr-3 h-5 w-5 text-primary" />
                                                 Configuración
                                             </Link>
                                         </Button>
