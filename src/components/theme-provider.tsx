@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 type ThemeContextType = {
     brandColor: string;
@@ -10,7 +11,12 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [brandColor, setBrandColor] = useState<string>("#820E2B"); // Default color
+    const { data: session } = authClient.useSession();
+    const [manualColor, setManualColor] = useState<string | null>(null);
+
+    // Derived state: Use manual override, then session color, then default
+    const sessionColor = (session?.user as any)?.brandColor;
+    const brandColor = manualColor || sessionColor || "#820E2B";
 
     useEffect(() => {
         // Update CSS variables
@@ -19,14 +25,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         root.style.setProperty("--color-brand-600", brandColor);
         root.style.setProperty("--brand-600", brandColor);
 
-        // Simple shade generation (very basic for now)
-        // In a real app, we'd use a color library to generate the 50-950 scale
+        // Simple shade generation
         root.style.setProperty("--brand-500", brandColor);
         root.style.setProperty("--brand-700", brandColor);
     }, [brandColor]);
 
     return (
-        <ThemeContext.Provider value={{ brandColor, setBrandColor }}>
+        <ThemeContext.Provider value={{ brandColor, setBrandColor: setManualColor }}>
             {children}
         </ThemeContext.Provider>
     );

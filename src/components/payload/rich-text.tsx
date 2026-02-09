@@ -2,23 +2,31 @@
 
 import React from "react";
 
-export function RichText({ content }: { content: any }) {
+interface LexicalNode {
+    type: string;
+    text?: string;
+    tag?: string;
+    format?: number;
+    children?: LexicalNode[];
+}
+
+export function RichText({ content }: { content: { root: { children: LexicalNode[] } } }) {
     if (!content || !content.root || !content.root.children) {
         return null;
     }
 
     return (
         <div className="prose prose-brand max-w-none">
-            {content.root.children.map((node: any, index: number) => {
+            {content.root.children.map((node: LexicalNode, index: number) => {
                 if (node.type === 'paragraph') {
                     return (
                         <p key={index} className="mb-4">
-                            {node.children?.map((child: any, i: number) => {
+                            {node.children?.map((child: LexicalNode, i: number) => {
                                 if (child.type === 'text') {
                                     return <span key={i} style={{
-                                        fontWeight: child.format & 1 ? 'bold' : 'normal',
-                                        fontStyle: child.format & 2 ? 'italic' : 'normal',
-                                        textDecoration: child.format & 4 ? 'underline' : 'none'
+                                        fontWeight: (child.format ?? 0) & 1 ? 'bold' : 'normal',
+                                        fontStyle: (child.format ?? 0) & 2 ? 'italic' : 'normal',
+                                        textDecoration: (child.format ?? 0) & 4 ? 'underline' : 'none'
                                     }}>{child.text}</span>;
                                 }
                                 return null;
@@ -27,10 +35,10 @@ export function RichText({ content }: { content: any }) {
                     );
                 }
                 if (node.type === 'heading') {
-                    const Tag = `h${node.tag?.slice(1) || 2}` as any;
+                    const Tag = (node.tag || 'h2') as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
                     return (
                         <Tag key={index} className="font-bold mb-2">
-                            {node.children?.map((child: any, i: number) => child.text).join('')}
+                            {node.children?.map((child: LexicalNode, i: number) => child.text).join('')}
                         </Tag>
                     );
                 }

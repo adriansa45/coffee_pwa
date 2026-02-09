@@ -77,6 +77,21 @@ export const follows = pgTable("follows", {
     index("following_idx").on(table.followingId),
 ]);
 
+export const shopFollows = pgTable("shop_follows", {
+    userId: text("user_id")
+        .notNull()
+        .references(() => user.id, { onDelete: "cascade" }),
+    shopId: varchar("shop_id")
+        .notNull()
+        .references(() => coffee_shops.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true, precision: 3 })
+        .defaultNow()
+        .notNull(),
+}, (table) => [
+    index("shop_follows_user_idx").on(table.userId),
+    index("shop_follows_shop_idx").on(table.shopId),
+]);
+
 export const visitsRelations = relations(visits, ({ one }) => ({
     user: one(user, {
         fields: [visits.userId],
@@ -127,4 +142,16 @@ export const followsRelations = relations(follows, ({ one }) => ({
 export const userSocialRelations = relations(user, ({ many }) => ({
     following: many(follows, { relationName: "following" }),
     followers: many(follows, { relationName: "followedBy" }),
+    shopFollows: many(shopFollows),
+}));
+
+export const shopFollowsRelations = relations(shopFollows, ({ one }) => ({
+    user: one(user, {
+        fields: [shopFollows.userId],
+        references: [user.id],
+    }),
+    shop: one(coffee_shops, {
+        fields: [shopFollows.shopId],
+        references: [coffee_shops.id],
+    }),
 }));

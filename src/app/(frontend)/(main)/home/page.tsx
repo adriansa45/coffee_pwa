@@ -12,7 +12,7 @@ const coffeeShops = [
     {
         id: 1,
         name: "Café Aroma",
-        image: "/images/coffee-1.jpg",
+        image: "/images/placeholder.jpg",
         rating: 4.8,
         distance: "0.5 km",
         status: "open" as const,
@@ -20,7 +20,7 @@ const coffeeShops = [
     {
         id: 2,
         name: "Espresso House",
-        image: "/images/coffee-2.jpg",
+        image: "/images/placeholder.jpg",
         rating: 4.6,
         distance: "1.2 km",
         status: "open" as const,
@@ -28,7 +28,7 @@ const coffeeShops = [
     {
         id: 3,
         name: "Bean & Brew",
-        image: "/images/coffee-3.jpg",
+        image: "/images/placeholder.jpg",
         rating: 4.9,
         distance: "2.1 km",
         status: "closed" as const,
@@ -36,7 +36,7 @@ const coffeeShops = [
     {
         id: 4,
         name: "Morning Cup",
-        image: "/images/coffee-4.jpg",
+        image: "/images/placeholder.jpg",
         rating: 4.7,
         distance: "0.8 km",
         status: "open" as const,

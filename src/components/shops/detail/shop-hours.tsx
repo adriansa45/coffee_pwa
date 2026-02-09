@@ -1,7 +1,12 @@
 import { Clock } from "lucide-react";
 
+export interface ShopHour {
+    day: string;
+    time: string;
+}
+
 interface ShopHoursProps {
-    hours: any[];
+    hours: ShopHour[];
 }
 
 export function ShopHours({ hours }: ShopHoursProps) {
@@ -15,7 +20,7 @@ export function ShopHours({ hours }: ShopHoursProps) {
             </div>
 
             <div className="space-y-3">
-                {hours.map((schedule: any, index: number) => (
+                {hours.map((schedule: ShopHour, index: number) => (
                     <div key={index} className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">{schedule.day}</span>
                         <span className="text-sm font-bold">{schedule.time}</span>

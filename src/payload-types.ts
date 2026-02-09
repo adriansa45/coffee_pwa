@@ -172,6 +172,7 @@ export interface CoffeeShop {
     };
     [k: string]: unknown;
   } | null;
+  mainImage: number | Media;
   gallery?: (number | Media)[] | null;
   latitude: number;
   longitude: number;
@@ -363,6 +364,7 @@ export interface CoffeeShopsSelect<T extends boolean = true> {
   id?: T;
   name?: T;
   description?: T;
+  mainImage?: T;
   gallery?: T;
   latitude?: T;
   longitude?: T;

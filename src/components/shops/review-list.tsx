@@ -6,7 +6,20 @@ import { StarRating } from "@/components/star-rating";
 import { LikertRating } from "@/components/likert-rating";
 import { Coffee, Utensils, Map, CircleDollarSign } from "lucide-react";
 
-export function ReviewList({ initialReviews, shopId }: { initialReviews: any[], shopId: string }) {
+interface Review {
+    id: string;
+    userImage?: string | null;
+    userName?: string | null;
+    rating: string | number;
+    coffeeRating: number;
+    foodRating: number;
+    placeRating: number;
+    priceRating: number;
+    comment?: string | null;
+    createdAt: string;
+}
+
+export function ReviewList({ initialReviews, shopId }: { initialReviews: Review[], shopId: string }) {
     if (initialReviews.length === 0) {
         return (
             <div className="text-center py-12 bg-primary/5 rounded-3xl border-2 border-dashed border-primary/10">

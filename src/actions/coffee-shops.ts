@@ -1,26 +1,29 @@
 "use server";
 
 import { db } from "@/db";
-import { coffee_shops as coffeeShops, reviews, visits, coffee_shops_rels as rels } from "@/db/schema";
+import { coffee_shops as coffeeShops, reviews, visits, coffee_shops_rels as rels, shopFollows } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { eq, sql, and, asc, notInArray, inArray } from "drizzle-orm";
 import { headers } from "next/headers";
 
 export async function getCoffeeShopById(id: string) {
     try {
-        const [shop] = await db.select().from(coffeeShops).where(eq(coffeeShops.id, id));
-
-        if (!shop) return { success: false, error: "Shop not found" };
-
-        // Fetch gallery images through relations
-        const galleryResults = await db.query.coffee_shops_rels.findMany({
-            where: and(eq(rels.parent, id), eq(rels.path, "gallery")),
+        const shop = await db.query.coffee_shops.findFirst({
+            where: eq(coffeeShops.id, id),
             with: {
-                mediaID: true
+                mainImage: true,
+                _rels: {
+                    where: eq(rels.path, "gallery"),
+                    with: {
+                        mediaID: true
+                    }
+                }
             }
         });
 
-        const gallery = galleryResults.map((r: any) => r.mediaID?.url).filter(Boolean);
+        if (!shop) return { success: false, error: "Shop not found" };
+
+        const gallery = (shop as any)._rels?.map((r: any) => r.mediaID).filter(Boolean) || [];
 
         // Fetch rating stats from Drizzle
         const [ratingStats] = await db.select({
@@ -135,5 +138,65 @@ export async function getCoffeeShops({
     } catch (error) {
         console.error("Error fetching coffee shops:", error);
         return { success: false, error: "Failed to fetch coffee shops" };
+    }
+}
+
+export async function toggleFollowShop(shopId: string) {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+
+        if (!session?.user?.id) {
+            return { success: false, error: "Unauthorized" };
+        }
+
+        const userId = session.user.id;
+
+        // Check if already following
+        const [existing] = await db
+            .select()
+            .from(shopFollows)
+            .where(and(eq(shopFollows.userId, userId), eq(shopFollows.shopId, shopId)));
+
+        if (existing) {
+            // Unfollow
+            await db
+                .delete(shopFollows)
+                .where(and(eq(shopFollows.userId, userId), eq(shopFollows.shopId, shopId)));
+            return { success: true, isFollowing: false };
+        } else {
+            // Follow
+            await db.insert(shopFollows).values({
+                userId,
+                shopId,
+            });
+            return { success: true, isFollowing: true };
+        }
+    } catch (error) {
+        console.error("Error toggling follow:", error);
+        return { success: false, error: "Failed to toggle follow" };
+    }
+}
+
+export async function isFollowingShop(shopId: string) {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+
+        if (!session?.user?.id) {
+            return { success: true, isFollowing: false };
+        }
+
+        const [existing] = await db
+            .select()
+            .from(shopFollows)
+            .where(and(eq(shopFollows.userId, session.user.id), eq(shopFollows.shopId, shopId)));
+
+        return { success: true, isFollowing: !!existing };
+    } catch (error) {
+        console.error("Error checking follow status:", error);
+        return { success: false, isFollowing: false };
     }
 }
