@@ -20,6 +20,13 @@ export const CoffeeShops: CollectionConfig = {
       type: 'richText',
     },
     {
+      name: 'mainImage',
+      label: 'Imagen Principal (Portada)',
+      type: 'relationship',
+      relationTo: 'media',
+      required: true,
+    },
+    {
       name: 'gallery',
       type: 'relationship',
       relationTo: 'media',

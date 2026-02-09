@@ -100,6 +100,11 @@ export const coffee_shops = db_schema.table(
     id: varchar("id").primaryKey(),
     name: varchar("name").notNull(),
     description: jsonb("description"),
+    mainImage: integer("main_image_id")
+      .notNull()
+      .references(() => media.id, {
+        onDelete: "set null",
+      }),
     latitude: numeric("latitude", { mode: "number" }).notNull(),
     longitude: numeric("longitude", { mode: "number" }).notNull(),
     address: varchar("address"),
@@ -124,6 +129,7 @@ export const coffee_shops = db_schema.table(
       .notNull(),
   },
   (columns) => [
+    index("coffee_shops_main_image_idx").on(columns.mainImage),
     index("coffee_shops_updated_at_idx").on(columns.updatedAt),
     index("coffee_shops_created_at_idx").on(columns.createdAt),
   ],
@@ -449,11 +455,19 @@ export const relations_coffee_shops_rels = relations(
     }),
   }),
 );
-export const relations_coffee_shops = relations(coffee_shops, ({ many }) => ({
-  _rels: many(coffee_shops_rels, {
-    relationName: "_rels",
+export const relations_coffee_shops = relations(
+  coffee_shops,
+  ({ one, many }) => ({
+    mainImage: one(media, {
+      fields: [coffee_shops.mainImage],
+      references: [media.id],
+      relationName: "mainImage",
+    }),
+    _rels: many(coffee_shops_rels, {
+      relationName: "_rels",
+    }),
   }),
-}));
+);
 export const relations_tags = relations(tags, () => ({}));
 export const relations_media = relations(media, () => ({}));
 export const relations_payload_kv = relations(payload_kv, () => ({}));

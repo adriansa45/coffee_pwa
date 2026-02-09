@@ -1,5 +1,11 @@
+interface LexicalNode {
+    type: string;
+    text?: string;
+    children?: LexicalNode[];
+}
+
 interface ShopDescriptionProps {
-    description: any;
+    description: string | { root: { children: LexicalNode[] } } | null | undefined;
 }
 
 export function ShopDescription({ description }: ShopDescriptionProps) {
@@ -11,11 +17,11 @@ export function ShopDescription({ description }: ShopDescriptionProps) {
             <div className="text-muted-foreground leading-relaxed">
                 {typeof description === 'string'
                     ? description
-                    : description?.root?.children?.map((node: any, idx: number) => {
+                    : (description as any)?.root?.children?.map((node: LexicalNode, idx: number) => {
                         if (node.type === 'paragraph') {
                             return (
                                 <p key={idx} className="mb-3">
-                                    {node.children?.map((child: any, childIdx: number) => {
+                                    {node.children?.map((child: LexicalNode, childIdx: number) => {
                                         if (child.type === 'text') {
                                             return <span key={childIdx}>{child.text}</span>;
                                         }

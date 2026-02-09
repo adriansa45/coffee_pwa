@@ -1,18 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Share2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ShopFollowButton } from "./shop-follow-button";
 
 interface ShopHeaderProps {
+    shopId: string;
     name: string;
     mainImage: string;
-    isOpen: boolean;
-    openUntil?: string;
+    isFollowing?: boolean;
 }
 
-export function ShopHeader({ name, mainImage, isOpen, openUntil }: ShopHeaderProps) {
+export function ShopHeader({ shopId, name, mainImage, isFollowing }: ShopHeaderProps) {
     return (
-        <section className="relative h-[50vh]">
+        <section className="relative h-[45vh] w-full overflow-hidden">
             <Image
                 src={mainImage}
                 alt={name}
@@ -20,33 +21,26 @@ export function ShopHeader({ name, mainImage, isOpen, openUntil }: ShopHeaderPro
                 className="object-cover"
                 priority
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-            {/* Top Bar */}
-            <div className="absolute top-0 left-0 right-0 p-6 flex items-center justify-between">
+            {/* Overlay Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/20" />
+
+            {/* Top Navigation */}
+            <div className="absolute top-0 left-0 right-0 p-6 flex items-center justify-between z-10">
                 <Link
                     href="/shops"
-                    className="w-10 h-10 rounded-full glass flex items-center justify-center text-white"
+                    className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-zinc-900 shadow-lg active:scale-95 transition-transform"
                 >
                     <ArrowLeft className="w-5 h-5" />
                 </Link>
 
-                <button className="w-10 h-10 rounded-full glass flex items-center justify-center text-white">
-                    <Share2 className="w-5 h-5" />
-                </button>
-            </div>
-
-            {/* Status Badge */}
-            <div className="absolute top-20 left-6">
-                <div className={cn(
-                    "px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md border",
-                    isOpen
-                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                        : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"
-                )}>
-                    {isOpen ? `Abierto hasta ${openUntil}` : 'Cerrado'}
+                <div className="flex items-center gap-3">
+                    <ShopFollowButton shopId={shopId} initialIsFollowing={isFollowing} />
                 </div>
             </div>
+
+            {/* Bottom Rounded Corner Effect (Optional, can be handled by container below) */}
+            <div className="absolute bottom-0 left-0 right-0 h-8 bg-background rounded-t-[3rem] z-20" />
         </section>
     );
 }
