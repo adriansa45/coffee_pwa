@@ -12,9 +12,14 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = authClient.useSession();
-    const [manualColor, setManualColor] = useState<string | null>(null);
+    const [manualColor, setManualColor] = useState<string | null>(() => {
+        if (typeof window !== "undefined") {
+            return localStorage.getItem("brand-color");
+        }
+        return null;
+    });
 
-    // Derived state: Use manual override, then session color, then default
+    // Derived state: Manual override (including localStorage), then session, then default
     const sessionColor = (session?.user as any)?.brandColor;
     const brandColor = manualColor || sessionColor || "#820E2B";
 
@@ -22,12 +27,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         // Update CSS variables
         const root = (document as any).documentElement;
         root.style.setProperty("--primary", brandColor);
+        root.style.setProperty("--color-primary", brandColor);
         root.style.setProperty("--color-brand-600", brandColor);
         root.style.setProperty("--brand-600", brandColor);
+        root.style.setProperty("--ring", brandColor);
 
         // Simple shade generation
         root.style.setProperty("--brand-500", brandColor);
         root.style.setProperty("--brand-700", brandColor);
+
+        // Persist to localStorage
+        localStorage.setItem("brand-color", brandColor);
     }, [brandColor]);
 
     return (
