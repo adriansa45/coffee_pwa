@@ -37,6 +37,13 @@ export const Users: CollectionConfig = {
         description: 'Color hexadecimal preferido del usuario',
       },
     },
+    {
+      name: 'fcmToken',
+      type: 'text',
+      admin: {
+        description: 'Token de Firebase Cloud Messaging para notificaciones',
+      },
+    },
   ],
   timestamps: true,
 }

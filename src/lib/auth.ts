@@ -39,6 +39,10 @@ export const auth = betterAuth({
                 type: "string",
                 required: false,
                 defaultValue: "#820E2B",
+            },
+            fcmToken: {
+                type: "string",
+                required: false,
             }
         },
     },
