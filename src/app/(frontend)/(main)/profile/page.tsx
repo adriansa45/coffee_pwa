@@ -60,7 +60,10 @@ export default function ProfilePage() {
             <div className="space-y-4">
                 <h3 className="text-xs font-bold text-foreground/40 uppercase tracking-wider ml-1">Cuenta</h3>
                 <div className="bg-white rounded-2xl border border-primary/10 divide-y divide-primary/5 shadow-sm overflow-hidden">
-                    <button className="w-full flex items-center justify-between p-4 hover:bg-primary/5 transition-colors group">
+                    <Link 
+                        href="/profile/preferences"
+                        className="w-full flex items-center justify-between p-4 hover:bg-primary/5 transition-colors group"
+                    >
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                                 <Settings className="w-4 h-4" />
@@ -68,7 +71,7 @@ export default function ProfilePage() {
                             <span className="text-sm font-medium text-foreground/90">Preferencias</span>
                         </div>
                         <ChevronRight className="w-4 h-4 text-foreground/20 group-hover:translate-x-1 transition-transform" />
-                    </button>
+                    </Link>
 
                     <button className="w-full flex items-center justify-between p-4 hover:bg-primary/5 transition-colors group">
                         <div className="flex items-center gap-3">
@@ -91,7 +94,7 @@ export default function ProfilePage() {
                     </button>
                 </div>
 
-                <ColorPicker />
+
             </div>
 
             <div className="pt-4">

@@ -12,15 +12,12 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = authClient.useSession();
-    const [manualColor, setManualColor] = useState<string | null>(null);
-
-    // Initial load from localStorage
-    useEffect(() => {
-        const savedColor = localStorage.getItem("brand-color");
-        if (savedColor) {
-            setManualColor(savedColor);
+    const [manualColor, setManualColor] = useState<string | null>(() => {
+        if (typeof window !== "undefined") {
+            return localStorage.getItem("brand-color");
         }
-    }, []);
+        return null;
+    });
 
     // Derived state: Manual override (including localStorage), then session, then default
     const sessionColor = (session?.user as any)?.brandColor;
