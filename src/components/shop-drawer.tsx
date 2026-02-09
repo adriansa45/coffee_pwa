@@ -126,39 +126,39 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                     <div className="px-6 pb-4 border-b border-gray-100">
                         <div className="flex justify-between items-start">
                             <div>
-                                <h2 className="text-xl font-bold text-brand-950 leading-tight">{shop?.name}</h2>
+                                <h2 className="text-xl font-bold text-foreground leading-tight">{shop?.name}</h2>
                                 <div className="flex items-center gap-2 mt-1">
                                     <StarRating rating={Number(shop?.avgRating || 0)} size={16} />
-                                    <span className="text-xs font-semibold text-brand-800/70">
+                                    <span className="text-xs font-semibold text-foreground/80/70">
                                         {Number(shop?.avgRating || 0).toFixed(1)} ({shop?.reviewCount} reseñas)
                                     </span>
                                 </div>
-                                
+
                                 {/* Summary Averages */}
                                 {shop && (Number(shop.avgCoffee) > 0 || Number(shop.avgFood) > 0) && (
                                     <div className="flex flex-wrap gap-2 mt-2">
                                         {Number(shop.avgCoffee) > 0 && (
-                                            <div className="flex items-center gap-1.5 bg-brand-50 px-3 py-1 rounded-full border border-brand-100">
-                                                <Coffee size={12} className="text-brand-600" />
-                                                <span className="text-[11px] font-bold text-brand-800">{Number(shop.avgCoffee).toFixed(1)}</span>
+                                            <div className="flex items-center gap-1.5 bg-primary/5 px-3 py-1 rounded-full border border-primary/10">
+                                                <Coffee size={12} className="text-primary" />
+                                                <span className="text-[11px] font-bold text-foreground/80">{Number(shop.avgCoffee).toFixed(1)}</span>
                                             </div>
                                         )}
                                         {Number(shop.avgFood) > 0 && (
-                                            <div className="flex items-center gap-1.5 bg-brand-50 px-3 py-1 rounded-full border border-brand-100">
-                                                <Utensils size={12} className="text-brand-600" />
-                                                <span className="text-[11px] font-bold text-brand-800">{Number(shop.avgFood).toFixed(1)}</span>
+                                            <div className="flex items-center gap-1.5 bg-primary/5 px-3 py-1 rounded-full border border-primary/10">
+                                                <Utensils size={12} className="text-primary" />
+                                                <span className="text-[11px] font-bold text-foreground/80">{Number(shop.avgFood).toFixed(1)}</span>
                                             </div>
                                         )}
                                         {Number(shop.avgPlace) > 0 && (
-                                            <div className="flex items-center gap-1.5 bg-brand-50 px-3 py-1 rounded-full border border-brand-100">
-                                                <Map size={12} className="text-brand-600" />
-                                                <span className="text-[11px] font-bold text-brand-800">{Number(shop.avgPlace).toFixed(1)}</span>
+                                            <div className="flex items-center gap-1.5 bg-primary/5 px-3 py-1 rounded-full border border-primary/10">
+                                                <Map size={12} className="text-primary" />
+                                                <span className="text-[11px] font-bold text-foreground/80">{Number(shop.avgPlace).toFixed(1)}</span>
                                             </div>
                                         )}
                                         {Number(shop.avgPrice) > 0 && (
-                                            <div className="flex items-center gap-1.5 bg-brand-50 px-3 py-1 rounded-full border border-brand-100">
-                                                <CircleDollarSign size={12} className="text-brand-600" />
-                                                <span className="text-[11px] font-bold text-brand-800">{Number(shop.avgPrice).toFixed(1)}</span>
+                                            <div className="flex items-center gap-1.5 bg-primary/5 px-3 py-1 rounded-full border border-primary/10">
+                                                <CircleDollarSign size={12} className="text-primary" />
+                                                <span className="text-[11px] font-bold text-foreground/80">{Number(shop.avgPrice).toFixed(1)}</span>
                                             </div>
                                         )}
                                     </div>
@@ -189,16 +189,16 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
 
                     {/* Content Area - Reviews Only */}
                     <div className="flex-1 overflow-y-auto px-6 py-4">
-                        <h3 className="text-sm font-bold text-brand-950 mb-4 uppercase tracking-wider">Críticas y Comentarios</h3>
+                        <h3 className="text-sm font-bold text-foreground mb-4 uppercase tracking-wider">Críticas y Comentarios</h3>
 
                         {loading ? (
                             <div className="flex justify-center py-10">
-                                <Loader2 className="animate-spin text-brand-600" size={32} />
+                                <Loader2 className="animate-spin text-primary" size={32} />
                             </div>
                         ) : (
                             <div className="space-y-4 pb-20">
                                 {reviews.length === 0 ? (
-                                    <div className="text-center py-12 bg-brand-50/30 rounded-3xl border-2 border-dashed border-brand-100">
+                                    <div className="text-center py-12 bg-primary/5 rounded-3xl border-2 border-dashed border-primary/10">
                                         <p className="text-sm text-gray-400">Sin reseñas aún. ¡Sé el primero!</p>
                                     </div>
                                 ) : (
@@ -206,10 +206,10 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                                         <div key={rev.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                                             <div className="flex justify-between items-center mb-3">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-bold text-xs shadow-inner">
+                                                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary/90 font-bold text-xs shadow-inner">
                                                         {rev.userName.charAt(0)}
                                                     </div>
-                                                    <span className="text-xs font-bold text-brand-950">{rev.userName}</span>
+                                                    <span className="text-xs font-bold text-foreground">{rev.userName}</span>
                                                 </div>
                                                 <div className="flex items-center gap-1">
                                                     <StarRating rating={Number(rev.rating)} size={10} />
@@ -219,19 +219,19 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                                             {/* Category Ratings Display */}
                                             <div className="grid grid-cols-2 gap-2 mb-3 bg-gray-50/50 p-2 rounded-xl border border-gray-100">
                                                 <div className="flex items-center gap-2">
-                                                    <Coffee size={12} className="text-brand-600" />
+                                                    <Coffee size={12} className="text-primary" />
                                                     <LikertRating rating={rev.coffeeRating} size="sm" />
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    <Utensils size={12} className="text-brand-600" />
+                                                    <Utensils size={12} className="text-primary" />
                                                     <LikertRating rating={rev.foodRating} size="sm" />
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    <Map size={12} className="text-brand-600" />
+                                                    <Map size={12} className="text-primary" />
                                                     <LikertRating rating={rev.placeRating} size="sm" />
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    <CircleDollarSign size={12} className="text-brand-600" />
+                                                    <CircleDollarSign size={12} className="text-primary" />
                                                     <LikertRating rating={rev.priceRating} size="sm" />
                                                 </div>
                                             </div>
@@ -252,7 +252,7 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                     <div className="p-6 bg-white border-t border-gray-100 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
                         <button
                             onClick={() => setIsReviewDrawerOpen(true)}
-                            className="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white font-black rounded-2xl shadow-xl shadow-brand-200 flex items-center justify-center gap-2 transition-all active:scale-95 text-sm uppercase tracking-widest"
+                            className="w-full py-4 bg-primary hover:bg-primary/90 text-white font-black rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-95 text-sm uppercase tracking-widest"
                         >
                             <Send size={18} />
                             AÑADIR RESEÑA
@@ -264,13 +264,13 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
             {/* Review Form Modal (Nested Overlay/Drawer) */}
             {isReviewDrawerOpen && (
                 <div className="fixed inset-0 z-[3000] flex flex-col justify-end">
-                    <div 
+                    <div
                         className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in"
                         onClick={() => setIsReviewDrawerOpen(false)}
                     />
                     <div className="relative w-full max-w-lg mx-auto bg-white rounded-t-3xl shadow-2xl p-6 animate-in slide-in-from-bottom-full duration-300">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-lg font-bold text-brand-950 uppercase">Tu experiencia</h3>
+                            <h3 className="text-lg font-bold text-foreground uppercase">Tu experiencia</h3>
                             <button onClick={() => setIsReviewDrawerOpen(false)} className="p-2 rounded-full hover:bg-gray-100">
                                 <X size={20} className="text-gray-400" />
                             </button>
@@ -280,29 +280,29 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 gap-5">
                                     <div className="space-y-2">
-                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><Coffee size={14}/> CAFÉ</span>
+                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><Coffee size={14} /> CAFÉ</span>
                                         <LikertRating rating={coffeeRating} interactive onRatingChange={setCoffeeRating} size="md" />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><Utensils size={14}/> COMIDA</span>
+                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><Utensils size={14} /> COMIDA</span>
                                         <LikertRating rating={foodRating} interactive onRatingChange={setFoodRating} size="md" />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><Map size={14}/> LUGAR</span>
+                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><Map size={14} /> LUGAR</span>
                                         <LikertRating rating={placeRating} interactive onRatingChange={setPlaceRating} size="md" />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><CircleDollarSign size={14}/> COSTO</span>
+                                        <span className="text-[10px] font-black text-gray-400 flex items-center gap-1 tracking-widest uppercase"><CircleDollarSign size={14} /> COSTO</span>
                                         <LikertRating rating={priceRating} interactive onRatingChange={setPriceRating} size="md" />
                                     </div>
                                 </div>
 
                                 <div className="relative pt-2">
                                     <textarea
-                                        className="w-full p-4 text-sm border-2 border-brand-100 rounded-2xl focus:border-brand-500 focus:ring-0 outline-none transition-all placeholder:text-gray-300 resize-none bg-gray-50/50"
+                                        className="w-full p-4 text-sm border-2 border-primary/10 rounded-2xl focus:border-primary/60 focus:ring-0 outline-none transition-all placeholder:text-gray-300 resize-none bg-gray-50/50"
                                         placeholder="Comparte tu opinión con la comunidad..."
                                         rows={3}
                                         value={newComment}
@@ -312,16 +312,16 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                                 <button
                                     onClick={handleReviewSubmit}
                                     disabled={isSubmitting || (coffeeRating === 0 && foodRating === 0 && placeRating === 0 && priceRating === 0)}
-                                    className="w-full py-5 bg-brand-600 hover:bg-brand-700 disabled:bg-brand-200 text-white font-black rounded-2xl shadow-xl shadow-brand-200 flex items-center justify-center gap-2 transition-all active:scale-[0.98] tracking-widest"
+                                    className="w-full py-5 bg-primary hover:bg-primary/90 disabled:bg-primary/20 text-white font-black rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98] tracking-widest"
                                 >
                                     {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <Send size={18} />}
                                     PUBLICAR RESEÑA
                                 </button>
                             </div>
                         ) : (
-                            <div className="bg-brand-50 p-8 rounded-3xl text-center border border-brand-100">
-                                <p className="text-sm text-brand-900 font-bold mb-2 uppercase tracking-tight">¿Te gustó el café?</p>
-                                <p className="text-xs text-brand-800/60 font-medium">Inicia sesión para compartir tu reseña con otros exploradores.</p>
+                            <div className="bg-primary/5 p-8 rounded-3xl text-center border border-primary/10">
+                                <p className="text-sm text-foreground/90 font-bold mb-2 uppercase tracking-tight">¿Te gustó el café?</p>
+                                <p className="text-xs text-foreground/80/60 font-medium">Inicia sesión para compartir tu reseña con otros exploradores.</p>
                             </div>
                         )}
                     </div>

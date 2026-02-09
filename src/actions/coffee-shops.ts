@@ -1,10 +1,57 @@
 "use server";
 
 import { db } from "@/db";
-import { coffeeShops, reviews, visits, reviewsTags } from "@/db/schema";
+import { coffee_shops as coffeeShops, reviews, visits, coffee_shops_rels as rels } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { eq, sql, and, desc, asc, notInArray, inArray } from "drizzle-orm";
+import { eq, sql, and, asc, notInArray, inArray } from "drizzle-orm";
 import { headers } from "next/headers";
+
+export async function getCoffeeShopById(id: string) {
+    try {
+        const [shop] = await db.select().from(coffeeShops).where(eq(coffeeShops.id, id));
+
+        if (!shop) return { success: false, error: "Shop not found" };
+
+        // Fetch gallery images through relations
+        const galleryResults = await db.query.coffee_shops_rels.findMany({
+            where: and(eq(rels.parent, id), eq(rels.path, "gallery")),
+            with: {
+                mediaID: true
+            }
+        });
+
+        const gallery = galleryResults.map((r: any) => r.mediaID?.url).filter(Boolean);
+
+        // Fetch rating stats from Drizzle
+        const [ratingStats] = await db.select({
+            avgRating: sql<number>`COALESCE(AVG(NULLIF(${reviews.rating}::numeric, 0)), 0)`,
+            avgCoffee: sql<number>`COALESCE(AVG(NULLIF(${reviews.coffeeRating}, 0)), 0)`,
+            avgFood: sql<number>`COALESCE(AVG(NULLIF(${reviews.foodRating}, 0)), 0)`,
+            avgPlace: sql<number>`COALESCE(AVG(NULLIF(${reviews.placeRating}, 0)), 0)`,
+            avgPrice: sql<number>`COALESCE(AVG(NULLIF(${reviews.priceRating}, 0)), 0)`,
+            reviewCount: sql<number>`COUNT(${reviews.id})`,
+        })
+            .from(reviews)
+            .where(eq(reviews.shopId, id));
+
+        return {
+            success: true,
+            data: {
+                ...shop,
+                gallery,
+                avgRating: ratingStats?.avgRating || 0,
+                avgCoffee: ratingStats?.avgCoffee || 0,
+                avgFood: ratingStats?.avgFood || 0,
+                avgPlace: ratingStats?.avgPlace || 0,
+                avgPrice: ratingStats?.avgPrice || 0,
+                reviewCount: ratingStats?.reviewCount || 0,
+            }
+        };
+    } catch (error) {
+        console.error("Error fetching coffee shop detail:", error);
+        return { success: false, error: "Failed to fetch shop details" };
+    }
+}
 
 type FilterType = "all" | "collected" | "missing";
 
@@ -14,20 +61,12 @@ export async function getCoffeeShops({
     filter = "all",
     tagIds = [],
     search = "",
-    minCoffee = 0,
-    minFood = 0,
-    minPlace = 0,
-    minPrice = 0,
 }: {
     page?: number;
     limit?: number;
     filter?: FilterType;
     tagIds?: string[];
     search?: string;
-    minCoffee?: number;
-    minFood?: number;
-    minPlace?: number;
-    minPrice?: number;
 } = {}) {
     try {
         const session = await auth.api.getSession({
@@ -42,97 +81,50 @@ export async function getCoffeeShops({
             ? (await db.select({ shopId: visits.shopId }).from(visits).where(eq(visits.userId, currentUserId))).map(v => v.shopId)
             : [];
 
-        // Build Where Clause
-        const conditions = [];
+        // Main Query with Joins for Gallery
+        const results = await db.query.coffee_shops.findMany({
+            where: (table, { and, ilike, inArray, notInArray }) => {
+                const conditions = [];
+                if (search) conditions.push(ilike(table.name, `%${search}%`));
 
-        // Search
-        if (search) {
-            conditions.push(sql`LOWER(${coffeeShops.name}) LIKE ${`%${search.toLowerCase()}%`}`);
-        }
+                if (filter === "collected") {
+                    if (visitedShopIds.length === 0) return sql`1=0`; // No results
+                    conditions.push(inArray(table.id, visitedShopIds));
+                } else if (filter === "missing" && visitedShopIds.length > 0) {
+                    conditions.push(notInArray(table.id, visitedShopIds));
+                }
 
-        // 1. Filter by Collection Status
-        if (filter === "collected") {
-            if (visitedShopIds.length === 0) return { success: true, data: [], hasMore: false };
-            conditions.push(inArray(coffeeShops.id, visitedShopIds));
-        } else if (filter === "missing") {
-            if (visitedShopIds.length > 0) {
-                conditions.push(notInArray(coffeeShops.id, visitedShopIds));
-            }
-        }
+                return and(...conditions);
+            },
+            with: {
+                _rels: {
+                    where: eq(rels.path, "gallery"),
+                    with: {
+                        mediaID: true
+                    }
+                }
+            },
+            limit: limit,
+            offset: offset,
+            orderBy: [asc(coffeeShops.name)]
+        });
 
-        // 2. Filter by Tags (Desactivado temporalmente a favor de categorías)
-        /*
-        if (tagIds.length > 0) {
-            const matchingShops = await db.selectDistinct({ shopId: reviews.shopId })
+        const finalResults = await Promise.all(results.map(async (shop) => {
+            const [ratingStats] = await db.select({
+                avgRating: sql<number>`COALESCE(AVG(NULLIF(${reviews.rating}::numeric, 0)), 0)`,
+                reviewCount: sql<number>`COUNT(${reviews.id})`,
+            })
                 .from(reviews)
-                .innerJoin(reviewsTags, eq(reviews.id, reviewsTags.reviewId))
-                .where(inArray(reviewsTags.tagId, tagIds));
+                .where(eq(reviews.shopId, shop.id));
 
-            const matchingShopIds = matchingShops.map(s => s.shopId).filter((id): id is string => id !== null);
-
-            if (matchingShopIds.length === 0) {
-                return { success: true, data: [], hasMore: false };
-            }
-            conditions.push(inArray(coffeeShops.id, matchingShopIds));
-        }
-        */
-
-        const havingConditions = [];
-        if (minCoffee > 0) havingConditions.push(sql`COALESCE(AVG(NULLIF(${reviews.coffeeRating}, 0)), 0) > ${minCoffee - 1}`);
-        if (minFood > 0) havingConditions.push(sql`COALESCE(AVG(NULLIF(${reviews.foodRating}, 0)), 0) > ${minFood - 1}`);
-        if (minPlace > 0) havingConditions.push(sql`COALESCE(AVG(NULLIF(${reviews.placeRating}, 0)), 0) > ${minPlace - 1}`);
-        if (minPrice > 0) havingConditions.push(sql`COALESCE(AVG(NULLIF(${reviews.priceRating}, 0)), 0) > ${minPrice - 1}`);
-
-        const havingClause = havingConditions.length > 0 ? and(...havingConditions) : undefined;
-        const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-
-        // Main Query with Category Averages
-        const shopsQuery = db.select({
-            id: coffeeShops.id,
-            name: coffeeShops.name,
-            description: coffeeShops.description,
-            latitude: coffeeShops.latitude,
-            longitude: coffeeShops.longitude,
-            address: coffeeShops.address,
-            googleMapsUrl: coffeeShops.googleMapsUrl,
-            avgRating: sql<number>`COALESCE(AVG(NULLIF(${reviews.rating}::numeric, 0)), 0)`,
-            avgCoffee: sql<number>`COALESCE(AVG(NULLIF(${reviews.coffeeRating}, 0)), 0)`,
-            avgFood: sql<number>`COALESCE(AVG(NULLIF(${reviews.foodRating}, 0)), 0)`,
-            avgPlace: sql<number>`COALESCE(AVG(NULLIF(${reviews.placeRating}, 0)), 0)`,
-            avgPrice: sql<number>`COALESCE(AVG(NULLIF(${reviews.priceRating}, 0)), 0)`,
-            reviewCount: sql<number>`COUNT(${reviews.id})`,
-        })
-            .from(coffeeShops)
-            .leftJoin(reviews, eq(coffeeShops.id, reviews.shopId))
-            .where(whereClause)
-            .groupBy(coffeeShops.id)
-            .limit(limit)
-            .offset(offset);
-
-        if (havingClause) {
-            shopsQuery.having(havingClause);
-        }
-
-        // Sort collected first if 'all'
-        if (filter === "all" && visitedShopIds.length > 0) {
-            shopsQuery.orderBy(sql`CASE WHEN ${coffeeShops.id} IN ${visitedShopIds} THEN 0 ELSE 1 END`, asc(coffeeShops.name));
-        } else {
-            shopsQuery.orderBy(asc(coffeeShops.name));
-        }
-
-        const shops = await shopsQuery;
-
-        // Visits Map
-        const visitsMap = new Map();
-        if (currentUserId && visitedShopIds.length > 0) {
-            const v = await db.select().from(visits).where(eq(visits.userId, currentUserId));
-            v.forEach(visit => visitsMap.set(visit.shopId, visit.visitedAt));
-        }
-
-        const finalResults = shops.map(shop => ({
-            ...shop,
-            isVisited: visitsMap.has(shop.id),
-            visitedAt: visitsMap.get(shop.id) || null
+            return {
+                ...shop,
+                avgRating: ratingStats?.avgRating || 0,
+                reviewCount: ratingStats?.reviewCount || 0,
+                isVisited: visitedShopIds.includes(shop.id),
+                image: (shop as any)._rels?.[0]?.mediaID?.url || null,
+                gallery: (shop as any)._rels?.map((r: any) => r.mediaID?.url).filter(Boolean) || []
+            };
         }));
 
         return {

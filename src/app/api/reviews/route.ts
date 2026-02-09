@@ -1,9 +1,10 @@
 import { db } from "@/db";
-import { reviews, user } from "@/db/schema";
+import { reviews, user, coffee_shops as coffeeShops } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import crypto from "crypto";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -20,7 +21,6 @@ export async function GET(request: Request) {
             comment: reviews.comment,
             createdAt: reviews.createdAt,
             userName: user.name,
-            userImage: user.image,
         })
             .from(reviews)
             .leftJoin(user, eq(reviews.userId, user.id))
@@ -50,7 +50,9 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
+        const reviewId = crypto.randomUUID();
         const newReview = await db.insert(reviews).values({
+            id: reviewId,
             userId: session.user.id,
             shopId: shopId,
             rating: rating.toString(),

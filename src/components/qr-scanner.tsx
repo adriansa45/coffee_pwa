@@ -30,7 +30,7 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
                     },
                     async (decodedText) => {
                         // Success callback
-                        await stopScanner();
+                        // await stopScanner();
                         onScan(decodedText);
                     },
                     (errorMessage) => {
@@ -49,34 +49,34 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
         startScanner();
 
         return () => {
-            stopScanner();
+            // stopScanner();
         };
     }, []);
 
-    const stopScanner = async () => {
-        if (scannerRef.current) {
-            try {
-                const state = await scannerRef.current.getState();
-                if (state === 2) { // 2 = SCANNING state
-                    await scannerRef.current.stop();
-                }
-                scannerRef.current.clear();
-                setIsScanning(false);
-            } catch (err) {
-                console.error("Error stopping scanner:", err);
-            }
-        }
-    };
+    // const stopScanner = async () => {
+    //     if (scannerRef.current) {
+    //         try {
+    //             const state = await scannerRef.current.getState();
+    //             if (state === 2) { // 2 = SCANNING state
+    //                 await scannerRef.current.stop();
+    //             }
+    //             scannerRef.current.clear();
+    //             setIsScanning(false);
+    //         } catch (err) {
+    //             console.error("Error stopping scanner:", err);
+    //         }
+    //     }
+    // };
 
     const handleClose = async () => {
-        await stopScanner();
+        // await stopScanner();
         onClose();
     };
 
     return (
         <div className="fixed inset-0 z-[3000] bg-black/95 flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 bg-brand-700">
+            <div className="flex items-center justify-between p-4 bg-primary/90">
                 <div className="flex items-center gap-2">
                     <Camera className="w-5 h-5 text-white" />
                     <h2 className="text-white font-bold text-lg">Escanear Código QR</h2>
@@ -108,7 +108,7 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
             </div>
 
             {/* Instructions */}
-            <div className="p-6 bg-brand-900/50 backdrop-blur-sm">
+            <div className="p-6 bg-foreground/90/50 backdrop-blur-sm">
                 <p className="text-white text-center text-sm">
                     Apunta la cámara al código QR del cliente
                 </p>

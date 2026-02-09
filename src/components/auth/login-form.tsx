@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Github } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTheme } from "@/components/theme-provider";
 
 export function LoginForm() {
     const [email, setEmail] = useState("");
@@ -17,6 +18,7 @@ export function LoginForm() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const { setBrandColor } = useTheme();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -27,13 +29,15 @@ export function LoginForm() {
             const { data, error } = await authClient.signIn.email({
                 email,
                 password,
-                callbackURL: "/dashboard/home",
+                callbackURL: "/home",
             });
+
+            //setBrandColor(data.brandColor);
 
             if (error) {
                 setError(error.message || "Credenciales inválidas");
             } else {
-                router.push("/dashboard/home");
+                router.push("/home");
             }
         } catch (err) {
             setError("Ocurrió un error inesperado");
@@ -45,7 +49,7 @@ export function LoginForm() {
     const handleGithubSignIn = async () => {
         await authClient.signIn.social({
             provider: "github",
-            callbackURL: "/dashboard/map",
+            callbackURL: "/map",
         });
     };
 
@@ -73,7 +77,7 @@ export function LoginForm() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12 rounded-xl focus:ring-brand-500 focus:border-brand-500 transition-all"
+                            className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12 rounded-xl focus:ring-primary/60 focus:border-primary/60 transition-all"
                         />
                     </div>
                     <div className="space-y-2">
@@ -84,14 +88,14 @@ export function LoginForm() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12 rounded-xl focus:ring-brand-500 focus:border-brand-500 transition-all"
+                            className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12 rounded-xl focus:ring-primary/60 focus:border-primary/60 transition-all"
                         />
                     </div>
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-4 pb-8">
                     <Button
                         type="submit"
-                        className="w-full h-14 mt-4 bg-brand-600 hover:bg-brand-700 text-white font-bold text-lg rounded-2xl shadow-lg shadow-brand-900/40 transition-all hover:scale-[1.02] active:scale-[0.98] border-none"
+                        className="w-full h-14 mt-4 bg-primary hover:bg-primary/90 text-white font-bold text-lg rounded-2xl shadow-lg shadow-primary/90 transition-all hover:scale-[1.02] active:scale-[0.98] border-none"
                         disabled={loading}
                     >
                         {loading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
@@ -121,7 +125,7 @@ export function LoginForm() {
 
                     <div className="text-sm text-center text-white/60 font-medium">
                         ¿No tienes cuenta?{" "}
-                        <Link href="/auth/signup" className="text-brand-400 hover:text-brand-300 font-bold hover:underline transition-colors ml-1">
+                        <Link href="/auth/signup" className="text-primary/40 hover:text-brand-300 font-bold hover:underline transition-colors ml-1">
                             Regístrate
                         </Link>
                     </div>

@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { coffeeShops, reviews } from "@/db/schema";
+import { coffee_shops as coffeeShops, reviews } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
