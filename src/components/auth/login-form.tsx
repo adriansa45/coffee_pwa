@@ -101,7 +101,7 @@ export function LoginForm() {
                         </button>
                     </div>
                     <div className="flex justify-end pr-2">
-                        <Link href="#" className="text-[#f35c2e] font-bold text-sm" style={{ color: brandColor }}>
+                        <Link href="/auth/forgot-password" disable-nprogress="true" className="text-[#f35c2e] font-bold text-sm" style={{ color: brandColor }}>
                             ¿Olvidaste tu contraseña?
                         </Link>
                     </div>
