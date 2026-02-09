@@ -19,7 +19,7 @@ const MapComponent = dynamic(() => import("@/components/map-view"), {
 export default function MapPage() {
     return (
         <div className="w-screen h-screen relative">
-            <div className="absolute top-4 left-4 right-4 z-[1001] bg-white/90 backdrop-blur-md py-3 px-4 rounded-2xl border border-primary/10 shadow-lg">
+            <div className="absolute top-14 left-4 right-4 z-[1001] bg-white/90 backdrop-blur-md py-3 px-4 rounded-2xl border border-primary/10 shadow-lg">
                 <h2 className="text-xs font-bold text-foreground/80 uppercase tracking-widest">CERCA DE TI</h2>
             </div>
             <MapComponent />

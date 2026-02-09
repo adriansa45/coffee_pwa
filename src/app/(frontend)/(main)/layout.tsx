@@ -7,7 +7,7 @@ export default function MainLayout({
 }) {
     return (
         <div className="relative w-full h-screen bg-background overflow-hidden">
-            <main className="w-full h-full overflow-auto pb-20">
+            <main className="w-full h-full overflow-auto pb-20 ">
                 {children}
             </main>
             <BottomNav />

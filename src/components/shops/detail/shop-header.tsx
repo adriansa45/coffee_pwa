@@ -26,7 +26,7 @@ export function ShopHeader({ shopId, name, mainImage, isFollowing }: ShopHeaderP
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/20" />
 
             {/* Top Navigation */}
-            <div className="absolute top-0 left-0 right-0 p-6 flex items-center justify-between z-10">
+            <div className="absolute top-10 left-0 right-0 p-6 flex items-center justify-between z-10">
                 <Link
                     href="/shops"
                     className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-zinc-900 shadow-lg active:scale-95 transition-transform"

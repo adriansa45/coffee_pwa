@@ -17,7 +17,7 @@ export default async function DiscoverPage(props: {
     return (
         <div className="min-h-screen bg-background pb-28">
             {/* Header / Search */}
-            <div className="bg-primary px-6 pt-6 pb-10 rounded-b-[40px] shadow-lg">
+            <div className="bg-primary px-6 pt-16 pb-10 rounded-b-[40px] shadow-lg">
                 <h1 className="text-3xl font-bold text-white mb-6">Descubrir Personas</h1>
                 <form action="/discover" className="relative group">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40" size={20} />
