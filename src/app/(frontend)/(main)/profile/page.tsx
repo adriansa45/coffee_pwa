@@ -43,7 +43,7 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="p-6 pb-28 space-y-8">
+        <div className="p-6 pt-16 pb-28 space-y-8">
             <header className="flex items-center gap-4">
                 <Avatar className="w-16 h-16 border-2 border-primary/10 shadow-sm">
                     <AvatarImage src={user.image || ""} alt={user.name || "Usuario"} />

@@ -4,6 +4,7 @@ import { authenticated } from '@/access/authenticated'
 
 export const Users: CollectionConfig = {
   slug: 'users',
+  dbName: 'admin_users',
   access: {
     admin: authenticated,
     create: authenticated,
@@ -28,22 +29,7 @@ export const Users: CollectionConfig = {
     {
       name: 'image',
       type: 'text',
-    },
-    {
-      name: 'brandColor',
-      type: 'text',
-      defaultValue: '#820E2B',
-      admin: {
-        description: 'Color hexadecimal preferido del usuario',
-      },
-    },
-    {
-      name: 'fcmToken',
-      type: 'text',
-      admin: {
-        description: 'Token de Firebase Cloud Messaging para notificaciones',
-      },
-    },
+    }
   ],
   timestamps: true,
 }

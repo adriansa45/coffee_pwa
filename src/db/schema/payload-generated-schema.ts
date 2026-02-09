@@ -22,8 +22,8 @@ import {
 import { sql, relations } from "@payloadcms/db-postgres/drizzle";
 export const db_schema = pgSchema("payload");
 
-export const users_sessions = db_schema.table(
-  "users_sessions",
+export const admin_users_sessions = db_schema.table(
+  "admin_users_sessions",
   {
     _order: integer("_order").notNull(),
     _parentID: varchar("_parent_id").notNull(),
@@ -40,23 +40,22 @@ export const users_sessions = db_schema.table(
     }).notNull(),
   },
   (columns) => [
-    index("users_sessions_order_idx").on(columns._order),
-    index("users_sessions_parent_id_idx").on(columns._parentID),
+    index("admin_users_sessions_order_idx").on(columns._order),
+    index("admin_users_sessions_parent_id_idx").on(columns._parentID),
     foreignKey({
       columns: [columns["_parentID"]],
-      foreignColumns: [users.id],
-      name: "users_sessions_parent_id_fk",
+      foreignColumns: [admin_users.id],
+      name: "admin_users_sessions_parent_id_fk",
     }).onDelete("cascade"),
   ],
 );
 
-export const users = db_schema.table(
-  "users",
+export const admin_users = db_schema.table(
+  "admin_users",
   {
     id: varchar("id").primaryKey(),
     name: varchar("name"),
     image: varchar("image"),
-    brandColor: varchar("brand_color").default("#820E2B"),
     updatedAt: timestamp("updated_at", {
       mode: "string",
       withTimezone: true,
@@ -88,9 +87,9 @@ export const users = db_schema.table(
     }),
   },
   (columns) => [
-    index("users_updated_at_idx").on(columns.updatedAt),
-    index("users_created_at_idx").on(columns.createdAt),
-    uniqueIndex("users_email_idx").on(columns.email),
+    index("admin_users_updated_at_idx").on(columns.updatedAt),
+    index("admin_users_created_at_idx").on(columns.createdAt),
+    uniqueIndex("admin_users_email_idx").on(columns.email),
   ],
 );
 
@@ -300,7 +299,7 @@ export const payload_locked_documents_rels = db_schema.table(
     order: integer("order"),
     parent: integer("parent_id").notNull(),
     path: varchar("path").notNull(),
-    usersID: varchar("users_id"),
+    usersID: varchar("admin_users_id"),
     "coffee-shopsID": varchar("coffee_shops_id"),
     tagsID: varchar("tags_id"),
     mediaID: integer("media_id"),
@@ -309,7 +308,9 @@ export const payload_locked_documents_rels = db_schema.table(
     index("payload_locked_documents_rels_order_idx").on(columns.order),
     index("payload_locked_documents_rels_parent_idx").on(columns.parent),
     index("payload_locked_documents_rels_path_idx").on(columns.path),
-    index("payload_locked_documents_rels_users_id_idx").on(columns.usersID),
+    index("payload_locked_documents_rels_admin_users_id_idx").on(
+      columns.usersID,
+    ),
     index("payload_locked_documents_rels_coffee_shops_id_idx").on(
       columns["coffee-shopsID"],
     ),
@@ -322,7 +323,7 @@ export const payload_locked_documents_rels = db_schema.table(
     }).onDelete("cascade"),
     foreignKey({
       columns: [columns["usersID"]],
-      foreignColumns: [users.id],
+      foreignColumns: [admin_users.id],
       name: "payload_locked_documents_rels_users_fk",
     }).onDelete("cascade"),
     foreignKey({
@@ -378,13 +379,13 @@ export const payload_preferences_rels = db_schema.table(
     order: integer("order"),
     parent: integer("parent_id").notNull(),
     path: varchar("path").notNull(),
-    usersID: varchar("users_id"),
+    usersID: varchar("admin_users_id"),
   },
   (columns) => [
     index("payload_preferences_rels_order_idx").on(columns.order),
     index("payload_preferences_rels_parent_idx").on(columns.parent),
     index("payload_preferences_rels_path_idx").on(columns.path),
-    index("payload_preferences_rels_users_id_idx").on(columns.usersID),
+    index("payload_preferences_rels_admin_users_id_idx").on(columns.usersID),
     foreignKey({
       columns: [columns["parent"]],
       foreignColumns: [payload_preferences.id],
@@ -392,7 +393,7 @@ export const payload_preferences_rels = db_schema.table(
     }).onDelete("cascade"),
     foreignKey({
       columns: [columns["usersID"]],
-      foreignColumns: [users.id],
+      foreignColumns: [admin_users.id],
       name: "payload_preferences_rels_users_fk",
     }).onDelete("cascade"),
   ],
@@ -425,18 +426,18 @@ export const payload_migrations = db_schema.table(
   ],
 );
 
-export const relations_users_sessions = relations(
-  users_sessions,
+export const relations_admin_users_sessions = relations(
+  admin_users_sessions,
   ({ one }) => ({
-    _parentID: one(users, {
-      fields: [users_sessions._parentID],
-      references: [users.id],
+    _parentID: one(admin_users, {
+      fields: [admin_users_sessions._parentID],
+      references: [admin_users.id],
       relationName: "sessions",
     }),
   }),
 );
-export const relations_users = relations(users, ({ many }) => ({
-  sessions: many(users_sessions, {
+export const relations_admin_users = relations(admin_users, ({ many }) => ({
+  sessions: many(admin_users_sessions, {
     relationName: "sessions",
   }),
 }));
@@ -479,9 +480,9 @@ export const relations_payload_locked_documents_rels = relations(
       references: [payload_locked_documents.id],
       relationName: "_rels",
     }),
-    usersID: one(users, {
+    usersID: one(admin_users, {
       fields: [payload_locked_documents_rels.usersID],
-      references: [users.id],
+      references: [admin_users.id],
       relationName: "users",
     }),
     "coffee-shopsID": one(coffee_shops, {
@@ -517,9 +518,9 @@ export const relations_payload_preferences_rels = relations(
       references: [payload_preferences.id],
       relationName: "_rels",
     }),
-    usersID: one(users, {
+    usersID: one(admin_users, {
       fields: [payload_preferences_rels.usersID],
-      references: [users.id],
+      references: [admin_users.id],
       relationName: "users",
     }),
   }),
@@ -539,8 +540,8 @@ export const relations_payload_migrations = relations(
 
 type DatabaseSchema = {
   db_schema: typeof db_schema;
-  users_sessions: typeof users_sessions;
-  users: typeof users;
+  admin_users_sessions: typeof admin_users_sessions;
+  admin_users: typeof admin_users;
   coffee_shops: typeof coffee_shops;
   coffee_shops_rels: typeof coffee_shops_rels;
   tags: typeof tags;
@@ -551,8 +552,8 @@ type DatabaseSchema = {
   payload_preferences: typeof payload_preferences;
   payload_preferences_rels: typeof payload_preferences_rels;
   payload_migrations: typeof payload_migrations;
-  relations_users_sessions: typeof relations_users_sessions;
-  relations_users: typeof relations_users;
+  relations_admin_users_sessions: typeof relations_admin_users_sessions;
+  relations_admin_users: typeof relations_admin_users;
   relations_coffee_shops_rels: typeof relations_coffee_shops_rels;
   relations_coffee_shops: typeof relations_coffee_shops;
   relations_tags: typeof relations_tags;

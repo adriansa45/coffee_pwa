@@ -29,6 +29,20 @@
       "when": 1770658734357,
       "tag": "0003_awesome_jimmy_woo",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1770663043240,
+      "tag": "0004_freezing_gunslinger",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1770663857087,
+      "tag": "0005_lumpy_chamber",
+      "breakpoints": true
     }
   ]
 }
