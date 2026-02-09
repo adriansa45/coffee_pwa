@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "@/app/globals.css";
 import { Interop } from "@/components/interop";
+import { Analytics } from "@vercel/analytics/next"
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta-sans",
@@ -28,6 +29,7 @@ export default function RootLayout({
           {children}
         </ThemeProvider>
         <Interop />
+        <Analytics />
       </body>
     </html>
   );
