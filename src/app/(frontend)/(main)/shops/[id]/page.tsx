@@ -1,14 +1,14 @@
 import { getCoffeeShopById, isFollowingShop } from "@/actions/coffee-shops";
-import { notFound } from "next/navigation";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { ShopHeader } from "@/components/shops/detail/shop-header";
-import { ShopInfo } from "@/components/shops/detail/shop-info";
-import { ShopDescription } from "@/components/shops/detail/shop-description";
-import { ShopContact } from "@/components/shops/detail/shop-contact";
-import { ShopHours, type ShopHour } from "@/components/shops/detail/shop-hours";
 import { ShopAction } from "@/components/shops/detail/shop-action";
+import { ShopContact } from "@/components/shops/detail/shop-contact";
+import { ShopDescription } from "@/components/shops/detail/shop-description";
+import { ShopHeader } from "@/components/shops/detail/shop-header";
+import { ShopHours, type ShopHour } from "@/components/shops/detail/shop-hours";
+import { ShopInfo } from "@/components/shops/detail/shop-info";
+import { cn } from "@/lib/utils";
 import { CoffeeShop, Media } from "@/payload-types";
+import Image from "next/image";
+import { notFound } from "next/navigation";
 
 type CoffeeShopWithStats = CoffeeShop & {
     reviewCount?: number;
@@ -49,9 +49,10 @@ export default async function ShopDetailPage(props: { params: Promise<{ id: stri
 
     const { isOpen, openUntil } = isShopOpen(shop.hours);
 
-    // mainImage is now joined as a Media object or undefined
-    const mainImageUrl = (shop.mainImage as Media)?.url || (shop.gallery?.[0] as Media)?.url || "/images/coffee-placeholder.jpg";
+    // mainImage is a number (Media ID), and gallery is an array of Media objects from the query
+    // The gallery is already populated as Media objects from the _rels join in getCoffeeShopById
     const gallery = shop.gallery as Media[] | undefined;
+    const mainImageUrl = gallery?.[0]?.url || "/images/coffee-placeholder.jpg";
 
     return (
         <div className="min-h-screen bg-background pb-28">

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import * as icons from "lucide-react";
 import { Star, MapPin, CheckCircle2, Coffee } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -51,6 +52,38 @@ export function CoffeeShopCard({ shop }: { shop: any }) {
                     <MapPin size={14} />
                     <span className="truncate">{shop.address || "Dirección no disponible"}</span>
                 </div>
+
+                {/* Features Insignias */}
+                {shop.features && shop.features.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mb-4">
+                        {shop.features.map((feature: any) => {
+                            const toPascalCase = (str: string) => 
+                                str.replace(/(^\w|-\w)/g, clear => clear.replace("-", "").toUpperCase());
+                            
+                            const iconName = toPascalCase(feature.icon || "");
+                            const IconComponent = (icons as any)[iconName] || (icons as any)[feature.icon];
+                            
+                            return (
+                                <div 
+                                    key={feature.id}
+                                    title={feature.name}
+                                    className="w-7 h-7 rounded-full border flex items-center justify-center transition-transform active:scale-110"
+                                    style={{ 
+                                        backgroundColor: (feature.color || 'var(--primary)') + '10',
+                                        color: feature.color || 'var(--primary)',
+                                        borderColor: (feature.color || 'var(--primary)') + '20'
+                                    }}
+                                >
+                                    {IconComponent ? (
+                                        <IconComponent size={14} />
+                                    ) : (
+                                        <span className="text-[8px] font-bold">{feature.name.substring(0, 1)}</span>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
 
                 <div className="flex justify-between items-center pt-4 border-t border-primary/5">
                     <span className="text-[10px] font-bold text-primary uppercase tracking-wider bg-primary/5 px-2 py-0.5 rounded">

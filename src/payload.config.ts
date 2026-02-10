@@ -11,6 +11,7 @@ import { Users } from './collections/Users'
 import { CoffeeShops } from './collections/CoffeeShops'
 import { Tags } from './collections/Tags'
 import { Media } from './collections/Media'
+import { Features } from './collections/Features'
 
 import { getServerSideURL } from './utilities/getURL'
 
@@ -24,7 +25,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, CoffeeShops, Tags, Media],
+  collections: [Users, CoffeeShops, Tags, Media, Features],
   plugins: [
     vercelBlobStorage({
       enabled: true,
