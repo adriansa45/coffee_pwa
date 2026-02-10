@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { MapPin, Star } from 'lucide-react';
+import { MapPin, Star, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -10,6 +10,7 @@ interface CoffeeCardProps {
         image?: string | null;
         avgRating?: number;
         address?: string | null;
+        followerCount?: number;
     };
     className?: string;
 }
@@ -53,11 +54,15 @@ export function CoffeeCard({ shop, className }: CoffeeCardProps) {
                             <span className="font-medium text-zinc-200">{rating.toFixed(1)}</span>
                         </div>
                         {shop.address && (
-                            <div className="flex items-center gap-1 text-zinc-300 truncate">
+                            <div className="flex items-center gap-1 text-zinc-300 truncate max-w-[120px]">
                                 <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
                                 <span className="truncate">{shop.address}</span>
                             </div>
                         )}
+                        <div className="flex items-center gap-1 text-zinc-300">
+                            <Users className="w-3.5 h-3.5" />
+                            <span className="font-medium">{shop.followerCount || 0}</span>
+                        </div>
                     </div>
                 </div>
 

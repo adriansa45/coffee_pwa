@@ -1,9 +1,9 @@
 "use server";
 
 import { db } from "@/db";
-import { coffee_shops as coffeeShops, reviews, shopFollows, visits } from "@/db/schema";
+import { coffee_shops as coffeeShops, coffee_shops_rels as coffeeShopsRels, reviews, shopFollows, visits } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { and, asc, desc, eq, ilike, inArray, notInArray, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, exists, ilike, inArray, notInArray, or, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 
 export async function getCoffeeShopById(id: string) {
@@ -46,6 +46,12 @@ export async function getCoffeeShopById(id: string) {
             .from(reviews)
             .where(eq(reviews.shopId, id));
 
+        const [followerStats] = await db.select({
+            count: sql<number>`COUNT(*)`,
+        })
+            .from(shopFollows)
+            .where(eq(shopFollows.shopId, id));
+
         return {
             success: true,
             data: {
@@ -58,6 +64,7 @@ export async function getCoffeeShopById(id: string) {
                 avgPlace: ratingStats?.avgPlace || 0,
                 avgPrice: ratingStats?.avgPrice || 0,
                 reviewCount: ratingStats?.reviewCount || 0,
+                followerCount: Number(followerStats?.count) || 0,
             }
         };
     } catch (error) {
@@ -130,6 +137,26 @@ export async function getCoffeeShops({
             conditions.push(notInArray(coffeeShops.id, visitedShopIds));
         }
 
+        if (featureIds.length > 0) {
+            // Intersection filter: shop must have ALL selected features
+            featureIds.forEach(fid => {
+                conditions.push(
+                    exists(
+                        db
+                            .select({ id: sql`1` })
+                            .from(coffeeShopsRels)
+                            .where(
+                                and(
+                                    eq(coffeeShopsRels.parent, coffeeShops.id),
+                                    eq(coffeeShopsRels.path, "features"),
+                                    eq(coffeeShopsRels.featuresID, Number(fid))
+                                )
+                            )
+                    )
+                );
+            });
+        }
+
         const query = db
             .select({
                 id: coffeeShops.id,
@@ -181,6 +208,12 @@ export async function getCoffeeShops({
                 .from(reviews)
                 .where(eq(reviews.shopId, shop.id));
 
+            const [followerStats] = await db.select({
+                count: sql<number>`COUNT(*)`,
+            })
+                .from(shopFollows)
+                .where(eq(shopFollows.shopId, shop.id));
+
             const shopRels = (shop as any)._rels || [];
             const gallery = shopRels
                 .filter((r: any) => r.path === "gallery")
@@ -208,7 +241,8 @@ export async function getCoffeeShops({
                 isVisited: visitedShopIds.includes(shop.id),
                 image: gallery[0]?.url || null,
                 gallery,
-                features
+                features,
+                followerCount: Number(followerStats?.count) || 0,
             };
         }));
 
@@ -368,6 +402,12 @@ export async function getTopRatedCoffeeShops(limit: number = 6) {
                 })
                 .filter(Boolean);
 
+            const [followerStats] = await db.select({
+                count: sql<number>`COUNT(*)`,
+            })
+                .from(shopFollows)
+                .where(eq(shopFollows.shopId, shop.id));
+
             return {
                 ...shop,
                 avgRating: Number(ratingStats?.avgRating) || 0,
@@ -375,7 +415,8 @@ export async function getTopRatedCoffeeShops(limit: number = 6) {
                 isVisited: visitedShopIds.includes(shop.id),
                 image: gallery[0]?.url || null,
                 gallery,
-                features
+                features,
+                followerCount: Number(followerStats?.count) || 0,
             };
         }));
 

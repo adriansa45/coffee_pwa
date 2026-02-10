@@ -1,10 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import * as icons from "lucide-react";
-import { Star, MapPin, CheckCircle2, Coffee } from "lucide-react";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
+import { CheckCircle2, Coffee, MapPin, Star } from "lucide-react";
+import Link from "next/link";
 
 export function CoffeeShopCard({ shop }: { shop: any }) {
     return (
@@ -57,18 +55,18 @@ export function CoffeeShopCard({ shop }: { shop: any }) {
                 {shop.features && shop.features.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mb-4">
                         {shop.features.map((feature: any) => {
-                            const toPascalCase = (str: string) => 
+                            const toPascalCase = (str: string) =>
                                 str.replace(/(^\w|-\w)/g, clear => clear.replace("-", "").toUpperCase());
-                            
+
                             const iconName = toPascalCase(feature.icon || "");
                             const IconComponent = (icons as any)[iconName] || (icons as any)[feature.icon];
-                            
+
                             return (
-                                <div 
+                                <div
                                     key={feature.id}
                                     title={feature.name}
                                     className="w-7 h-7 rounded-full border flex items-center justify-center transition-transform active:scale-110"
-                                    style={{ 
+                                    style={{
                                         backgroundColor: (feature.color || 'var(--primary)') + '10',
                                         color: feature.color || 'var(--primary)',
                                         borderColor: (feature.color || 'var(--primary)') + '20'
@@ -89,12 +87,11 @@ export function CoffeeShopCard({ shop }: { shop: any }) {
                     <span className="text-[10px] font-bold text-primary uppercase tracking-wider bg-primary/5 px-2 py-0.5 rounded">
                         {shop.reviewCount} Reseñas
                     </span>
-                    <div className="flex -space-x-2">
-                        {[1, 2, 3].map(i => (
-                            <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-primary/10 flex items-center justify-center text-[8px] font-bold text-primary">
-                                {i}
-                            </div>
-                        ))}
+                    <div className="flex items-center gap-1.5 text-primary/60">
+                        <icons.Users size={14} />
+                        <span className="text-[10px] font-bold tracking-wider">
+                            {shop.followerCount || 0} SEGUIDORES
+                        </span>
                     </div>
                 </div>
             </div>
