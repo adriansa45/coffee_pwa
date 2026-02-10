@@ -78,5 +78,11 @@ export const CoffeeShops: CollectionConfig = {
         readOnly: true,
       }
     },
+    {
+      name: 'features',
+      type: 'relationship',
+      relationTo: 'features',
+      hasMany: true,
+    },
   ],
 }

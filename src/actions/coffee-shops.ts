@@ -11,11 +11,11 @@ export async function getCoffeeShopById(id: string) {
         const shop = await db.query.coffee_shops.findFirst({
             where: eq(coffeeShops.id, id),
             with: {
-                mainImage: true,
                 _rels: {
-                    where: eq(rels.path, "gallery"),
                     with: {
-                        mediaID: true
+                        mediaID: true,
+                        // @ts-ignore
+                        featuresID: true
                     }
                 }
             }
@@ -23,7 +23,16 @@ export async function getCoffeeShopById(id: string) {
 
         if (!shop) return { success: false, error: "Shop not found" };
 
-        const gallery = (shop as any)._rels?.map((r: any) => r.mediaID).filter(Boolean) || [];
+        const shopRels = (shop as any)._rels || [];
+        const gallery = shopRels
+            .filter((r: any) => r.path === "gallery")
+            .map((r: any) => r.mediaID)
+            .filter(Boolean);
+
+        const features = shopRels
+            .filter((r: any) => r.path === "features")
+            .map((r: any) => r.featuresID)
+            .filter(Boolean);
 
         // Fetch rating stats from Drizzle
         const [ratingStats] = await db.select({
@@ -42,6 +51,7 @@ export async function getCoffeeShopById(id: string) {
             data: {
                 ...shop,
                 gallery,
+                features,
                 avgRating: ratingStats?.avgRating || 0,
                 avgCoffee: ratingStats?.avgCoffee || 0,
                 avgFood: ratingStats?.avgFood || 0,
@@ -63,12 +73,14 @@ export async function getCoffeeShops({
     limit = 10,
     filter = "all",
     tagIds = [],
+    featureIds = [],
     search = "",
 }: {
     page?: number;
     limit?: number;
     filter?: FilterType;
     tagIds?: string[];
+    featureIds?: string[];
     search?: string;
 } = {}) {
     try {
@@ -84,7 +96,7 @@ export async function getCoffeeShops({
             ? (await db.select({ shopId: visits.shopId }).from(visits).where(eq(visits.userId, currentUserId))).map(v => v.shopId)
             : [];
 
-        // Main Query with Joins for Gallery
+        // Main Query with Joins for Gallery and Features
         const results = await db.query.coffee_shops.findMany({
             where: (table, { and, ilike, inArray, notInArray }) => {
                 const conditions = [];
@@ -101,9 +113,10 @@ export async function getCoffeeShops({
             },
             with: {
                 _rels: {
-                    where: eq(rels.path, "gallery"),
                     with: {
-                        mediaID: true
+                        mediaID: true,
+                        // @ts-ignore - features table might not be in types yet
+                        featuresID: true
                     }
                 }
             },
@@ -112,7 +125,7 @@ export async function getCoffeeShops({
             orderBy: [asc(coffeeShops.name)]
         });
 
-        const finalResults = await Promise.all(results.map(async (shop) => {
+        let finalResults = await Promise.all(results.map(async (shop) => {
             const [ratingStats] = await db.select({
                 avgRating: sql<number>`COALESCE(AVG(NULLIF(${reviews.rating}::numeric, 0)), 0)`,
                 reviewCount: sql<number>`COUNT(${reviews.id})`,
@@ -120,20 +133,48 @@ export async function getCoffeeShops({
                 .from(reviews)
                 .where(eq(reviews.shopId, shop.id));
 
+            const shopRels = (shop as any)._rels || [];
+            const gallery = shopRels
+                .filter((r: any) => r.path === "gallery")
+                .map((r: any) => r.mediaID?.url)
+                .filter(Boolean);
+            
+            const features = shopRels
+                .filter((r: any) => r.path === "features")
+                .map((r: any) => {
+                    const feat = r.featuresID;
+                    if (!feat) return null;
+                    return {
+                        id: feat.id,
+                        name: feat.name,
+                        icon: feat.icon,
+                        color: feat.color
+                    };
+                })
+                .filter(Boolean);
+
             return {
                 ...shop,
                 avgRating: ratingStats?.avgRating || 0,
                 reviewCount: ratingStats?.reviewCount || 0,
                 isVisited: visitedShopIds.includes(shop.id),
-                image: (shop as any)._rels?.[0]?.mediaID?.url || null,
-                gallery: (shop as any)._rels?.map((r: any) => r.mediaID?.url).filter(Boolean) || []
+                image: gallery[0] || null,
+                gallery,
+                features
             };
         }));
+
+        // Client-side filtering for features if needed (or deep join if preferred)
+        if (featureIds.length > 0) {
+            finalResults = finalResults.filter(shop => 
+                featureIds.every(fid => shop.features.some((f: any) => f.id === fid))
+            );
+        }
 
         return {
             success: true,
             data: finalResults,
-            hasMore: finalResults.length === limit
+            hasMore: results.length === limit
         };
     } catch (error) {
         console.error("Error fetching coffee shops:", error);

@@ -71,6 +71,7 @@ export interface Config {
     'coffee-shops': CoffeeShop;
     tags: Tag;
     media: Media;
+    features: Feature;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -82,6 +83,7 @@ export interface Config {
     'coffee-shops': CoffeeShopsSelect<false> | CoffeeShopsSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    features: FeaturesSelect<false> | FeaturesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -186,6 +188,7 @@ export interface CoffeeShop {
     | boolean
     | null;
   rating?: number | null;
+  features?: (number | Feature)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -236,6 +239,24 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "features".
+ */
+export interface Feature {
+  id: number;
+  name: string;
+  /**
+   * Nombre del icono de Lucide (ej: Coffee, Dog, Car)
+   */
+  icon?: string | null;
+  /**
+   * Código hex del color (ej: #FF0000). Si se deja vacío, se usará el color de marca.
+   */
+  color?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tags".
  */
 export interface Tag {
@@ -283,6 +304,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'features';
+        value: number | Feature;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -369,6 +394,7 @@ export interface CoffeeShopsSelect<T extends boolean = true> {
   website?: T;
   hours?: T;
   rating?: T;
+  features?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -433,6 +459,17 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "features_select".
+ */
+export interface FeaturesSelect<T extends boolean = true> {
+  name?: T;
+  icon?: T;
+  color?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
