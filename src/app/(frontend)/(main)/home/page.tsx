@@ -1,53 +1,17 @@
-"use client";
-
-import { Coffee, MapPin, Star, TrendingUp } from "lucide-react";
+import { getTopRatedCoffeeShops } from "@/actions/coffee-shops";
 import { CoffeeCard } from "@/components/CoffeeCard";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Coffee, MapPin, Star, TrendingUp } from "lucide-react";
+import Link from "next/link";
 
 const categories = ["Todos", "Cerca de ti", "Populares", "Nuevos"];
 
-// Mock data - replace with real data from your API
-const coffeeShops = [
-    {
-        id: 1,
-        name: "Café Aroma",
-        image: "/images/placeholder.jpg",
-        rating: 4.8,
-        distance: "0.5 km",
-        status: "open" as const,
-    },
-    {
-        id: 2,
-        name: "Espresso House",
-        image: "/images/placeholder.jpg",
-        rating: 4.6,
-        distance: "1.2 km",
-        status: "open" as const,
-    },
-    {
-        id: 3,
-        name: "Bean & Brew",
-        image: "/images/placeholder.jpg",
-        rating: 4.9,
-        distance: "2.1 km",
-        status: "closed" as const,
-    },
-    {
-        id: 4,
-        name: "Morning Cup",
-        image: "/images/placeholder.jpg",
-        rating: 4.7,
-        distance: "0.8 km",
-        status: "open" as const,
-    },
-];
-
-export default function HomePage() {
-    const [selectedCategory, setSelectedCategory] = useState("Todos");
+export default async function HomePage() {
+    const response = await getTopRatedCoffeeShops(4);
+    const coffeeShops = response.success ? response.data : [];
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background text-foreground">
             {/* Hero Section */}
             <section className="relative h-[40vh] overflow-hidden">
                 {/* Background with gradient overlay */}
@@ -82,18 +46,17 @@ export default function HomePage() {
             <section className="px-6 -mt-6 relative z-10">
                 <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
                     {categories.map((category) => (
-                        <button
+                        <div
                             key={category}
-                            onClick={() => setSelectedCategory(category)}
                             className={cn(
-                                "px-6 py-3 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-300 border",
-                                selectedCategory === category
+                                "px-6 py-3 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-300 border cursor-pointer",
+                                category === "Todos"
                                     ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
-                                    : "glass text-foreground border-white/5 hover:border-primary/30"
+                                    : "glass text-foreground border-zinc-200 hover:border-primary/30"
                             )}
                         >
                             {category}
-                        </button>
+                        </div>
                     ))}
                 </div>
             </section>
@@ -101,21 +64,17 @@ export default function HomePage() {
             {/* Coffee Shops Grid */}
             <section className="px-6 py-8 space-y-6">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold">Cafeterías destacadas</h2>
-                    <button className="text-sm font-bold text-primary hover:underline">
+                    <h2 className="text-2xl font-bold text-zinc-900">Cafeterías destacadas</h2>
+                    <Link href="/shops?sortBy=rating" className="text-sm font-bold text-primary hover:underline">
                         Ver todas
-                    </button>
+                    </Link>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                    {coffeeShops.map((shop) => (
+                    {coffeeShops && coffeeShops.map((shop: any) => (
                         <CoffeeCard
                             key={shop.id}
-                            name={shop.name}
-                            image={shop.image}
-                            rating={shop.rating}
-                            distance={shop.distance}
-                            status={shop.status}
+                            shop={shop}
                         />
                     ))}
                 </div>
@@ -123,32 +82,32 @@ export default function HomePage() {
 
             {/* Stats Section */}
             <section className="px-6 py-8">
-                <div className="glass rounded-4xl p-8 space-y-6">
-                    <h3 className="text-xl font-bold">Tu progreso</h3>
+                <div className="glass rounded-4xl p-8 space-y-6 border border-zinc-200">
+                    <h3 className="text-xl font-bold text-zinc-900">Tu progreso</h3>
 
                     <div className="grid grid-cols-3 gap-4">
                         <div className="text-center space-y-2">
                             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
                                 <Coffee className="w-6 h-6 text-primary" />
                             </div>
-                            <div className="text-2xl font-bold">12</div>
-                            <div className="text-xs text-muted-foreground">Visitas</div>
+                            <div className="text-2xl font-bold text-zinc-900">12</div>
+                            <div className="text-xs text-zinc-500 font-bold uppercase tracking-wider">Visitas</div>
                         </div>
 
                         <div className="text-center space-y-2">
                             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
                                 <MapPin className="w-6 h-6 text-primary" />
                             </div>
-                            <div className="text-2xl font-bold">8</div>
-                            <div className="text-xs text-muted-foreground">Lugares</div>
+                            <div className="text-2xl font-bold text-zinc-900">8</div>
+                            <div className="text-xs text-zinc-500 font-bold uppercase tracking-wider">Lugares</div>
                         </div>
 
                         <div className="text-center space-y-2">
                             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
                                 <Star className="w-6 h-6 text-primary" />
                             </div>
-                            <div className="text-2xl font-bold">4.8</div>
-                            <div className="text-xs text-muted-foreground">Promedio</div>
+                            <div className="text-2xl font-bold text-zinc-900">4.8</div>
+                            <div className="text-xs text-zinc-500 font-bold uppercase tracking-wider">Promedio</div>
                         </div>
                     </div>
                 </div>

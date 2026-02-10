@@ -1,9 +1,9 @@
 "use server";
 
 import { db } from "@/db";
-import { coffee_shops as coffeeShops, reviews, visits, coffee_shops_rels as rels, shopFollows } from "@/db/schema";
+import { coffee_shops as coffeeShops, reviews, shopFollows, visits } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { eq, sql, and, asc, notInArray, inArray } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 
 export async function getCoffeeShopById(id: string) {
@@ -67,6 +67,7 @@ export async function getCoffeeShopById(id: string) {
 }
 
 type FilterType = "all" | "collected" | "missing";
+type SortByType = "name" | "rating";
 
 export async function getCoffeeShops({
     page = 1,
@@ -75,6 +76,8 @@ export async function getCoffeeShops({
     tagIds = [],
     featureIds = [],
     search = "",
+    sortBy = "name",
+    sortOrder = "desc",
 }: {
     page?: number;
     limit?: number;
@@ -82,6 +85,8 @@ export async function getCoffeeShops({
     tagIds?: string[];
     featureIds?: string[];
     search?: string;
+    sortBy?: SortByType;
+    sortOrder?: "asc" | "desc";
 } = {}) {
     try {
         const session = await auth.api.getSession({
@@ -91,41 +96,77 @@ export async function getCoffeeShops({
         const currentUserId = session?.user?.id;
         const offset = (page - 1) * limit;
 
-        // Fetch visited shop IDs
+        // Fetch visited shop IDs for the current user
         const visitedShopIds = currentUserId
             ? (await db.select({ shopId: visits.shopId }).from(visits).where(eq(visits.userId, currentUserId))).map(v => v.shopId)
             : [];
 
-        // Main Query with Joins for Gallery and Features
+        // 1. Subquery to calculate ratings for all relevant shops
+        const ratingsSubquery = db
+            .select({
+                shopId: reviews.shopId,
+                avgRating: sql<number>`AVG(NULLIF(${reviews.rating}::numeric, 0))`.as('avg_rating'),
+                reviewCount: sql<number>`COUNT(${reviews.id})`.as('review_count'),
+            })
+            .from(reviews)
+            .groupBy(reviews.shopId)
+            .as('ratings_sq');
+
+        // 2. Select IDs with filtering and sorting
+        const conditions = [];
+        if (search) conditions.push(sql`${coffeeShops.name} ILIKE ${`%${search}%`}`);
+
+        if (filter === "collected") {
+            if (visitedShopIds.length === 0) return { success: true, data: [], hasMore: false };
+            conditions.push(inArray(coffeeShops.id, visitedShopIds));
+        } else if (filter === "missing" && visitedShopIds.length > 0) {
+            conditions.push(notInArray(coffeeShops.id, visitedShopIds));
+        }
+
+        const query = db
+            .select({
+                id: coffeeShops.id,
+            })
+            .from(coffeeShops)
+            .leftJoin(ratingsSubquery, eq(coffeeShops.id, ratingsSubquery.shopId))
+            .where(and(...conditions));
+
+        // Applying sort order
+        if (sortBy === "name") {
+            query.orderBy(sortOrder === "asc" ? asc(coffeeShops.name) : desc(coffeeShops.name));
+        } else if (sortBy === "rating") {
+            query.orderBy(
+                sortOrder === "asc"
+                    ? asc(sql`COALESCE(${ratingsSubquery.avgRating}, 0)`)
+                    : desc(sql`COALESCE(${ratingsSubquery.avgRating}, 0)`)
+            );
+        }
+
+        const pagedIds = await query.limit(limit).offset(offset);
+        const ids = pagedIds.map(row => row.id);
+
+        if (ids.length === 0) {
+            return { success: true, data: [], hasMore: false };
+        }
+
+        // 3. Fetch full objects for the selected IDs using findMany to get relations
         const results = await db.query.coffee_shops.findMany({
-            where: (table, { and, ilike, inArray, notInArray }) => {
-                const conditions = [];
-                if (search) conditions.push(ilike(table.name, `%${search}%`));
-
-                if (filter === "collected") {
-                    if (visitedShopIds.length === 0) return sql`1=0`; // No results
-                    conditions.push(inArray(table.id, visitedShopIds));
-                } else if (filter === "missing" && visitedShopIds.length > 0) {
-                    conditions.push(notInArray(table.id, visitedShopIds));
-                }
-
-                return and(...conditions);
-            },
+            where: (table, { inArray }) => inArray(table.id, ids),
             with: {
                 _rels: {
                     with: {
                         mediaID: true,
-                        // @ts-ignore - features table might not be in types yet
+                        // @ts-ignore
                         featuresID: true
                     }
                 }
-            },
-            limit: limit,
-            offset: offset,
-            orderBy: [asc(coffeeShops.name)]
+            }
         });
 
-        let finalResults = await Promise.all(results.map(async (shop) => {
+        // Re-sort results to match the IDs order from the paged query
+        const sortedResults = ids.map(id => results.find(r => r.id === id)!);
+
+        const finalResults = await Promise.all(sortedResults.map(async (shop) => {
             const [ratingStats] = await db.select({
                 avgRating: sql<number>`COALESCE(AVG(NULLIF(${reviews.rating}::numeric, 0)), 0)`,
                 reviewCount: sql<number>`COUNT(${reviews.id})`,
@@ -136,9 +177,9 @@ export async function getCoffeeShops({
             const shopRels = (shop as any)._rels || [];
             const gallery = shopRels
                 .filter((r: any) => r.path === "gallery")
-                .map((r: any) => r.mediaID?.url)
+                .map((r: any) => r.mediaID)
                 .filter(Boolean);
-            
+
             const features = shopRels
                 .filter((r: any) => r.path === "features")
                 .map((r: any) => {
@@ -155,26 +196,19 @@ export async function getCoffeeShops({
 
             return {
                 ...shop,
-                avgRating: ratingStats?.avgRating || 0,
-                reviewCount: ratingStats?.reviewCount || 0,
+                avgRating: Number(ratingStats?.avgRating) || 0,
+                reviewCount: Number(ratingStats?.reviewCount) || 0,
                 isVisited: visitedShopIds.includes(shop.id),
-                image: gallery[0] || null,
+                image: gallery[0]?.url || null,
                 gallery,
                 features
             };
         }));
 
-        // Client-side filtering for features if needed (or deep join if preferred)
-        if (featureIds.length > 0) {
-            finalResults = finalResults.filter(shop => 
-                featureIds.every(fid => shop.features.some((f: any) => f.id === fid))
-            );
-        }
-
         return {
             success: true,
             data: finalResults,
-            hasMore: results.length === limit
+            hasMore: pagedIds.length === limit
         };
     } catch (error) {
         console.error("Error fetching coffee shops:", error);
@@ -239,5 +273,87 @@ export async function isFollowingShop(shopId: string) {
     } catch (error) {
         console.error("Error checking follow status:", error);
         return { success: false, isFollowing: false };
+    }
+}
+
+export async function getTopRatedCoffeeShops(limit: number = 6) {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+
+        const currentUserId = session?.user?.id;
+
+        // Fetch visited shop IDs
+        const visitedShopIds = currentUserId
+            ? (await db.select({ shopId: visits.shopId }).from(visits).where(eq(visits.userId, currentUserId))).map(v => v.shopId)
+            : [];
+
+        // Fetch all shops with their relations
+        const results = await db.query.coffee_shops.findMany({
+            with: {
+                _rels: {
+                    with: {
+                        mediaID: true,
+                        // @ts-ignore
+                        featuresID: true
+                    }
+                }
+            },
+            limit: 50 // Fetch more than needed to ensure we have enough with ratings
+        });
+
+        // Calculate ratings for each shop
+        const shopsWithRatings = await Promise.all(results.map(async (shop) => {
+            const [ratingStats] = await db.select({
+                avgRating: sql<number>`COALESCE(AVG(NULLIF(${reviews.rating}::numeric, 0)), 0)`,
+                reviewCount: sql<number>`COUNT(${reviews.id})`,
+            })
+                .from(reviews)
+                .where(eq(reviews.shopId, shop.id));
+
+            const shopRels = (shop as any)._rels || [];
+            const gallery = shopRels
+                .filter((r: any) => r.path === "gallery")
+                .map((r: any) => r.mediaID)
+                .filter(Boolean);
+
+            const features = shopRels
+                .filter((r: any) => r.path === "features")
+                .map((r: any) => {
+                    const feat = r.featuresID;
+                    if (!feat) return null;
+                    return {
+                        id: feat.id,
+                        name: feat.name,
+                        icon: feat.icon,
+                        color: feat.color
+                    };
+                })
+                .filter(Boolean);
+
+            return {
+                ...shop,
+                avgRating: Number(ratingStats?.avgRating) || 0,
+                reviewCount: Number(ratingStats?.reviewCount) || 0,
+                isVisited: visitedShopIds.includes(shop.id),
+                image: gallery[0]?.url || null,
+                gallery,
+                features
+            };
+        }));
+
+        // Sort by rating and take top N
+        const topRated = shopsWithRatings
+            .sort((a, b) => (b.avgRating as number) - (a.avgRating as number))
+            .slice(0, limit);
+
+        return {
+            success: true,
+            data: topRated
+        };
+    } catch (error) {
+        console.error("Error fetching top rated coffee shops:", error);
+        return { success: false, error: "Failed to fetch top rated shops" };
     }
 }

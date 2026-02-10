@@ -1,6 +1,6 @@
 import { getCoffeeShops } from "@/actions/coffee-shops";
-import { getTags } from "@/actions/reviews";
 import { getFeatures } from "@/actions/features";
+import { getTags } from "@/actions/reviews";
 import { CoffeeShopList } from "@/components/shops/shop-list";
 
 export default async function ShopsPage(props: {
@@ -8,8 +8,10 @@ export default async function ShopsPage(props: {
 }) {
     const searchParams = await props.searchParams;
     const filter = typeof searchParams.filter === 'string' ? searchParams.filter as any : "all";
+    const sortBy = typeof searchParams.sortBy === 'string' ? searchParams.sortBy as any : "name";
+    const sortOrder = typeof searchParams.sortOrder === 'string' ? searchParams.sortOrder as any : "desc";
 
-    const { data: shops } = await getCoffeeShops({ filter });
+    const { data: shops } = await getCoffeeShops({ filter, sortBy, sortOrder });
     const { data: tags } = await getTags();
     const { data: features } = await getFeatures();
 
@@ -22,7 +24,13 @@ export default async function ShopsPage(props: {
 
             {/* Content */}
             <div className="px-6">
-                <CoffeeShopList initialShops={shops || []} tags={tags || []} features={features || []} />
+                <CoffeeShopList
+                    initialShops={shops || []}
+                    tags={tags || []}
+                    features={features || []}
+                    initialSortBy={sortBy}
+                    initialSortOrder={sortOrder}
+                />
             </div>
         </div>
     );
