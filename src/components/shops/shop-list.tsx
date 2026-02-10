@@ -23,7 +23,7 @@ export function CoffeeShopList({
     initialShops,
     tags,
     features = [],
-    initialSortBy = "name",
+    initialSortBy = "rating",
     initialSortOrder = "desc"
 }: {
     initialShops: any[],
@@ -40,12 +40,22 @@ export function CoffeeShopList({
     const [sortBy, setSortBy] = useState<"name" | "rating">(initialSortBy);
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">(initialSortOrder);
     const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
     const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
 
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(initialShops.length >= 10);
     const observerTarget = useRef(null);
+
+    // Debounce search input
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     // Sync state with props when server-side navigation happens
     useEffect(() => {
@@ -63,56 +73,73 @@ export function CoffeeShopList({
             newOrder = sortOrder === "asc" ? "desc" : "asc";
         }
 
-        // Update URL will trigger server re-render and update initialShops
         const params = new URLSearchParams(searchParams.toString());
         params.set('sortBy', newSort);
         params.set('sortOrder', newOrder);
         router.push(`/shops?${params.toString()}`, { scroll: false });
     };
 
-    const loadMore = async () => {
-        if (loading || !hasMore) return;
+    const loadData = async (reset: boolean = false) => {
+        if (loading) return;
 
         setLoading(true);
-        const nextPage = page + 1;
+        const targetPage = reset ? 1 : page + 1;
 
         try {
             const response = await getCoffeeShops({
-                page: nextPage,
+                page: targetPage,
                 limit: 10,
                 filter: filter as any,
                 featureIds: selectedFeatures,
-                search: search,
+                search: debouncedSearch,
                 sortBy: sortBy,
                 sortOrder: sortOrder
             });
 
             if (response.success && response.data) {
-                setShops(prev => {
-                    const existingIds = new Set(prev.map(s => s.id));
-                    const newShops = response.data!.filter(s => !existingIds.has(s.id));
-                    return [...prev, ...newShops];
-                });
-                setPage(nextPage);
+                if (reset) {
+                    setShops(response.data);
+                    setPage(1);
+                } else {
+                    setShops(prev => {
+                        const existingIds = new Set(prev.map(s => s.id));
+                        const newShops = response.data!.filter(s => !existingIds.has(s.id));
+                        return [...prev, ...newShops];
+                    });
+                    setPage(targetPage);
+                }
                 setHasMore(response.data.length >= 10);
             } else {
+                if (reset) setShops([]);
                 setHasMore(false);
             }
         } catch (error) {
-            console.error("Error loading more shops:", error);
+            console.error("Error loading shops:", error);
             setHasMore(false);
         } finally {
             setLoading(false);
         }
     };
 
+    const hasModifiedFilters = useRef(false);
+
+    useEffect(() => {
+        // Only trigger manual reload if we've actually changed something locally
+        // or if we're clearing a previous search
+        if (debouncedSearch !== "" || selectedFeatures.length > 0 || hasModifiedFilters.current) {
+            hasModifiedFilters.current = true;
+            loadData(true);
+        }
+    }, [debouncedSearch, selectedFeatures, filter]);
+
+    // Infinite scroll observer
     useEffect(() => {
         if (!hasMore || loading) return;
 
         const observer = new IntersectionObserver(
             entries => {
                 if (entries[0].isIntersecting) {
-                    loadMore();
+                    loadData(false);
                 }
             },
             { threshold: 0.1 }
@@ -123,24 +150,12 @@ export function CoffeeShopList({
         }
 
         return () => observer.disconnect();
-    }, [hasMore, loading, page, sortBy, sortOrder, filter, search, selectedFeatures]);
+    }, [hasMore, loading, page, sortBy, sortOrder, filter, debouncedSearch, selectedFeatures]);
 
-    const filteredShops = useMemo(() => {
-        return shops.filter(shop => {
-            if (search && !shop.name.toLowerCase().includes(search.toLowerCase()) && !shop.address?.toLowerCase().includes(search.toLowerCase())) {
-                return false;
-            }
-
-            if (selectedFeatures.length > 0) {
-                const shopFeatureIds = shop.features?.map((f: any) => f.id) || [];
-                if (!selectedFeatures.every(fid => shopFeatureIds.includes(fid))) {
-                    return false;
-                }
-            }
-
-            return true;
-        });
-    }, [shops, search, selectedFeatures]);
+    const displayShops = useMemo(() => {
+        // We rely on server sorting/filtering now for search too
+        return shops;
+    }, [shops]);
 
     const toggleFeature = (id: string) => {
         setSelectedFeatures(prev =>
@@ -228,7 +243,7 @@ export function CoffeeShopList({
                             </div>
                             <DrawerFooter>
                                 <DrawerClose asChild>
-                                    <Button className="rounded-2xl py-6 font-bold">Ver {filteredShops.length} resultados</Button>
+                                    <Button className="rounded-2xl py-6 font-bold">Ver {displayShops.length} resultados</Button>
                                 </DrawerClose>
                             </DrawerFooter>
                         </div>
@@ -266,10 +281,10 @@ export function CoffeeShopList({
             </div>
 
             <div className="grid grid-cols-1 gap-4">
-                {filteredShops.map((shop) => (
+                {displayShops.map((shop) => (
                     <CoffeeShopCard key={shop.id} shop={shop} />
                 ))}
-                {filteredShops.length === 0 && !loading && (
+                {displayShops.length === 0 && !loading && (
                     <div className="text-center py-20 bg-zinc-50 rounded-[32px] border border-primary/10/50">
                         <p className="text-foreground/40 font-medium">No se encontraron cafeterías</p>
                     </div>
@@ -283,7 +298,7 @@ export function CoffeeShopList({
                         <span className="text-sm font-bold">Cargando más...</span>
                     </div>
                 )}
-                {!hasMore && shops.length > 0 && (
+                {!hasMore && displayShops.length > 0 && (
                     <div className="text-zinc-400 text-xs font-medium py-4">
                         Has llegado al final de la lista
                     </div>
