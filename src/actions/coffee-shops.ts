@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { coffee_shops as coffeeShops, reviews, shopFollows, visits } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { and, asc, desc, eq, inArray, notInArray, sql } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, inArray, notInArray, or, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 
 export async function getCoffeeShopById(id: string) {
@@ -114,7 +114,14 @@ export async function getCoffeeShops({
 
         // 2. Select IDs with filtering and sorting
         const conditions = [];
-        if (search) conditions.push(sql`${coffeeShops.name} ILIKE ${`%${search}%`}`);
+        if (search) {
+            conditions.push(
+                or(
+                    ilike(coffeeShops.name, `%${search}%`),
+                    ilike(coffeeShops.address, `%${search}%`)
+                )
+            );
+        }
 
         if (filter === "collected") {
             if (visitedShopIds.length === 0) return { success: true, data: [], hasMore: false };
@@ -289,8 +296,36 @@ export async function getTopRatedCoffeeShops(limit: number = 6) {
             ? (await db.select({ shopId: visits.shopId }).from(visits).where(eq(visits.userId, currentUserId))).map(v => v.shopId)
             : [];
 
-        // Fetch all shops with their relations
+        // 1. Subquery to calculate ratings for all shops
+        const ratingsSubquery = db
+            .select({
+                shopId: reviews.shopId,
+                avgRating: sql<number>`AVG(NULLIF(${reviews.rating}::numeric, 0))`.as('avg_rating'),
+                reviewCount: sql<number>`COUNT(${reviews.id})`.as('review_count'),
+            })
+            .from(reviews)
+            .groupBy(reviews.shopId)
+            .as('ratings_sq');
+
+        // 2. Select IDs sorted by rating
+        const pagedIds = await db
+            .select({
+                id: coffeeShops.id,
+            })
+            .from(coffeeShops)
+            .leftJoin(ratingsSubquery, eq(coffeeShops.id, ratingsSubquery.shopId))
+            .orderBy(desc(sql`COALESCE(${ratingsSubquery.avgRating}, 0)`))
+            .limit(limit);
+
+        const ids = pagedIds.map(row => row.id);
+
+        if (ids.length === 0) {
+            return { success: true, data: [] };
+        }
+
+        // 3. Fetch full objects for the selected IDs
         const results = await db.query.coffee_shops.findMany({
+            where: (table, { inArray }) => inArray(table.id, ids),
             with: {
                 _rels: {
                     with: {
@@ -299,12 +334,13 @@ export async function getTopRatedCoffeeShops(limit: number = 6) {
                         featuresID: true
                     }
                 }
-            },
-            limit: 50 // Fetch more than needed to ensure we have enough with ratings
+            }
         });
 
-        // Calculate ratings for each shop
-        const shopsWithRatings = await Promise.all(results.map(async (shop) => {
+        // Re-sort results to match the IDs order
+        const sortedResults = ids.map(id => results.find(r => r.id === id)!);
+
+        const finalResults = await Promise.all(sortedResults.map(async (shop) => {
             const [ratingStats] = await db.select({
                 avgRating: sql<number>`COALESCE(AVG(NULLIF(${reviews.rating}::numeric, 0)), 0)`,
                 reviewCount: sql<number>`COUNT(${reviews.id})`,
@@ -343,14 +379,9 @@ export async function getTopRatedCoffeeShops(limit: number = 6) {
             };
         }));
 
-        // Sort by rating and take top N
-        const topRated = shopsWithRatings
-            .sort((a, b) => (b.avgRating as number) - (a.avgRating as number))
-            .slice(0, limit);
-
         return {
             success: true,
-            data: topRated
+            data: finalResults
         };
     } catch (error) {
         console.error("Error fetching top rated coffee shops:", error);

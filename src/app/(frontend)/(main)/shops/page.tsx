@@ -9,7 +9,7 @@ export default async function ShopsPage(props: {
     const searchParams = await props.searchParams;
     const filter = typeof searchParams.filter === 'string' ? searchParams.filter as any : "all";
     const sortBy = typeof searchParams.sortBy === 'string' ? searchParams.sortBy as any : "name";
-    const sortOrder = typeof searchParams.sortOrder === 'string' ? searchParams.sortOrder as any : "desc";
+    const sortOrder = typeof searchParams.sortOrder === 'string' ? searchParams.sortOrder as any : "asc";
 
     const { data: shops } = await getCoffeeShops({ filter, sortBy, sortOrder });
     const { data: tags } = await getTags();
