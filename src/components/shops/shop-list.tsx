@@ -96,14 +96,14 @@ export function CoffeeShopList({
                 sortOrder: sortOrder
             });
 
-            if (response.success && response.data) {
+            if (response.success && 'data' in response && response.data) {
                 if (reset) {
                     setShops(response.data);
                     setPage(1);
                 } else {
                     setShops(prev => {
                         const existingIds = new Set(prev.map(s => s.id));
-                        const newShops = response.data!.filter(s => !existingIds.has(s.id));
+                        const newShops = response.data.filter((s: any) => !existingIds.has(s.id));
                         return [...prev, ...newShops];
                     });
                     setPage(targetPage);

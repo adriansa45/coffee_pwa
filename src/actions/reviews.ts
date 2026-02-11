@@ -7,6 +7,9 @@ import { db } from "@/db";
 import { reviews, reviewTags, tags as tagsTable } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import crypto from "crypto";
+import { unstable_cache, revalidateTag } from "next/cache";
+import { cache } from "react";
+import { CACHE_TAGS, getShopTag, getShopReviewsTag } from "@/lib/cache-tags";
 
 export async function getTags() {
     try {
@@ -69,6 +72,12 @@ export async function createReview(data: {
             }
         });
 
+        // Revalidate related caches
+        revalidateTag(CACHE_TAGS.REVIEWS);
+        revalidateTag(CACHE_TAGS.COFFEE_SHOPS);
+        revalidateTag(getShopReviewsTag(shopId));
+        revalidateTag(getShopTag(shopId));
+
         return { success: true, data: { id: reviewId } };
     } catch (error) {
         console.error("Error creating review:", error);
@@ -76,39 +85,52 @@ export async function createReview(data: {
     }
 }
 
-export async function getReviews(shopId: string) {
-    try {
-        // Fetch reviews from Drizzle with joined user and tags
-        const results = await db.query.reviews.findMany({
-            where: eq(reviews.shopId, shopId),
-            orderBy: [desc(reviews.createdAt)],
-            with: {
-                user: true,
-                reviewTags: {
-                    with: {
-                        tag: true
-                    }
+const getReviewsInternal = async (shopId: string, page: number = 1, limit: number = 10) => {
+    // Fetch reviews from Drizzle with joined user and tags
+    const results = await db.query.reviews.findMany({
+        where: eq(reviews.shopId, shopId),
+        orderBy: [desc(reviews.createdAt)],
+        limit: limit,
+        offset: (page - 1) * limit,
+        with: {
+            user: true,
+            reviewTags: {
+                with: {
+                    tag: true
                 }
             }
-        });
+        }
+    });
 
-        const mappedReviews = results.map((r: any) => ({
-            id: r.id,
-            userName: r.user?.name || 'Usuario',
-            userImage: r.user?.image,
-            rating: r.rating,
-            coffeeRating: parseFloat(r.coffeeRating),
-            foodRating: parseFloat(r.foodRating),
-            placeRating: parseFloat(r.placeRating),
-            priceRating: parseFloat(r.priceRating),
-            comment: r.comment,
-            createdAt: r.createdAt,
-            tags: r.reviewTags?.map((rt: any) => rt.tag?.name).filter(Boolean) || []
-        }));
+    const mappedReviews = results.map((r: any) => ({
+        id: r.id,
+        userName: r.user?.name || 'Usuario',
+        userImage: r.user?.image,
+        rating: r.rating,
+        coffeeRating: parseFloat(r.coffeeRating),
+        foodRating: parseFloat(r.foodRating),
+        placeRating: parseFloat(r.placeRating),
+        priceRating: parseFloat(r.priceRating),
+        comment: r.comment,
+        createdAt: r.createdAt,
+        tags: r.reviewTags?.map((rt: any) => rt.tag?.name).filter(Boolean) || []
+    }));
 
-        return { success: true, data: mappedReviews };
+    return mappedReviews;
+};
+
+export const getReviews = cache(async (shopId: string, page: number = 1, limit: number = 10) => {
+    try {
+        const fetchReviews = unstable_cache(
+            async (sId: string, p: number, l: number) => getReviewsInternal(sId, p, l),
+            [getShopReviewsTag(shopId), `page-${page}`, `limit-${limit}`],
+            { tags: [CACHE_TAGS.REVIEWS, getShopReviewsTag(shopId)], revalidate: 3600 }
+        );
+
+        const data = await fetchReviews(shopId, page, limit);
+        return { success: true, data, hasMore: data.length >= limit };
     } catch (error) {
         console.error("Error fetching reviews:", error);
         return { success: false, error: "Failed to fetch reviews" };
     }
-}
+});
