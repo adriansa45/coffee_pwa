@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { X, MapPin, Star, Send, Loader2, Tag, Utensils, Coffee, Map, CircleDollarSign } from "lucide-react";
-import { StarRating } from "./star-rating";
-import { LikertRating } from "./likert-rating";
+import { createReview, getReviews } from "@/actions/reviews";
 import { authClient } from "@/lib/auth-client";
-import { getTags, createReview, getReviews } from "@/actions/reviews";
+import { CircleDollarSign, Coffee, Loader2, Map, MapPin, Send, Utensils, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { LikertRating } from "./likert-rating";
+import { StarRating } from "./star-rating";
 
 interface Review {
     id: string;
@@ -63,9 +63,8 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
         setLoading(true);
         try {
             const res = await getReviews(shopId);
-            if (res.success && res.data) {
-                // @ts-ignore
-                setReviews(res.data);
+            if (res.success && 'data' in res) {
+                setReviews(res.data as Review[]);
             }
         } finally {
             setLoading(false);

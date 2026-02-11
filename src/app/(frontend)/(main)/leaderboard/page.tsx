@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { getLeaderboard } from "@/actions/stats";
 import { getCoffeeShops } from "@/actions/coffee-shops";
+import { getLeaderboard } from "@/actions/stats";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Trophy, Home, Filter, Medal, Loader2, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
     Drawer,
     DrawerClose,
@@ -15,9 +14,10 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { ArrowLeft, Filter, Loader2, Medal, Trophy } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface UserRank {
     userId: string;
@@ -41,9 +41,8 @@ export default function LeaderboardPage() {
     useEffect(() => {
         // Load shops for filter
         getCoffeeShops({ limit: 100 }).then(res => {
-            if (res.success && res.data) {
-                // @ts-ignore
-                setShops(res.data);
+            if (res.success && 'data' in res) {
+                setShops(res.data as Shop[]);
             }
         });
     }, []);
@@ -56,9 +55,8 @@ export default function LeaderboardPage() {
         setLoading(true);
         try {
             const res = await getLeaderboard({ shopId });
-            if (res.success && res.data) {
-                // @ts-ignore
-                setLeaderboard(res.data);
+            if (res.success && 'data' in res) {
+                setLeaderboard(res.data as UserRank[]);
             }
         } catch (error) {
             console.error(error);

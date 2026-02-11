@@ -3,11 +3,13 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { getPayload } from "@/lib/payload";
-import { revalidatePath } from "next/cache";
+import { unstable_cache, revalidateTag } from "next/cache";
 import { db } from "@/db";
 import { visits } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import crypto from "crypto";
+import { cache } from "react";
+import { CACHE_TAGS, getUserVisitsTag } from "@/lib/cache-tags";
 
 export async function registerVisitByCode(userCode: string) {
     const session = await auth.api.getSession({
@@ -51,7 +53,9 @@ export async function registerVisitByCode(userCode: string) {
             visitedAt: new Date(),
         });
 
-        revalidatePath("/");
+        revalidateTag(CACHE_TAGS.VISITS);
+        revalidateTag(getUserVisitsTag(targetUser.id));
+
         return { success: true, message: `Visita registrada para ${targetUser.name}` };
     } catch (error) {
         console.error("Error registering visit:", error);
@@ -59,7 +63,18 @@ export async function registerVisitByCode(userCode: string) {
     }
 }
 
-export async function getUserVisits() {
+const getUserVisitsInternal = async (userId: string) => {
+    const results = await db.query.visits.findMany({
+        where: eq(visits.userId, userId),
+        orderBy: [desc(visits.visitedAt)],
+        with: {
+            shop: true
+        }
+    });
+    return results;
+};
+
+export const getUserVisits = cache(async () => {
     const session = await auth.api.getSession({
         headers: await headers()
     });
@@ -69,17 +84,16 @@ export async function getUserVisits() {
     }
 
     try {
-        const results = await db.query.visits.findMany({
-            where: eq(visits.userId, session.user.id),
-            orderBy: [desc(visits.visitedAt)],
-            with: {
-                shop: true
-            }
-        });
+        const fetchVisits = unstable_cache(
+            async (uId: string) => getUserVisitsInternal(uId),
+            [getUserVisitsTag(session.user.id)],
+            { tags: [CACHE_TAGS.VISITS, getUserVisitsTag(session.user.id)], revalidate: 3600 }
+        );
 
-        return { success: true, data: results };
+        const data = await fetchVisits(session.user.id);
+        return { success: true, data };
     } catch (error) {
         console.error("Error fetching visits:", error);
         return { success: false, data: [] };
     }
-}
+});

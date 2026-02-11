@@ -46,12 +46,14 @@ export function ShopFollowButton({ shopId, initialIsFollowing = false }: ShopFol
             onClick={toggleFollow}
             disabled={isLoading}
             className={cn(
-                "w-10 h-10 rounded-full glass flex items-center justify-center transition-all active:scale-90",
-                isFollowing ? "text-rose-500" : "text-white",
+                "w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-90 border-2 shadow-sm",
+                isFollowing 
+                    ? "bg-rose-50 border-rose-100 text-rose-500 shadow-rose-100" 
+                    : "bg-white border-zinc-100 text-zinc-300 hover:text-rose-400 hover:border-rose-100 hover:bg-rose-50/50",
                 isLoading && "opacity-70"
             )}
         >
-            <Heart className={cn("w-5 h-5", isFollowing && "fill-rose-500")} />
+            <Heart className={cn("w-5 h-5 transition-transform", isFollowing && "fill-rose-500 scale-110")} />
         </button>
     );
 }

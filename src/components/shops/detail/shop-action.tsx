@@ -1,15 +1,35 @@
+"use client";
+
+import { useState } from "react";
+import { MessageSquare } from "lucide-react";
+import { ReviewForm } from "./review-form";
+
 interface ShopActionProps {
-    onClick?: () => void;
-    label?: string;
+    shopId: string;
+    shopName: string;
 }
 
-export function ShopAction({ onClick, label = "Registrar Visita" }: ShopActionProps) {
+export function ShopAction({ shopId, shopName }: ShopActionProps) {
+    const [isFormOpen, setIsFormOpen] = useState(false);
+
     return (
-        <button
-            onClick={onClick}
-            className="w-full py-4 bg-primary hover:bg-primary/90 text-white rounded-3xl font-bold text-lg transition-all duration-300 active:scale-95 shadow-lg shadow-primary/20"
-        >
-            {label}
-        </button>
+        <>
+            <button
+                onClick={() => setIsFormOpen(true)}
+                className="w-full h-14 bg-white hover:bg-zinc-50 text-primary border-2 border-primary/20 hover:border-primary/40 rounded-[2rem] font-black text-base transition-all active:scale-95 shadow-sm flex items-center justify-center gap-2.5"
+            >
+                <div className="bg-primary/5 p-1.5 rounded-lg">
+                    <MessageSquare size={18} className="text-primary" />
+                </div>
+                Escribir Reseña
+            </button>
+
+            <ReviewForm 
+                shopId={shopId} 
+                shopName={shopName} 
+                isOpen={isFormOpen} 
+                onOpenChange={setIsFormOpen} 
+            />
+        </>
     );
 }
