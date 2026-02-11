@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
-import { PassportStamp } from "@/components/passport-stamp";
 import { getCoffeeShops } from "@/actions/coffee-shops";
-import { Loader2, Search, ArrowUp, X } from "lucide-react";
+import { PassportStamp } from "@/components/passport-stamp";
 import { cn } from "@/lib/utils";
+import { ArrowUp, Loader2, Search, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type FilterType = "all" | "collected" | "missing";
 
@@ -12,7 +12,7 @@ interface Shop {
     id: string;
     name: string;
     isVisited: boolean;
-    visitedAt: string | null;
+    visitedAt?: string | null;
 }
 
 export function PassportList({ initialShops }: { initialShops?: Shop[] }) {
@@ -61,17 +61,18 @@ export function PassportList({ initialShops }: { initialShops?: Shop[] }) {
         if (loading) return;
         setLoading(true);
         try {
-            // @ts-ignore
             const result = await getCoffeeShops({
                 page: pageNum,
                 limit: 10,
                 filter: currentFilter,
                 search: search // Ensure getCoffeeShops supports this
             });
-            if (result.success && result.data) {
-                // @ts-ignore
-                setShops((prev) => (reset ? result.data : [...prev, ...result.data]));
-                setHasMore(result.hasMore);
+            if (result.success && 'data' in result) {
+                const newData = result.data as Shop[];
+                setShops((prev) => (reset ? newData : [...prev, ...newData]));
+                if ('hasMore' in result) {
+                    setHasMore(result.hasMore as boolean);
+                }
             }
         } catch (error) {
             console.error(error);
@@ -166,7 +167,7 @@ export function PassportList({ initialShops }: { initialShops?: Shop[] }) {
                         <PassportStamp
                             id={shop.id}
                             name={shop.name}
-                            date={shop.visitedAt}
+                            date={shop.visitedAt ?? null}
                             collected={shop.isVisited}
                         />
                     </div>

@@ -11,9 +11,14 @@ export default async function ShopsPage(props: {
     const sortBy = typeof searchParams.sortBy === 'string' ? searchParams.sortBy as any : "name";
     const sortOrder = typeof searchParams.sortOrder === 'string' ? searchParams.sortOrder as any : "asc";
 
-    const { data: shops } = await getCoffeeShops({ filter, sortBy, sortOrder });
-    const { data: tags } = await getTags();
-    const { data: features } = await getFeatures();
+    const shopsRes = await getCoffeeShops({ filter, sortBy, sortOrder });
+    const shops = shopsRes.success && 'data' in shopsRes ? shopsRes.data : [];
+
+    const tagsRes = await getTags();
+    const tags = tagsRes.success && 'data' in tagsRes ? tagsRes.data : [];
+
+    const featuresRes = await getFeatures();
+    const features = featuresRes.success && 'data' in featuresRes ? featuresRes.data : [];
 
     return (
         <div className="min-h-screen bg-background pb-28">

@@ -1,16 +1,7 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-import { useEffect, useState } from "react";
-import { StarRating } from "./star-rating";
-import { ShopDrawer } from "./shop-drawer";
-import { UserQRDrawer } from "./user-qr-drawer";
-import { MapPin, Filter, X, Coffee, Utensils, Map, CircleDollarSign } from "lucide-react";
 import { getCoffeeShops } from "@/actions/coffee-shops";
-import { getTags } from "@/actions/reviews";
-import { LikertRating } from "./likert-rating";
+import { Button } from "@/components/ui/button";
 import {
     Drawer,
     DrawerClose,
@@ -21,7 +12,15 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { CircleDollarSign, Coffee, Filter, Map, Utensils } from "lucide-react";
+import { useEffect, useState } from "react";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { LikertRating } from "./likert-rating";
+import { ShopDrawer } from "./shop-drawer";
+import { StarRating } from "./star-rating";
+import { UserQRDrawer } from "./user-qr-drawer";
 
 // Fix for default marker icons
 const coffeeIcon = L.divIcon({
@@ -88,7 +87,6 @@ export default function MapView() {
     const fetchShops = async () => {
         setLoading(true);
         try {
-            // @ts-ignore
             const res = await getCoffeeShops({
                 filter: "all",
                 limit: 100,
@@ -98,9 +96,8 @@ export default function MapView() {
                 // minPrice
             });
 
-            if (res.success && res.data) {
-                // @ts-ignore
-                setShops(res.data);
+            if (res.success && 'data' in res) {
+                setShops(res.data as Shop[]);
             }
         } catch (error) {
             console.error("Error fetching shops:", error);

@@ -1,14 +1,15 @@
-import { Coffee } from "lucide-react";
 import { getCoffeeShops } from "@/actions/coffee-shops";
 import { getUserVisits } from "@/actions/visits";
-import { PassportList } from "@/components/passport-list";
 
 export const dynamic = "force-dynamic";
 
 export default async function PassportPage() {
     // Initial fetch for "all"
-    const { data: initialShops } = await getCoffeeShops({ page: 1, limit: 10, filter: "all" });
-    const { data: visits } = await getUserVisits();
+    const shopsRes = await getCoffeeShops({ page: 1, limit: 10, filter: "all" });
+    const initialShops = (shopsRes.success && 'data' in shopsRes) ? shopsRes.data : [];
+
+    const visitsRes = await getUserVisits();
+    const visits = (visitsRes.success && 'data' in visitsRes) ? visitsRes.data : [];
 
     const collectedCount = visits?.length || 0;
     // We don't know total count without a separate query, but let's assume valid total from initial response?
