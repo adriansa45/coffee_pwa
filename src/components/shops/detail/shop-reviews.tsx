@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { getReviews } from "@/actions/reviews";
+import { getReviews, toggleReviewLike } from "@/actions/reviews";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, Loader2, MessageSquare } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { authClient } from "@/lib/auth-client";
+import { CircleDollarSign, Coffee, Heart, Loader2, Map, MessageSquare, Star, Utensils } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface ShopReviewsProps {
     shopId: string;
@@ -13,11 +13,47 @@ interface ShopReviewsProps {
 }
 
 export function ShopReviews({ shopId, initialReviews, initialHasMore }: ShopReviewsProps) {
-    const [reviews, setReviews] = useState(initialReviews);
+    const [reviews, setReviews] = useState<any[]>(initialReviews);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(initialHasMore);
+    const { data: session } = authClient.useSession();
     const observerTarget = useRef(null);
+
+    const handleToggleLike = async (reviewId: string) => {
+        if (!session) return;
+
+        // Optimistic update
+        setReviews(prev => prev.map(rev => {
+            if (rev.id === reviewId) {
+                return {
+                    ...rev,
+                    isLiked: !rev.isLiked,
+                    likeCount: rev.isLiked ? rev.likeCount - 1 : rev.likeCount + 1
+                };
+            }
+            return rev;
+        }));
+
+        try {
+            const res = await toggleReviewLike(reviewId);
+            if (!res.success) {
+                // Rollback if failed
+                setReviews(prev => prev.map(rev => {
+                    if (rev.id === reviewId) {
+                        return {
+                            ...rev,
+                            isLiked: !rev.isLiked,
+                            likeCount: rev.isLiked ? rev.likeCount - 1 : rev.likeCount + 1
+                        };
+                    }
+                    return rev;
+                }));
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const loadMoreReviews = async () => {
         if (loading || !hasMore) return;
@@ -95,6 +131,34 @@ export function ShopReviews({ shopId, initialReviews, initialHasMore }: ShopRevi
                             </div>
                         </div>
 
+                        {/* Category Ratings Display as Badges */}
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                            {review.coffeeRating > 0 && (
+                                <div className="flex items-center gap-1 bg-amber-50 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-amber-100 text-amber-700">
+                                    <Coffee size={10} />
+                                    <span>{review.coffeeRating.toFixed(1)}</span>
+                                </div>
+                            )}
+                            {review.foodRating > 0 && (
+                                <div className="flex items-center gap-1 bg-orange-50 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-orange-100 text-orange-600">
+                                    <Utensils size={10} />
+                                    <span>{review.foodRating.toFixed(1)}</span>
+                                </div>
+                            )}
+                            {review.placeRating > 0 && (
+                                <div className="flex items-center gap-1 bg-blue-50 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-blue-100 text-blue-600">
+                                    <Map size={10} />
+                                    <span>{review.placeRating.toFixed(1)}</span>
+                                </div>
+                            )}
+                            {review.priceRating > 0 && (
+                                <div className="flex items-center gap-1 bg-green-50 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-green-100 text-green-600">
+                                    <CircleDollarSign size={10} />
+                                    <span>{review.priceRating.toFixed(1)}</span>
+                                </div>
+                            )}
+                        </div>
+
                         <p className="text-sm text-zinc-600 leading-relaxed pl-1">
                             {review.comment}
                         </p>
@@ -108,6 +172,19 @@ export function ShopReviews({ shopId, initialReviews, initialHasMore }: ShopRevi
                                 ))}
                             </div>
                         )}
+
+                        <div className="flex justify-start items-center pt-2">
+                            <button
+                                onClick={() => handleToggleLike(review.id)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all active:scale-90 ${review.isLiked
+                                    ? "bg-red-50 text-red-500 border border-red-100"
+                                    : "bg-gray-50 text-gray-400 border border-gray-100 hover:text-red-400"
+                                    }`}
+                            >
+                                <Heart size={14} className={review.isLiked ? "fill-current" : ""} />
+                                <span className="text-xs font-bold">{review.likeCount}</span>
+                            </button>
+                        </div>
                     </div>
                 ))}
 

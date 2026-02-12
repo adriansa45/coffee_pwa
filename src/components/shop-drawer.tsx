@@ -1,8 +1,8 @@
 "use client";
 
-import { createReview, getReviews } from "@/actions/reviews";
+import { createReview, getReviews, toggleReviewLike } from "@/actions/reviews";
 import { authClient } from "@/lib/auth-client";
-import { CircleDollarSign, Coffee, Loader2, Map, MapPin, Send, Utensils, X } from "lucide-react";
+import { CircleDollarSign, Coffee, Heart, Loader2, Map, MapPin, Send, Utensils, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { LikertRating } from "./likert-rating";
 import { StarRating } from "./star-rating";
@@ -19,6 +19,8 @@ interface Review {
     comment: string | null;
     createdAt: string; // or Date
     tags?: string[];
+    likeCount: number;
+    isLiked: boolean;
 }
 
 interface ShopDrawerProps {
@@ -68,6 +70,41 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
             }
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleToggleLike = async (reviewId: string) => {
+        if (!session) return;
+
+        // Optimistic update
+        setReviews(prev => prev.map(rev => {
+            if (rev.id === reviewId) {
+                return {
+                    ...rev,
+                    isLiked: !rev.isLiked,
+                    likeCount: rev.isLiked ? rev.likeCount - 1 : rev.likeCount + 1
+                };
+            }
+            return rev;
+        }));
+
+        try {
+            const res = await toggleReviewLike(reviewId);
+            if (!res.success) {
+                // Rollback if failed
+                setReviews(prev => prev.map(rev => {
+                    if (rev.id === reviewId) {
+                        return {
+                            ...rev,
+                            isLiked: !rev.isLiked,
+                            likeCount: rev.isLiked ? rev.likeCount - 1 : rev.likeCount + 1
+                        };
+                    }
+                    return rev;
+                }));
+            }
+        } catch (err) {
+            console.error(err);
         }
     };
 
@@ -215,31 +252,52 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                                                 </div>
                                             </div>
 
-                                            {/* Category Ratings Display */}
-                                            <div className="grid grid-cols-2 gap-2 mb-3 bg-gray-50/50 p-2 rounded-xl border border-gray-100">
-                                                <div className="flex items-center gap-2">
-                                                    <Coffee size={12} className="text-primary" />
-                                                    <LikertRating rating={rev.coffeeRating} size="sm" />
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <Utensils size={12} className="text-primary" />
-                                                    <LikertRating rating={rev.foodRating} size="sm" />
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <Map size={12} className="text-primary" />
-                                                    <LikertRating rating={rev.placeRating} size="sm" />
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <CircleDollarSign size={12} className="text-primary" />
-                                                    <LikertRating rating={rev.priceRating} size="sm" />
-                                                </div>
+                                            {/* Category Ratings Display as Badges */}
+                                            <div className="flex flex-wrap gap-1.5 mb-3">
+                                                {rev.coffeeRating > 0 && (
+                                                    <div className="flex items-center gap-1 bg-amber-50 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-amber-100 text-amber-700">
+                                                        <Coffee size={10} />
+                                                        <span>{rev.coffeeRating.toFixed(1)}</span>
+                                                    </div>
+                                                )}
+                                                {rev.foodRating > 0 && (
+                                                    <div className="flex items-center gap-1 bg-orange-50 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-orange-100 text-orange-600">
+                                                        <Utensils size={10} />
+                                                        <span>{rev.foodRating.toFixed(1)}</span>
+                                                    </div>
+                                                )}
+                                                {rev.placeRating > 0 && (
+                                                    <div className="flex items-center gap-1 bg-blue-50 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-blue-100 text-blue-600">
+                                                        <Map size={10} />
+                                                        <span>{rev.placeRating.toFixed(1)}</span>
+                                                    </div>
+                                                )}
+                                                {rev.priceRating > 0 && (
+                                                    <div className="flex items-center gap-1 bg-green-50 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-green-100 text-green-600">
+                                                        <CircleDollarSign size={10} />
+                                                        <span>{rev.priceRating.toFixed(1)}</span>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             <p className="text-sm text-gray-700 leading-relaxed font-medium">{rev.comment}</p>
 
-                                            <p className="text-[10px] text-gray-400 mt-2 font-semibold">
-                                                {new Date(rev.createdAt).toLocaleDateString()}
-                                            </p>
+                                            <div className="flex justify-between items-center mt-3">
+                                                <p className="text-[10px] text-gray-400 font-semibold">
+                                                    {new Date(rev.createdAt).toLocaleDateString()}
+                                                </p>
+
+                                                <button
+                                                    onClick={() => handleToggleLike(rev.id)}
+                                                    className={`flex items-center gap-1.5 px-2 py-1 rounded-full transition-all active:scale-90 ${rev.isLiked
+                                                            ? "bg-red-50 text-red-500 border border-red-100"
+                                                            : "bg-gray-50 text-gray-400 border border-gray-100 hover:text-red-400"
+                                                        }`}
+                                                >
+                                                    <Heart size={12} className={rev.isLiked ? "fill-current" : ""} />
+                                                    <span className="text-[10px] font-bold">{rev.likeCount}</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     ))
                                 )}
