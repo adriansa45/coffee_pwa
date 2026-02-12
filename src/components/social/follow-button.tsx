@@ -33,14 +33,15 @@ export function FollowButton({ userId, initialIsFollowing, variant = "default" }
                 onClick={handleAction}
                 disabled={isPending}
                 className={cn(
-                    "px-8 py-3 rounded-2xl font-bold flex items-center gap-2 transition-all duration-300 shadow-md transform hover:scale-105 active:scale-95 disabled:opacity-50",
+                    "h-8 px-4 rounded-lg font-bold flex items-center gap-2 transition-all active:scale-95 border shadow-sm text-[10px] uppercase tracking-wider",
                     isFollowing
-                        ? "bg-white/20 text-white backdrop-blur-md border border-white/30 hover:bg-white/30"
-                        : "bg-white text-primary hover:bg-primary/5 shadow-xl"
+                        ? "bg-rose-50 border-rose-100 text-rose-600 shadow-rose-100/50"
+                        : "bg-white text-zinc-500 border-zinc-100 hover:bg-rose-50/50 hover:text-rose-600 hover:border-rose-100"
                 )}
             >
-                {isPending ? <Loader2 size={20} className="animate-spin" /> :
-                    isFollowing ? <><Check size={20} /> Siguiendo</> : <><UserPlus size={20} /> Seguir</>}
+                {isPending ? <Loader2 size={12} className="animate-spin" /> :
+                    isFollowing ? <Check size={12} /> : <UserPlus size={12} />}
+                <span>{isFollowing ? "Siguiendo" : "Seguir"}</span>
             </button>
         );
     }
@@ -50,14 +51,14 @@ export function FollowButton({ userId, initialIsFollowing, variant = "default" }
             onClick={handleAction}
             disabled={isPending}
             className={cn(
-                "p-2.5 rounded-2xl transition-all duration-300 transform active:scale-90 disabled:opacity-50 shadow-sm",
+                "p-2 rounded-lg transition-all active:scale-90 disabled:opacity-50 border shadow-sm",
                 isFollowing
-                    ? "bg-primary/10 text-primary hover:bg-red-50 hover:text-red-600"
-                    : "bg-primary/5 text-primary hover:bg-primary hover:text-white"
+                    ? "bg-rose-50 border-rose-100 text-rose-600 shadow-rose-100/30"
+                    : "bg-zinc-50 border-zinc-100 text-zinc-400 hover:text-rose-500 hover:bg-rose-50/50"
             )}
         >
-            {isPending ? <Loader2 size={18} className="animate-spin" /> :
-                isFollowing ? <UserMinus size={18} /> : <UserPlus size={18} />}
+            {isPending ? <Loader2 size={16} className="animate-spin" /> :
+                isFollowing ? <UserMinus size={16} /> : <UserPlus size={16} />}
         </button>
     );
 }

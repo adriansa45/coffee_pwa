@@ -8,4 +8,5 @@ export const CACHE_TAGS = {
 export const getShopTag = (id: string) => `shop-${id}`;
 export const getShopReviewsTag = (id: string) => `shop-reviews-${id}`;
 export const getUserVisitsTag = (userId: string) => `user-visits-${userId}`;
+export const getUserReviewsTag = (userId: string) => `user-reviews-${userId}`;
 export const getUserFollowsTag = (userId: string) => `user-follows-${userId}`;

@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { reviewLikes, reviews, reviewTags, tags as tagsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { CACHE_TAGS, getShopReviewsTag, getShopTag } from "@/lib/cache-tags";
+import { CACHE_TAGS, getShopReviewsTag, getShopTag, getUserReviewsTag } from "@/lib/cache-tags";
 import crypto from "crypto";
 import { and, desc, eq } from "drizzle-orm";
 import { revalidateTag, unstable_cache } from "next/cache";
@@ -106,6 +106,7 @@ const getReviewsInternal = async (shopId: string, page: number = 1, limit: numbe
         id: r.id,
         userName: r.user?.name || 'Usuario',
         userImage: r.user?.image,
+        userId: r.userId,
         rating: r.rating,
         coffeeRating: parseFloat(r.coffeeRating),
         foodRating: parseFloat(r.foodRating),
@@ -114,7 +115,7 @@ const getReviewsInternal = async (shopId: string, page: number = 1, limit: numbe
         comment: r.comment,
         createdAt: r.createdAt,
         tags: r.reviewTags?.map((rt: any) => rt.tag?.name).filter(Boolean) || [],
-        likeCount: r.likes?.length || 0,
+        likeCount: (r.likes || []).length,
         isLiked: currentUserId ? r.likes?.some((l: any) => l.userId === currentUserId) : false,
     }));
 
@@ -184,3 +185,63 @@ export async function toggleReviewLike(reviewId: string) {
         return { success: false, error: "Failed to toggle review like" };
     }
 }
+
+const getUserReviewsInternal = async (userId: string, currentUserId?: string) => {
+    const results = await db.query.reviews.findMany({
+        where: eq(reviews.userId, userId),
+        orderBy: [desc(reviews.createdAt)],
+        with: {
+            reviewTags: {
+                with: {
+                    tag: true,
+                },
+            },
+            likes: true,
+            shop: {
+                columns: {
+                    name: true,
+                }
+            }
+        },
+    });
+
+    return results.map((r: any) => ({
+        id: r.id,
+        userName: '', // Not needed for profile view as we know the user
+        userImage: '',
+        userId: r.userId,
+        shopId: r.shopId,
+        shopName: r.shop?.name || 'Cafetería',
+        rating: r.rating,
+        coffeeRating: r.coffeeRating,
+        foodRating: r.foodRating,
+        placeRating: r.placeRating,
+        priceRating: r.priceRating,
+        comment: r.comment,
+        createdAt: r.createdAt,
+        tags: r.reviewTags?.map((rt: any) => rt.tag?.name).filter(Boolean) || [],
+        likeCount: (r.likes || []).length,
+        isLiked: currentUserId ? r.likes?.some((l: any) => l.userId === currentUserId) : false,
+    }));
+};
+
+export const getUserReviews = cache(async (userId: string) => {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+        const currentUserId = session?.user?.id;
+
+        const fetchReviews = unstable_cache(
+            async (uId: string, cId?: string) => getUserReviewsInternal(uId, cId),
+            [getUserReviewsTag(userId), currentUserId || "anonymous"],
+            { tags: [CACHE_TAGS.REVIEWS, getUserReviewsTag(userId)], revalidate: 3600 }
+        );
+
+        const data = await fetchReviews(userId, currentUserId);
+        return { success: true, data };
+    } catch (error) {
+        console.error("Error fetching user reviews:", error);
+        return { success: false, data: [] };
+    }
+});
