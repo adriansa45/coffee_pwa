@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { getReviews } from "@/actions/reviews";
+import { getReviews, toggleReviewLike } from "@/actions/reviews";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, Loader2, MessageSquare } from "lucide-react";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
+import { CircleDollarSign, Coffee, Heart, Loader2, Map, MessageSquare, Star, Utensils } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface ShopReviewsProps {
     shopId: string;
@@ -13,11 +14,49 @@ interface ShopReviewsProps {
 }
 
 export function ShopReviews({ shopId, initialReviews, initialHasMore }: ShopReviewsProps) {
-    const [reviews, setReviews] = useState(initialReviews);
+    const [reviews, setReviews] = useState<any[]>(initialReviews);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(initialHasMore);
+    const { data: session } = authClient.useSession();
     const observerTarget = useRef(null);
+
+    const handleToggleLike = async (reviewId: string) => {
+        if (!session) return;
+
+        // Optimistic update
+        setReviews(prev => prev.map(rev => {
+            if (rev.id === reviewId) {
+                const currentLikeCount = Number(rev.likeCount) || 0;
+                return {
+                    ...rev,
+                    isLiked: !rev.isLiked,
+                    likeCount: rev.isLiked ? Math.max(0, currentLikeCount - 1) : currentLikeCount + 1
+                };
+            }
+            return rev;
+        }));
+
+        try {
+            const res = await toggleReviewLike(reviewId);
+            if (!res.success) {
+                // Rollback if failed
+                setReviews(prev => prev.map(rev => {
+                    if (rev.id === reviewId) {
+                        const currentLikeCount = Number(rev.likeCount) || 0;
+                        return {
+                            ...rev,
+                            isLiked: !rev.isLiked,
+                            likeCount: rev.isLiked ? Math.max(0, currentLikeCount - 1) : currentLikeCount + 1
+                        };
+                    }
+                    return rev;
+                }));
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const loadMoreReviews = async () => {
         if (loading || !hasMore) return;
@@ -67,35 +106,59 @@ export function ShopReviews({ shopId, initialReviews, initialHasMore }: ShopRevi
                 </h3>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-2">
                 {reviews.map((review) => (
-                    <div key={review.id} className="bg-white rounded-[2rem] p-5 shadow-sm border border-zinc-100 space-y-3">
+                    <div key={review.id} className="bg-white rounded-[1.5rem] p-4 shadow-sm border border-zinc-100 space-y-2">
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
+                            <Link href={`/users/${review.userId}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                                 <Avatar className="w-10 h-10 border-2 border-primary/5">
                                     <AvatarImage src={review.userImage} alt={review.userName} />
                                     <AvatarFallback className="bg-primary/5 text-primary font-bold">
-                                        {review.userName?.[0]}
+                                        {review.userName.substring(0, 2).toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <p className="text-sm font-bold text-foreground">{review.userName}</p>
-                                    <p className="text-[10px] font-medium text-zinc-400 capitalize">
-                                        {new Date(review.createdAt).toLocaleDateString("es-ES", {
-                                            day: "numeric",
-                                            month: "long",
-                                            year: "numeric"
-                                        })}
+                                    <h4 className="font-bold text-sm leading-none">{review.userName}</h4>
+                                    <p className="text-[10px] text-zinc-400 mt-1 font-medium">
+                                        {new Date(review.createdAt).toLocaleDateString()}
                                     </p>
                                 </div>
-                            </div>
+                            </Link>
                             <div className="flex items-center gap-1 bg-amber-500/10 px-2 py-0.5 rounded-full">
                                 <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                                 <span className="text-xs font-black text-amber-700">{Number(review.rating).toFixed(1)}</span>
                             </div>
                         </div>
 
-                        <p className="text-sm text-zinc-600 leading-relaxed pl-1">
+                        {/* Category Ratings Display as Badges */}
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                            {review.coffeeRating > 0 && (
+                                <div className="flex items-center gap-1 bg-amber-50 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-amber-100 text-amber-700">
+                                    <Coffee size={10} />
+                                    <span>{review.coffeeRating.toFixed(1)}</span>
+                                </div>
+                            )}
+                            {review.foodRating > 0 && (
+                                <div className="flex items-center gap-1 bg-orange-50 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-orange-100 text-orange-600">
+                                    <Utensils size={10} />
+                                    <span>{review.foodRating.toFixed(1)}</span>
+                                </div>
+                            )}
+                            {review.placeRating > 0 && (
+                                <div className="flex items-center gap-1 bg-blue-50 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-blue-100 text-blue-600">
+                                    <Map size={10} />
+                                    <span>{review.placeRating.toFixed(1)}</span>
+                                </div>
+                            )}
+                            {review.priceRating > 0 && (
+                                <div className="flex items-center gap-1 bg-green-50 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-green-100 text-green-600">
+                                    <CircleDollarSign size={10} />
+                                    <span>{review.priceRating.toFixed(1)}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        <p className="text-sm text-zinc-600 leading-relaxed px-1">
                             {review.comment}
                         </p>
 
@@ -108,6 +171,19 @@ export function ShopReviews({ shopId, initialReviews, initialHasMore }: ShopRevi
                                 ))}
                             </div>
                         )}
+
+                        <div className="flex justify-start items-center pt-2">
+                            <button
+                                onClick={() => handleToggleLike(review.id)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all active:scale-90 ${review.isLiked
+                                    ? "bg-red-50 text-red-500 border border-red-100"
+                                    : "bg-zinc-50 text-zinc-400 border border-zinc-100 hover:text-red-400"
+                                    }`}
+                            >
+                                <Heart size={13} className={review.isLiked ? "fill-current" : ""} />
+                                <span className="text-xs font-bold">{Number(review.likeCount) || 0}</span>
+                            </button>
+                        </div>
                     </div>
                 ))}
 

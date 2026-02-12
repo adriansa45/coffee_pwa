@@ -16,10 +16,10 @@ export function ShopAction({ shopId, shopName }: ShopActionProps) {
         <>
             <button
                 onClick={() => setIsFormOpen(true)}
-                className="w-full h-14 bg-white hover:bg-zinc-50 text-primary border-2 border-primary/20 hover:border-primary/40 rounded-[2rem] font-black text-base transition-all active:scale-95 shadow-sm flex items-center justify-center gap-2.5"
+                className="w-full h-12 bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-100 rounded-[1.5rem] font-bold text-sm transition-all active:scale-95 shadow-sm flex items-center justify-center gap-2.5"
             >
-                <div className="bg-primary/5 p-1.5 rounded-lg">
-                    <MessageSquare size={18} className="text-primary" />
+                <div className="bg-zinc-50 p-1.5 rounded-lg text-zinc-400">
+                    <MessageSquare size={16} />
                 </div>
                 Escribir Reseña
             </button>

@@ -1,15 +1,14 @@
 "use server";
 
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { getPayload } from "@/lib/payload";
 import { db } from "@/db";
-import { reviews, reviewTags, tags as tagsTable } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { reviewLikes, reviews, reviewTags, tags as tagsTable } from "@/db/schema";
+import { auth } from "@/lib/auth";
+import { CACHE_TAGS, getShopReviewsTag, getShopTag, getUserReviewsTag } from "@/lib/cache-tags";
 import crypto from "crypto";
-import { unstable_cache, revalidateTag } from "next/cache";
+import { and, desc, eq } from "drizzle-orm";
+import { revalidateTag, unstable_cache } from "next/cache";
+import { headers } from "next/headers";
 import { cache } from "react";
-import { CACHE_TAGS, getShopTag, getShopReviewsTag } from "@/lib/cache-tags";
 
 export async function getTags() {
     try {
@@ -85,7 +84,7 @@ export async function createReview(data: {
     }
 }
 
-const getReviewsInternal = async (shopId: string, page: number = 1, limit: number = 10) => {
+const getReviewsInternal = async (shopId: string, page: number = 1, limit: number = 10, currentUserId?: string) => {
     // Fetch reviews from Drizzle with joined user and tags
     const results = await db.query.reviews.findMany({
         where: eq(reviews.shopId, shopId),
@@ -98,7 +97,8 @@ const getReviewsInternal = async (shopId: string, page: number = 1, limit: numbe
                 with: {
                     tag: true
                 }
-            }
+            },
+            likes: true,
         }
     });
 
@@ -106,6 +106,7 @@ const getReviewsInternal = async (shopId: string, page: number = 1, limit: numbe
         id: r.id,
         userName: r.user?.name || 'Usuario',
         userImage: r.user?.image,
+        userId: r.userId,
         rating: r.rating,
         coffeeRating: parseFloat(r.coffeeRating),
         foodRating: parseFloat(r.foodRating),
@@ -113,7 +114,9 @@ const getReviewsInternal = async (shopId: string, page: number = 1, limit: numbe
         priceRating: parseFloat(r.priceRating),
         comment: r.comment,
         createdAt: r.createdAt,
-        tags: r.reviewTags?.map((rt: any) => rt.tag?.name).filter(Boolean) || []
+        tags: r.reviewTags?.map((rt: any) => rt.tag?.name).filter(Boolean) || [],
+        likeCount: (r.likes || []).length,
+        isLiked: currentUserId ? r.likes?.some((l: any) => l.userId === currentUserId) : false,
     }));
 
     return mappedReviews;
@@ -121,16 +124,124 @@ const getReviewsInternal = async (shopId: string, page: number = 1, limit: numbe
 
 export const getReviews = cache(async (shopId: string, page: number = 1, limit: number = 10) => {
     try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+        const userId = session?.user?.id;
+
         const fetchReviews = unstable_cache(
-            async (sId: string, p: number, l: number) => getReviewsInternal(sId, p, l),
-            [getShopReviewsTag(shopId), `page-${page}`, `limit-${limit}`],
+            async (sId: string, p: number, l: number, uId?: string) => getReviewsInternal(sId, p, l, uId),
+            [getShopReviewsTag(shopId), `page-${page}`, `limit-${limit}`, userId || "anonymous"],
             { tags: [CACHE_TAGS.REVIEWS, getShopReviewsTag(shopId)], revalidate: 3600 }
         );
 
-        const data = await fetchReviews(shopId, page, limit);
+        const data = await fetchReviews(shopId, page, limit, userId);
         return { success: true, data, hasMore: data.length >= limit };
     } catch (error) {
         console.error("Error fetching reviews:", error);
         return { success: false, error: "Failed to fetch reviews" };
+    }
+});
+
+export async function toggleReviewLike(reviewId: string) {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+
+        if (!session?.user?.id) {
+            return { success: false, error: "Unauthorized" };
+        }
+
+        const userId = session.user.id;
+
+        // Check if already liked
+        const [existing] = await db
+            .select()
+            .from(reviewLikes)
+            .where(and(eq(reviewLikes.userId, userId), eq(reviewLikes.reviewId, reviewId)));
+
+        if (existing) {
+            // Unlike
+            await db
+                .delete(reviewLikes)
+                .where(and(eq(reviewLikes.userId, userId), eq(reviewLikes.reviewId, reviewId)));
+
+            revalidateTag(CACHE_TAGS.REVIEWS);
+            return { success: true, isLiked: false };
+        } else {
+            // Like
+            await db.insert(reviewLikes).values({
+                id: crypto.randomUUID(),
+                userId,
+                reviewId,
+            });
+
+            revalidateTag(CACHE_TAGS.REVIEWS);
+            return { success: true, isLiked: true };
+        }
+    } catch (error) {
+        console.error("Error toggling review like:", error);
+        return { success: false, error: "Failed to toggle review like" };
+    }
+}
+
+const getUserReviewsInternal = async (userId: string, currentUserId?: string) => {
+    const results = await db.query.reviews.findMany({
+        where: eq(reviews.userId, userId),
+        orderBy: [desc(reviews.createdAt)],
+        with: {
+            reviewTags: {
+                with: {
+                    tag: true,
+                },
+            },
+            likes: true,
+            shop: {
+                columns: {
+                    name: true,
+                }
+            }
+        },
+    });
+
+    return results.map((r: any) => ({
+        id: r.id,
+        userName: '', // Not needed for profile view as we know the user
+        userImage: '',
+        userId: r.userId,
+        shopId: r.shopId,
+        shopName: r.shop?.name || 'Cafetería',
+        rating: r.rating,
+        coffeeRating: r.coffeeRating,
+        foodRating: r.foodRating,
+        placeRating: r.placeRating,
+        priceRating: r.priceRating,
+        comment: r.comment,
+        createdAt: r.createdAt,
+        tags: r.reviewTags?.map((rt: any) => rt.tag?.name).filter(Boolean) || [],
+        likeCount: (r.likes || []).length,
+        isLiked: currentUserId ? r.likes?.some((l: any) => l.userId === currentUserId) : false,
+    }));
+};
+
+export const getUserReviews = cache(async (userId: string) => {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+        const currentUserId = session?.user?.id;
+
+        const fetchReviews = unstable_cache(
+            async (uId: string, cId?: string) => getUserReviewsInternal(uId, cId),
+            [getUserReviewsTag(userId), currentUserId || "anonymous"],
+            { tags: [CACHE_TAGS.REVIEWS, getUserReviewsTag(userId)], revalidate: 3600 }
+        );
+
+        const data = await fetchReviews(userId, currentUserId);
+        return { success: true, data };
+    } catch (error) {
+        console.error("Error fetching user reviews:", error);
+        return { success: false, data: [] };
     }
 });

@@ -11,6 +11,7 @@ import { Loader2, Github, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/components/theme-provider";
+import { updateUserFcmToken } from "@/actions/user";
 
 export function LoginForm() {
     const [email, setEmail] = useState("");
@@ -38,6 +39,16 @@ export function LoginForm() {
             if (error) {
                 setError(error.message || "Credenciales inválidas");
             } else {
+                // Read fcm_token from cookie and update user if present
+                const fcmTokenFromCookie = document.cookie
+                    .split("; ")
+                    .find((row) => row.startsWith("fcm_token="))
+                    ?.split("=")[1];
+
+                if (fcmTokenFromCookie) {
+                    await updateUserFcmToken(fcmTokenFromCookie);
+                }
+
                 router.push("/home");
             }
         } catch (err) {

@@ -1,5 +1,5 @@
-import { pgTable, text, timestamp, varchar, numeric, index } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import { index, numeric, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
 import { coffee_shops, tags } from "./payload-generated-schema";
 
@@ -92,6 +92,22 @@ export const shopFollows = pgTable("shop_follows", {
     index("shop_follows_shop_idx").on(table.shopId),
 ]);
 
+export const reviewLikes = pgTable("review_likes", {
+    id: varchar("id").primaryKey(),
+    userId: text("user_id")
+        .notNull()
+        .references(() => user.id, { onDelete: "cascade" }),
+    reviewId: varchar("review_id")
+        .notNull()
+        .references(() => reviews.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true, precision: 3 })
+        .defaultNow()
+        .notNull(),
+}, (table) => [
+    index("review_likes_user_idx").on(table.userId),
+    index("review_likes_review_idx").on(table.reviewId),
+]);
+
 export const visitsRelations = relations(visits, ({ one }) => ({
     user: one(user, {
         fields: [visits.userId],
@@ -113,6 +129,7 @@ export const reviewsRelations = relations(reviews, ({ one, many }) => ({
         references: [coffee_shops.id],
     }),
     reviewTags: many(reviewTags),
+    likes: many(reviewLikes),
 }));
 
 export const reviewTagsRelations = relations(reviewTags, ({ one }) => ({
@@ -143,6 +160,18 @@ export const userSocialRelations = relations(user, ({ many }) => ({
     following: many(follows, { relationName: "following" }),
     followers: many(follows, { relationName: "followedBy" }),
     shopFollows: many(shopFollows),
+    reviewLikes: many(reviewLikes),
+}));
+
+export const reviewLikesRelations = relations(reviewLikes, ({ one }) => ({
+    user: one(user, {
+        fields: [reviewLikes.userId],
+        references: [user.id],
+    }),
+    review: one(reviews, {
+        fields: [reviewLikes.reviewId],
+        references: [reviews.id],
+    }),
 }));
 
 export const shopFollowsRelations = relations(shopFollows, ({ one }) => ({

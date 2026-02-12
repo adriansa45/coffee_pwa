@@ -74,23 +74,25 @@ const getUserVisitsInternal = async (userId: string) => {
     return results;
 };
 
-export const getUserVisits = cache(async () => {
+export const getUserVisits = cache(async (targetUserId?: string) => {
     const session = await auth.api.getSession({
         headers: await headers()
     });
 
-    if (!session || !session.user) {
+    const userId = targetUserId || session?.user?.id;
+
+    if (!userId) {
         return { success: false, data: [] };
     }
 
     try {
         const fetchVisits = unstable_cache(
             async (uId: string) => getUserVisitsInternal(uId),
-            [getUserVisitsTag(session.user.id)],
-            { tags: [CACHE_TAGS.VISITS, getUserVisitsTag(session.user.id)], revalidate: 3600 }
+            [getUserVisitsTag(userId)],
+            { tags: [CACHE_TAGS.VISITS, getUserVisitsTag(userId)], revalidate: 3600 }
         );
 
-        const data = await fetchVisits(session.user.id);
+        const data = await fetchVisits(userId);
         return { success: true, data };
     } catch (error) {
         console.error("Error fetching visits:", error);

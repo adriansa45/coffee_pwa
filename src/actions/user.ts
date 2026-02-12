@@ -74,3 +74,24 @@ export async function getUserProfile(userId: string) {
         return { success: false, error: "Failed to fetch profile" };
     }
 }
+
+export async function updateUserFcmToken(token: string) {
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+
+    if (!session?.user?.id) {
+        return { success: false, error: "Unauthorized" };
+    }
+
+    try {
+        await db.update(userTable)
+            .set({ fcmToken: token, updatedAt: new Date() })
+            .where(eq(userTable.id, session.user.id));
+
+        return { success: true };
+    } catch (error) {
+        console.error("Error updating FCM token:", error);
+        return { success: false, error: "Failed to update FCM token" };
+    }
+}

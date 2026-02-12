@@ -90,7 +90,7 @@ export function ReviewForm({ shopId, shopName, isOpen, onOpenChange }: ReviewFor
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-[95vw] sm:max-w-[425px] rounded-[2.5rem] p-6 gap-6 outline-none border-none shadow-2xl">
+            <DialogContent className="max-w-[95vw] sm:max-w-[425px] rounded-lg p-6 gap-6 outline-none border-none shadow-2xl">
                 <DialogHeader className="space-y-1">
                     <DialogTitle className="text-2xl font-black">Escribir Reseña</DialogTitle>
                     <DialogDescription className="text-sm font-medium text-zinc-400">
