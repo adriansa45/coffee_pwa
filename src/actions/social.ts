@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { sendPushNotification } from "@/lib/notifications";
 
 export async function followUser(followingId: string) {
     const session = await auth.api.getSession({
@@ -18,6 +19,16 @@ export async function followUser(followingId: string) {
         await db.insert(follows).values({
             followerId: session.user.id,
             followingId: followingId,
+        });
+
+        // Send push notification to the followed user
+        await sendPushNotification(followingId, {
+            title: "Nuevo seguidor 🚀",
+            body: `${session.user.name || "Alguien"} ha empezado a seguirte.`,
+            data: {
+                type: "new_follower",
+                followerId: session.user.id
+            }
         });
 
         revalidatePath(`/users/${followingId}`);

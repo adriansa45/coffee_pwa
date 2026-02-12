@@ -46,11 +46,18 @@ export function SignUpForm() {
         setError(null);
 
         try {
+            // Read fcm_token from cookie if present
+            const fcmTokenFromCookie = document.cookie
+                .split("; ")
+                .find((row) => row.startsWith("fcm_token="))
+                ?.split("=")[1];
+
             const { data, error } = await authClient.signUp.email({
                 email,
                 password,
                 name,
                 callbackURL: "/home",
+                ...(fcmTokenFromCookie ? { fcmToken: fcmTokenFromCookie } : {}),
             });
 
             if (error) {
