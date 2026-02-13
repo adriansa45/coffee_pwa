@@ -3,7 +3,7 @@
 import { authClient } from "@/lib/auth-client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { User, Settings, LogOut, ChevronRight, Bell, Shield, Loader2 } from "lucide-react";
+import { User, Settings, LogOut, ChevronRight, Bell, Shield, Loader2, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ColorPicker } from "@/components/profile/color-picker";
@@ -43,19 +43,18 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="p-6 pt-16 pb-28 space-y-8">
-            <header className="flex items-center gap-4">
-                <Avatar className="w-16 h-16 border-2 border-primary/10 shadow-sm">
-                    <AvatarImage src={user.image || ""} alt={user.name || "Usuario"} />
-                    <AvatarFallback className="bg-primary/20 text-primary text-xl font-bold">
-                        {(user.name || "U").charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                </Avatar>
+        <div className="p-6 pt-18 pb-28 space-y-8">
+            <div className="flex items-center gap-4">
+                <button 
+                    onClick={() => router.back()}
+                    className="p-2 -ml-2 rounded-full text-foreground/40 hover:bg-primary/5 hover:text-foreground transition-all"
+                >
+                    <ArrowLeft size={20} />
+                </button>
                 <div className="space-y-1">
-                    <h1 className="text-xl font-bold text-foreground">{user.name || "Usuario"}</h1>
-                    <p className="text-sm text-foreground/60 break-all">{user.email}</p>
+                    <p className="text-sm font-bold text-foreground/60 break-all">{user.email}</p>
                 </div>
-            </header>
+            </div>
 
             <div className="space-y-4">
                 <h3 className="text-xs font-bold text-foreground/40 uppercase tracking-wider ml-1">Cuenta</h3>
@@ -101,7 +100,7 @@ export default function ProfilePage() {
                 <Button
                     onClick={handleSignOut}
                     variant="outline"
-                    className="w-full py-6 border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-2xl gap-2 font-bold shadow-sm active:scale-95 transition-all"
+                    className="w-full py-6 border-red-100 text-red-700 bg-red-50 hover:text-red-700 rounded-2xl gap-2 font-bold shadow-sm active:scale-95 transition-all"
                 >
                     <LogOut className="w-4 h-4" />
                     Cerrar Sesión

@@ -31,17 +31,19 @@ export function UserSearchList({ initialUsers, query }: { initialUsers: any[], q
                         <Link href={`/users/${user.id}`} className="flex items-center gap-4 flex-1">
                             <Avatar className="h-12 w-12 border-2 border-white shadow-sm group-hover:scale-105 transition-transform">
                                 <AvatarImage src={user.image || ""} />
-                                <AvatarFallback className="bg-primary/10 text-primary/90 font-bold">
+                                <AvatarFallback className="bg-primary/10 text-primary/90 font-semibold">
                                     {user.name?.charAt(0)}
                                 </AvatarFallback>
                             </Avatar>
                             <div>
-                                <p className="font-bold text-foreground group-hover:text-primary transition-colors">{user.name}</p>
-                                <p className="text-xs text-primary/60 font-medium">Fan del café</p>
+                                <p className="font-semibold text-foreground group-hover:text-primary transition-colors">{user.name}</p>
+                                <p className="text-xs text-primary/60 font-semibold">Fan del café</p>
                             </div>
                         </Link>
 
-                        <FollowButton userId={user.id} initialIsFollowing={false} />
+                        {!user.isFollowing && (
+                            <FollowButton userId={user.id} initialIsFollowing={false} />
+                        )}
                     </div>
                 ))}
             </div>
