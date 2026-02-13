@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Coffee, Map, Users, Home, QrCode, Search } from "lucide-react";
+import { Coffee, Map, UserRound, Home, QrCode, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
 
@@ -11,7 +11,6 @@ const customerNavItems = [
     { name: "Mapa", href: "/map", icon: Map },
     { name: "Cafeterías", href: "/shops", icon: Coffee },
     { name: "Descubrir", href: "/discover", icon: Search },
-    { name: "Perfil", href: "/profile", icon: Users },
 ];
 
 const shopNavItems = [
@@ -73,12 +72,26 @@ export function BottomNav() {
                         )}>
                             <Icon className={cn("w-5 h-5", isActive ? "stroke-[2.5px]" : "stroke-2")} />
                         </div>
-                        {/* {isActive && (
-                            <span className="absolute -bottom-1 w-1 h-1 rounded-full bg-primary animate-in fade-in zoom-in duration-300" />
-                        )} */}
                     </Link>
                 );
             })}
+
+            {user && (
+                <Link
+                    href={`/users/${user.id}`}
+                    className={cn(
+                        "relative flex flex-col items-center gap-1 transition-all duration-300",
+                        pathname === `/users/${user.id}` ? "text-primaryScale" : "text-muted-foreground hover:text-foreground"
+                    )}
+                >
+                    <div className={cn(
+                        "p-2 rounded-full transition-all duration-300",
+                        pathname === `/users/${user.id}` ? "bg-primary/20 text-primary scale-110" : "hover:bg-white/5"
+                    )}>
+                        <UserRound className={cn("w-5 h-5", pathname === `/users/${user.id}` ? "stroke-[2.5px]" : "stroke-2")} />
+                    </div>
+                </Link>
+            )}
 
             {/* {user && (
                 <Drawer>
