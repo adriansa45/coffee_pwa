@@ -148,7 +148,7 @@ export default function MapView() {
                         }}
                     >
                         <Popup className="custom-popup">
-                            <div className="p-1 w-48">
+                            <div className="p-3 w-48 ">
                                 <h3 className="font-bold text-foreground text-xs mb-1">{loc.name}</h3>
                                 <div className="flex items-center gap-1.5 mb-2">
                                     <StarRating rating={Number(loc.avgRating)} size={10} />

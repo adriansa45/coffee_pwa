@@ -1,28 +1,35 @@
 "use client";
 
 import { getReviews, toggleReviewLike } from "@/actions/reviews";
+import { AuthModal } from "@/components/auth-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { CircleDollarSign, Coffee, Heart, Loader2, Map, MessageSquare, Star, Utensils } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 interface ShopReviewsProps {
     shopId: string;
-    initialReviews: any[];
-    initialHasMore: boolean;
+    initialReviews?: any[];
+    initialHasMore?: boolean;
 }
 
-export function ShopReviews({ shopId, initialReviews, initialHasMore }: ShopReviewsProps) {
+export function ShopReviews({ shopId, initialReviews = [], initialHasMore = true }: ShopReviewsProps) {
     const [reviews, setReviews] = useState<any[]>(initialReviews);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(initialHasMore);
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const { data: session } = authClient.useSession();
+    const router = useRouter();
     const observerTarget = useRef(null);
 
     const handleToggleLike = async (reviewId: string) => {
-        if (!session) return;
+        if (!session) {
+            setIsAuthModalOpen(true);
+            return;
+        }
 
         // Optimistic update
         setReviews(prev => prev.map(rev => {
@@ -200,9 +207,8 @@ export function ShopReviews({ shopId, initialReviews, initialHasMore }: ShopRevi
 
             <div ref={observerTarget} className="py-8 flex justify-center">
                 {loading && (
-                    <div className="flex items-center gap-2 text-primary animate-pulse">
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span className="text-sm font-bold">Cargando más reseñas...</span>
+                    <div className="flex justify-center p-4">
+                        <Loader2 className="w-6 h-6 animate-spin text-primary/40" />
                     </div>
                 )}
                 {!hasMore && reviews.length > 0 && (
@@ -211,6 +217,7 @@ export function ShopReviews({ shopId, initialReviews, initialHasMore }: ShopRevi
                     </p>
                 )}
             </div>
+            <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
         </div>
     );
 }

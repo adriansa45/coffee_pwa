@@ -72,6 +72,7 @@ export interface Config {
     tags: Tag;
     media: Media;
     features: Feature;
+    leeds: Leed;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -84,6 +85,7 @@ export interface Config {
     tags: TagsSelect<false> | TagsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     features: FeaturesSelect<false> | FeaturesSelect<true>;
+    leeds: LeedsSelect<false> | LeedsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -267,6 +269,19 @@ export interface Tag {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leeds".
+ */
+export interface Leed {
+  id: number;
+  name: string;
+  email: string;
+  coffeeShopName: string;
+  instagramUser?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -308,6 +323,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'features';
         value: number | Feature;
+      } | null)
+    | ({
+        relationTo: 'leeds';
+        value: number | Leed;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -468,6 +487,18 @@ export interface FeaturesSelect<T extends boolean = true> {
   name?: T;
   icon?: T;
   color?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leeds_select".
+ */
+export interface LeedsSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  coffeeShopName?: T;
+  instagramUser?: T;
   updatedAt?: T;
   createdAt?: T;
 }

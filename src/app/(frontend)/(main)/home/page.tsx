@@ -1,7 +1,7 @@
 import { getTopRatedCoffeeShops } from "@/actions/coffee-shops";
 import { CoffeeCard } from "@/components/CoffeeCard";
 import { cn } from "@/lib/utils";
-import { Coffee, MapPin, Star, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import Link from "next/link";
 
 const categories = ["Todos", "Cerca de ti", "Populares", "Nuevos"];
@@ -15,7 +15,7 @@ export default async function HomePage() {
             {/* Hero Section */}
             <section className="relative h-[40vh] overflow-hidden">
                 {/* Background with gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900" />
+                <div className="absolute inset-0 bg-gradient-to-br from-zinc-700 via-zinc-600 to-zinc-700" />
                 <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5" />
 
                 {/* Content */}
@@ -81,7 +81,7 @@ export default async function HomePage() {
             </section>
 
             {/* Stats Section */}
-            <section className="px-6 py-8">
+            {/* <section className="px-6 py-8">
                 <div className="glass rounded-4xl p-8 space-y-6 border border-zinc-200">
                     <h3 className="text-xl font-bold text-zinc-900">Tu progreso</h3>
 
@@ -111,7 +111,7 @@ export default async function HomePage() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> */}
         </div>
     );
 }
