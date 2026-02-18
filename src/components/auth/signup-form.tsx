@@ -205,7 +205,7 @@ export function SignUpForm() {
                         Ya tengo una cuenta
                     </Link>
 
-                    <div className="w-full space-y-6">
+                    {/* <div className="w-full space-y-6">
                         <div className="relative flex justify-center text-sm font-bold">
                             <span className="bg-white px-4 text-[#f35c2e]" style={{ color: brandColor }}>
                                 O continúa con
@@ -223,7 +223,7 @@ export function SignUpForm() {
                                 <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05 1.78-3.3 1.78-1.18 0-1.55-.73-2.92-.73-1.38 0-1.8.71-2.92.71-1.17 0-2.36-.93-3.38-2.4C2.45 16.6 1.15 11.23 3.25 7.57c1.04-1.8 2.88-2.94 4.88-2.94 1.53 0 2.97 1.05 3.91 1.05.9 0 2.66-1.25 4.51-1.07 1.9.18 3.32 1 4.14 2.21-3.6 2.16-3.01 6.81.67 8.32-.73 2.1-2.45 5.17-4.31 7.14zM14.65 1.5c-1.18 0-2.6.76-3.4 1.7-.82.97-1.52 2.36-1.32 3.73 1.25.1 2.63-.67 3.44-1.63.8-.96 1.39-2.28 1.28-3.8z" /></svg>
                             </button>
                         </div>
-                    </div>
+                    </div> */}
                 </CardFooter>
             </form>
         </Card>
