@@ -100,7 +100,7 @@ export default function MapCnView({ initialShops }: MapCnViewProps) {
                             </div>
                         </MarkerContent>
                         <MarkerPopup>
-                            <div className="p-1 w-48">
+                            <div className="w-48 ">
                                 <h3 className="font-bold text-foreground text-xs mb-1">{shop.name}</h3>
                                 <div className="flex items-center gap-1.5 mb-2">
                                     <StarRating rating={Number(shop.avgRating)} size={10} />

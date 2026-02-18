@@ -1,7 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 type ThemeContextType = {
     brandColor: string;
@@ -12,16 +12,18 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = authClient.useSession();
-    const [manualColor, setManualColor] = useState<string | null>(() => {
-        if (typeof window !== "undefined") {
-            return localStorage.getItem("brand-color");
-        }
-        return null;
-    });
+    const [mounted, setMounted] = useState(false);
+    const [manualColor, setManualColor] = useState<string | null>(null);
+
+    // useEffect(() => {
+    //     setMounted(true);
+    //     const saved = localStorage.getItem("brand-color");
+    //     if (saved) setManualColor(saved);
+    // }, []);
 
     // Derived state: Manual override (including localStorage), then session, then default
     const sessionColor = (session?.user as any)?.brandColor;
-    const brandColor = manualColor || sessionColor || "#820E2B";
+    const brandColor = mounted ? (manualColor || sessionColor || "#764f32") : "#764f32";
 
     useEffect(() => {
         // Update CSS variables

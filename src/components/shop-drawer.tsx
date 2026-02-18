@@ -1,8 +1,10 @@
 "use client";
 
 import { createReview, getReviews, toggleReviewLike } from "@/actions/reviews";
+import { AuthModal } from "@/components/auth-modal";
 import { authClient } from "@/lib/auth-client";
 import { CircleDollarSign, Coffee, Heart, Loader2, Map, MapPin, Send, Utensils, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LikertRating } from "./likert-rating";
 import { StarRating } from "./star-rating";
@@ -52,8 +54,10 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
     const [priceRating, setPriceRating] = useState(0);
     const [newComment, setNewComment] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
     const { data: session } = authClient.useSession();
+    const router = useRouter();
 
     useEffect(() => {
         if (shop && isOpen) {
@@ -74,7 +78,10 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
     };
 
     const handleToggleLike = async (reviewId: string) => {
-        if (!session) return;
+        if (!session) {
+            setIsAuthModalOpen(true);
+            return;
+        }
 
         // Optimistic update
         setReviews(prev => prev.map(rev => {
@@ -109,6 +116,10 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
     };
 
     const handleReviewSubmit = async () => {
+        if (!session) {
+            setIsAuthModalOpen(true);
+            return;
+        }
         if (!shop || (coffeeRating === 0 && foodRating === 0 && placeRating === 0 && priceRating === 0)) return;
         setIsSubmitting(true);
         try {
@@ -290,8 +301,8 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                                                 <button
                                                     onClick={() => handleToggleLike(rev.id)}
                                                     className={`flex items-center gap-1.5 px-2 py-1 rounded-full transition-all active:scale-90 ${rev.isLiked
-                                                            ? "bg-red-50 text-red-500 border border-red-100"
-                                                            : "bg-gray-50 text-gray-400 border border-gray-100 hover:text-red-400"
+                                                        ? "bg-red-50 text-red-500 border border-red-100"
+                                                        : "bg-gray-50 text-gray-400 border border-gray-100 hover:text-red-400"
                                                         }`}
                                                 >
                                                     <Heart size={12} className={rev.isLiked ? "fill-current" : ""} />
@@ -308,7 +319,13 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                     {/* Fixed Add Review Button at the bottom of the drawer */}
                     <div className="p-6 bg-white border-t border-gray-100 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
                         <button
-                            onClick={() => setIsReviewDrawerOpen(true)}
+                            onClick={() => {
+                                if (!session) {
+                                    setIsAuthModalOpen(true);
+                                } else {
+                                    setIsReviewDrawerOpen(true);
+                                }
+                            }}
                             className="w-full py-4 bg-primary hover:bg-primary/90 text-white font-black rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-95 text-sm uppercase tracking-widest"
                         >
                             <Send size={18} />
@@ -384,6 +401,7 @@ export function ShopDrawer({ shop, isOpen, onClose, onReviewSubmitted }: ShopDra
                     </div>
                 </div>
             )}
+            <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
         </>
     );
 }

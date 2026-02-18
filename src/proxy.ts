@@ -35,8 +35,12 @@ export default async function proxy(request: NextRequest) {
     const isPayloadRoute = pathname.startsWith("/admin");
     const isPublicRoute = isAuthRoute || isPayloadRoute;
 
+    // Routes that require authentication
+    const protectedRoutes = ["/profile", "/history", "/passport", "/discover", "/users/"];
+    const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route)) || pathname === "/shop" || pathname.startsWith("/shop/");
+
     // If user is not logged in and trying to access a protected route
-    if (!session && !isPublicRoute) {
+    if (!session && isProtectedRoute) {
         return NextResponse.redirect(new URL("/auth/login", request.url));
     }
 

@@ -1,17 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { authClient } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { updateUserFcmToken } from "@/actions/user";
+import { useTheme } from "@/components/theme-provider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, Github, Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth-client";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTheme } from "@/components/theme-provider";
-import { updateUserFcmToken } from "@/actions/user";
+import { useState } from "react";
 
 export function LoginForm() {
     const [email, setEmail] = useState("");
@@ -120,8 +119,8 @@ export function LoginForm() {
                 <CardFooter className="flex flex-col space-y-8 px-0 pb-4">
                     <Button
                         type="submit"
-                        className="w-full h-16 text-white font-black text-xl rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] border-none"
-                        style={{ 
+                        className="w-full h-14 text-white font-black text-xl rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] border-none"
+                        style={{
                             backgroundColor: brandColor,
                             boxShadow: `0 10px 30px ${brandColor}4D` // 30% opacity shadow
                         }}
@@ -131,10 +130,20 @@ export function LoginForm() {
                         Entrar
                     </Button>
 
+
+
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => router.push("/home")}
+                        className="w-full h-14 rounded-2xl text-[#626262] font-bold text-base hover:text-black hover:bg-transparent transition-all -mt-4"
+                    >
+                        Continuar sin cuenta
+                    </Button>
+
                     <Link href="/auth/signup" className="text-black font-bold text-base hover:underline transition-all">
                         Crear cuenta nueva
                     </Link>
-
                     {/* <div className="w-full space-y-6">
                         <div className="relative flex justify-center text-sm font-bold">
                             <span className="bg-white px-4 text-[#f35c2e]" style={{ color: brandColor }}>
