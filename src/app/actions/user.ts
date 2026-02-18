@@ -1,12 +1,13 @@
 "use server";
 
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { put } from "@vercel/blob";
 import { db } from "@/db";
 import { user as userTable } from "@/db/schema/auth-schema";
+import { auth } from "@/lib/auth";
+import { put } from "@vercel/blob";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
+import sharp from "sharp";
 
 export async function updateProfileImage(formData: FormData) {
     const session = await auth.api.getSession({
@@ -23,10 +24,27 @@ export async function updateProfileImage(formData: FormData) {
     }
 
     try {
+        // Convert File to Buffer for sharp
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+
+        // Process image with sharp: resize and convert to webp
+        const optimizedBuffer = await sharp(buffer)
+            .resize({
+                width: 1024,
+                height: 1024,
+                fit: "inside",
+                withoutEnlargement: true
+            })
+            .webp({ quality: 80 })
+            .toBuffer();
+
         // Upload to Vercel Blob in the 'users' folder
-        const filename = `users/${session.user.id}-${Date.now()}.${file.name.split(".").pop()}`;
-        const blob = await put(filename, file, {
+        // Use .webp extension as we converted it
+        const filename = `users/${session.user.id}-${Date.now()}.webp`;
+        const blob = await put(filename, optimizedBuffer, {
             access: "public",
+            contentType: "image/webp"
         });
 
         // Update user record in database
@@ -36,10 +54,10 @@ export async function updateProfileImage(formData: FormData) {
 
         revalidatePath("/profile");
         revalidatePath("/profile/preferences");
-        
+
         return { success: true, url: blob.url };
     } catch (error) {
         console.error("Error updating profile image:", error);
-        return { success: false, error: "Error al subir la imagen" };
+        return { success: false, error: "Error al procesar o subir la imagen" };
     }
 }
