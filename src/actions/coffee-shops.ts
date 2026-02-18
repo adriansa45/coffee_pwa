@@ -3,11 +3,11 @@
 import { db } from "@/db";
 import { coffee_shops as coffeeShops, coffee_shops_rels as coffeeShopsRels, reviews, shopFollows, visits } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { and, asc, desc, eq, exists, ilike, inArray, notInArray, or, sql } from "drizzle-orm";
-import { headers } from "next/headers";
-import { unstable_cache, revalidateTag } from "next/cache";
-import { cache } from "react";
 import { CACHE_TAGS, getShopTag, getUserFollowsTag } from "@/lib/cache-tags";
+import { and, asc, desc, eq, exists, ilike, inArray, notInArray, or, sql } from "drizzle-orm";
+import { revalidateTag, unstable_cache } from "next/cache";
+import { headers } from "next/headers";
+import { cache } from "react";
 
 const getCoffeeShopByIdInternal = async (id: string) => {
     const shop = await db.query.coffee_shops.findFirst({
@@ -291,11 +291,11 @@ export async function toggleFollowShop(shopId: string) {
             await db
                 .delete(shopFollows)
                 .where(and(eq(shopFollows.userId, userId), eq(shopFollows.shopId, shopId)));
-            
+
             revalidateTag(CACHE_TAGS.FOLLOWS);
             revalidateTag(getShopTag(shopId));
             revalidateTag(getUserFollowsTag(userId));
-            
+
             return { success: true, isFollowing: false };
         } else {
             // Follow
@@ -303,11 +303,11 @@ export async function toggleFollowShop(shopId: string) {
                 userId,
                 shopId,
             });
-            
+
             revalidateTag(CACHE_TAGS.FOLLOWS);
             revalidateTag(getShopTag(shopId));
             revalidateTag(getUserFollowsTag(userId));
-            
+
             return { success: true, isFollowing: true };
         }
     } catch (error) {

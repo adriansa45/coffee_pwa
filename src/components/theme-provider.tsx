@@ -15,11 +15,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const [mounted, setMounted] = useState(false);
     const [manualColor, setManualColor] = useState<string | null>(null);
 
-    useEffect(() => {
-        setMounted(true);
-        const saved = localStorage.getItem("brand-color");
-        if (saved) setManualColor(saved);
-    }, []);
+    // useEffect(() => {
+    //     setMounted(true);
+    //     const saved = localStorage.getItem("brand-color");
+    //     if (saved) setManualColor(saved);
+    // }, []);
 
     // Derived state: Manual override (including localStorage), then session, then default
     const sessionColor = (session?.user as any)?.brandColor;
