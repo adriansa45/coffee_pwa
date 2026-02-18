@@ -57,6 +57,13 @@
       "when": 1770848767454,
       "tag": "0007_polite_bishop",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1771383198787,
+      "tag": "0008_quiet_dagger",
+      "breakpoints": true
     }
   ]
 }
