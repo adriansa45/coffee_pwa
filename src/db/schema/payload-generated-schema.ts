@@ -291,6 +291,35 @@ export const features = db_schema.table(
   ],
 );
 
+export const leeds = db_schema.table(
+  "leeds",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name").notNull(),
+    email: varchar("email").notNull(),
+    coffeeShopName: varchar("coffee_shop_name").notNull(),
+    instagramUser: varchar("instagram_user"),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (columns) => [
+    index("leeds_updated_at_idx").on(columns.updatedAt),
+    index("leeds_created_at_idx").on(columns.createdAt),
+  ],
+);
+
 export const payload_kv = db_schema.table(
   "payload_kv",
   {
@@ -340,6 +369,7 @@ export const payload_locked_documents_rels = db_schema.table(
     tagsID: varchar("tags_id"),
     mediaID: integer("media_id"),
     featuresID: integer("features_id"),
+    leedsID: integer("leeds_id"),
   },
   (columns) => [
     index("payload_locked_documents_rels_order_idx").on(columns.order),
@@ -356,6 +386,7 @@ export const payload_locked_documents_rels = db_schema.table(
     index("payload_locked_documents_rels_features_id_idx").on(
       columns.featuresID,
     ),
+    index("payload_locked_documents_rels_leeds_id_idx").on(columns.leedsID),
     foreignKey({
       columns: [columns["parent"]],
       foreignColumns: [payload_locked_documents.id],
@@ -385,6 +416,11 @@ export const payload_locked_documents_rels = db_schema.table(
       columns: [columns["featuresID"]],
       foreignColumns: [features.id],
       name: "payload_locked_documents_rels_features_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["leedsID"]],
+      foreignColumns: [leeds.id],
+      name: "payload_locked_documents_rels_leeds_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -522,6 +558,7 @@ export const relations_coffee_shops = relations(
 export const relations_tags = relations(tags, () => ({}));
 export const relations_media = relations(media, () => ({}));
 export const relations_features = relations(features, () => ({}));
+export const relations_leeds = relations(leeds, () => ({}));
 export const relations_payload_kv = relations(payload_kv, () => ({}));
 export const relations_payload_locked_documents_rels = relations(
   payload_locked_documents_rels,
@@ -555,6 +592,11 @@ export const relations_payload_locked_documents_rels = relations(
       fields: [payload_locked_documents_rels.featuresID],
       references: [features.id],
       relationName: "features",
+    }),
+    leedsID: one(leeds, {
+      fields: [payload_locked_documents_rels.leedsID],
+      references: [leeds.id],
+      relationName: "leeds",
     }),
   }),
 );
@@ -603,6 +645,7 @@ type DatabaseSchema = {
   tags: typeof tags;
   media: typeof media;
   features: typeof features;
+  leeds: typeof leeds;
   payload_kv: typeof payload_kv;
   payload_locked_documents: typeof payload_locked_documents;
   payload_locked_documents_rels: typeof payload_locked_documents_rels;
@@ -616,6 +659,7 @@ type DatabaseSchema = {
   relations_tags: typeof relations_tags;
   relations_media: typeof relations_media;
   relations_features: typeof relations_features;
+  relations_leeds: typeof relations_leeds;
   relations_payload_kv: typeof relations_payload_kv;
   relations_payload_locked_documents_rels: typeof relations_payload_locked_documents_rels;
   relations_payload_locked_documents: typeof relations_payload_locked_documents;
