@@ -4,6 +4,7 @@ import { updateProfileImage } from "@/app/actions/user";
 import { useTheme } from "@/components/theme-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { authClient } from "@/lib/auth-client";
+import { optimizeImage } from "@/lib/image-optimization";
 import { Camera, Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner"; // Assuming sonner is available or similar toast utility
@@ -19,27 +20,25 @@ export function ProfilePictureUpload({ initialImage, name }: { initialImage?: st
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Check file size (max 8MB, server will optimize it)
-        if (file.size > 8 * 1024 * 1024) {
-            alert("La imagen es demasiado grande. El máximo para optimizar es 8MB.");
-            return;
-        }
-
         setUploading(true);
-        const formData = new FormData();
-        formData.append("file", file);
-
         try {
+            // Optimize image before upload
+            const optimizedFile = await optimizeImage(file);
+
+            const formData = new FormData();
+            formData.append("file", optimizedFile);
+
             const result = await updateProfileImage(formData);
             if (result.success && result.url) {
                 setImage(result.url);
                 await refetch(); // Refresh session to reflect changes
                 toast.success("Imagen de perfil actualizada");
             } else {
-                alert(result.error || "Error al subir la imagen");
+                toast.error(result.error || "Error al subir la imagen");
             }
         } catch (error) {
-            alert("Error inesperado al subir la imagen");
+            console.error("Optimization/Upload error:", error);
+            toast.error("Error al procesar o subir la imagen");
         } finally {
             setUploading(false);
         }
@@ -71,7 +70,7 @@ export function ProfilePictureUpload({ initialImage, name }: { initialImage?: st
 
             <div className="text-center">
                 <p className="text-sm font-bold text-foreground/80">Foto de perfil</p>
-                <p className="text-xs text-foreground/40 mt-1">PNG, JPG (se optimizará a WebP)</p>
+                <p className="text-xs text-foreground/40 mt-1">PNG, JPG, JPEG</p>
             </div>
 
             <input

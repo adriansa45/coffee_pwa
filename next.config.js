@@ -31,6 +31,11 @@ const nextConfig = {
 
     return webpackConfig
   },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+  },
   reactStrictMode: true
 }
 
