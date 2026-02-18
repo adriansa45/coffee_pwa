@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Camera, Loader2, Upload } from "lucide-react";
 import { updateProfileImage } from "@/app/actions/user";
 import { useTheme } from "@/components/theme-provider";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { authClient } from "@/lib/auth-client";
+import { Camera, Loader2 } from "lucide-react";
+import { useRef, useState } from "react";
 import { toast } from "sonner"; // Assuming sonner is available or similar toast utility
 
 export function ProfilePictureUpload({ initialImage, name }: { initialImage?: string | null, name?: string | null }) {
@@ -20,9 +19,9 @@ export function ProfilePictureUpload({ initialImage, name }: { initialImage?: st
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Check file size (max 4.5MB for Vercel Hobby, let's stick to 4MB)
-        if (file.size > 4 * 1024 * 1024) {
-            alert("La imagen es demasiado grande. El máximo es 4MB.");
+        // Check file size (max 8MB, server will optimize it)
+        if (file.size > 8 * 1024 * 1024) {
+            alert("La imagen es demasiado grande. El máximo para optimizar es 8MB.");
             return;
         }
 
@@ -55,7 +54,7 @@ export function ProfilePictureUpload({ initialImage, name }: { initialImage?: st
                         {(name || "U").charAt(0).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
-                
+
                 <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
@@ -72,7 +71,7 @@ export function ProfilePictureUpload({ initialImage, name }: { initialImage?: st
 
             <div className="text-center">
                 <p className="text-sm font-bold text-foreground/80">Foto de perfil</p>
-                <p className="text-xs text-foreground/40 mt-1">PNG, JPG hasta 4MB</p>
+                <p className="text-xs text-foreground/40 mt-1">PNG, JPG (se optimizará a WebP)</p>
             </div>
 
             <input
