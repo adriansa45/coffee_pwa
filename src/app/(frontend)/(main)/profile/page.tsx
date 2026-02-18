@@ -1,12 +1,10 @@
 "use client";
 
-import { authClient } from "@/lib/auth-client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { User, Settings, LogOut, ChevronRight, Bell, Shield, Loader2, ArrowLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import { ArrowLeft, ChevronRight, Loader2, LogOut, Settings, Shield } from "lucide-react";
 import Link from "next/link";
-import { ColorPicker } from "@/components/profile/color-picker";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
     const { data: session, isPending } = authClient.useSession();
@@ -45,7 +43,7 @@ export default function ProfilePage() {
     return (
         <div className="p-6 pt-18 pb-28 space-y-8">
             <div className="flex items-center gap-4">
-                <button 
+                <button
                     onClick={() => router.back()}
                     className="p-2 -ml-2 rounded-full text-foreground/40 hover:bg-primary/5 hover:text-foreground transition-all"
                 >
@@ -59,7 +57,7 @@ export default function ProfilePage() {
             <div className="space-y-4">
                 <h3 className="text-xs font-bold text-foreground/40 uppercase tracking-wider ml-1">Cuenta</h3>
                 <div className="bg-white rounded-2xl border border-primary/10 divide-y divide-primary/5 shadow-sm overflow-hidden">
-                    <Link 
+                    <Link
                         href="/profile/preferences"
                         className="w-full flex items-center justify-between p-4 hover:bg-primary/5 transition-colors group"
                     >
@@ -72,17 +70,10 @@ export default function ProfilePage() {
                         <ChevronRight className="w-4 h-4 text-foreground/20 group-hover:translate-x-1 transition-transform" />
                     </Link>
 
-                    <button className="w-full flex items-center justify-between p-4 hover:bg-primary/5 transition-colors group">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                                <Bell className="w-4 h-4" />
-                            </div>
-                            <span className="text-sm font-medium text-foreground/90">Notificaciones</span>
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-foreground/20 group-hover:translate-x-1 transition-transform" />
-                    </button>
-
-                    <button className="w-full flex items-center justify-between p-4 hover:bg-primary/5 transition-colors group">
+                    <Link
+                        href="/profile/privacy"
+                        className="w-full flex items-center justify-between p-4 hover:bg-primary/5 transition-colors group"
+                    >
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                                 <Shield className="w-4 h-4" />
@@ -90,7 +81,7 @@ export default function ProfilePage() {
                             <span className="text-sm font-medium text-foreground/90">Privacidad</span>
                         </div>
                         <ChevronRight className="w-4 h-4 text-foreground/20 group-hover:translate-x-1 transition-transform" />
-                    </button>
+                    </Link>
                 </div>
 
 
