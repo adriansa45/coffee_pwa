@@ -73,6 +73,18 @@ export const auth = betterAuth({
             fcmToken: {
                 type: "string",
                 required: false,
+            },
+            totalVisitsCount: {
+                type: "string",
+                required: false,
+                defaultValue: "0",
+                input: false,
+            },
+            currentTier: {
+                type: "string",
+                required: false,
+                defaultValue: "Explorador/a",
+                input: false,
             }
         },
     },

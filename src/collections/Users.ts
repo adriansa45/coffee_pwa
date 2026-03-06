@@ -29,6 +29,38 @@ export const Users: CollectionConfig = {
     {
       name: 'image',
       type: 'text',
+    },
+    {
+      name: 'role',
+      type: 'select',
+      options: [
+        { label: 'Customer', value: 'customer' },
+        { label: 'Cafe Staff', value: 'CafeStaff' },
+        { label: 'Cafe Admin', value: 'CafeAdmin' },
+        { label: 'Coffee Shop', value: 'coffee_shop' },
+      ],
+      defaultValue: 'customer',
+    },
+    {
+      name: 'userCode',
+      type: 'text',
+      admin: {
+        readOnly: true,
+      },
+    },
+    {
+      name: 'totalVisitsCount',
+      type: 'number',
+      defaultValue: 0,
+    },
+    {
+      name: 'currentTier',
+      type: 'text',
+      defaultValue: 'Explorador/a',
+    },
+    {
+        name: 'shopId',
+        type: 'text',
     }
   ],
   timestamps: true,

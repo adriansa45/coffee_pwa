@@ -64,6 +64,13 @@
       "when": 1771383198787,
       "tag": "0008_quiet_dagger",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1772769990659,
+      "tag": "0009_ambitious_shinko_yamashiro",
+      "breakpoints": true
     }
   ]
 }

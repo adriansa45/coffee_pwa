@@ -84,5 +84,15 @@ export const CoffeeShops: CollectionConfig = {
       relationTo: 'features',
       hasMany: true,
     },
+    {
+      name: 'visitCooldownHours',
+      type: 'number',
+      label: 'Cooldown de Visitas (Horas)',
+      defaultValue: 4,
+      required: true,
+      admin: {
+        description: 'Tiempo mínimo entre visitas para el mismo usuario.',
+      },
+    },
   ],
 }

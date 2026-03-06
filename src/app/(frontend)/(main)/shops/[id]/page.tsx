@@ -8,6 +8,7 @@ import { ShopHours, type ShopHour } from "@/components/shops/detail/shop-hours";
 import { ShopInfo } from "@/components/shops/detail/shop-info";
 import { ShopReviews } from "@/components/shops/detail/shop-reviews";
 import { ShopGallery } from "@/components/shops/detail/shop-gallery";
+import { ShopLoyalty } from "@/components/shops/detail/shop-loyalty";
 import { cn } from "@/lib/utils";
 import { CoffeeShop, Media } from "@/payload-types";
 import { notFound } from "next/navigation";
@@ -103,6 +104,8 @@ export default async function ShopDetailPage(props: { params: Promise<{ id: stri
                 />
 
                 <ShopHours hours={shop.hours as ShopHour[]} />
+
+                <ShopLoyalty shopId={shop.id} shopName={shop.name} />
 
                 <ShopGallery shopName={shop.name} gallery={gallery || []} />
 

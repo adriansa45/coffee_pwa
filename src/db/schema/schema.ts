@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { index, numeric, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { boolean, index, numeric, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
 import { coffee_shops, tags } from "./payload-generated-schema";
 
@@ -20,9 +20,79 @@ export const visits = pgTable("visits", {
     updatedAt: timestamp("updated_at", { withTimezone: true, precision: 3 })
         .defaultNow()
         .notNull(),
+    staffId: text("staff_id").references(() => user.id),
+    method: varchar("method").notNull().default("qr_scan"),
+    fraudMetadata: text("fraud_metadata"),
 }, (table) => [
     index("visits_user_idx").on(table.userId),
     index("visits_shop_idx").on(table.shopId),
+    index("visits_staff_idx").on(table.staffId),
+]);
+
+export const rewards = pgTable("rewards", {
+    id: varchar("id").primaryKey(),
+    shopId: varchar("shop_id")
+        .notNull()
+        .references(() => coffee_shops.id, { onDelete: "cascade" }),
+    name: varchar("name").notNull(),
+    description: text("description"),
+    visitsRequired: numeric("visits_required").notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, precision: 3 })
+        .defaultNow()
+        .notNull(),
+}, (table) => [
+    index("rewards_shop_idx").on(table.shopId),
+]);
+
+export const unlockedRewards = pgTable("unlocked_rewards", {
+    id: varchar("id").primaryKey(),
+    userId: text("user_id")
+        .notNull()
+        .references(() => user.id, { onDelete: "cascade" }),
+    rewardId: varchar("reward_id")
+        .notNull()
+        .references(() => rewards.id, { onDelete: "cascade" }),
+    unlockedAt: timestamp("unlocked_at", { withTimezone: true, precision: 3 })
+        .defaultNow()
+        .notNull(),
+    redeemedAt: timestamp("redeemed_at", { withTimezone: true, precision: 3 }),
+}, (table) => [
+    index("unlocked_rewards_user_idx").on(table.userId),
+    index("unlocked_rewards_reward_idx").on(table.rewardId),
+]);
+
+export const badges = pgTable("badges", {
+    id: varchar("id").primaryKey(),
+    shopId: varchar("shop_id")
+        .notNull()
+        .references(() => coffee_shops.id, { onDelete: "cascade" }),
+    name: varchar("name").notNull(),
+    description: text("description"),
+    criteria: varchar("criteria").notNull(), // e.g., "visits_count"
+    criteriaValue: numeric("criteria_value").notNull(),
+    imageUrl: text("image_url"),
+    createdAt: timestamp("created_at", { withTimezone: true, precision: 3 })
+        .defaultNow()
+        .notNull(),
+}, (table) => [
+    index("badges_shop_idx").on(table.shopId),
+]);
+
+export const userBadges = pgTable("user_badges", {
+    id: varchar("id").primaryKey(),
+    userId: text("user_id")
+        .notNull()
+        .references(() => user.id, { onDelete: "cascade" }),
+    badgeId: varchar("badge_id")
+        .notNull()
+        .references(() => badges.id, { onDelete: "cascade" }),
+    earnedAt: timestamp("earned_at", { withTimezone: true, precision: 3 })
+        .defaultNow()
+        .notNull(),
+}, (table) => [
+    index("user_badges_user_idx").on(table.userId),
+    index("user_badges_badge_idx").on(table.badgeId),
 ]);
 
 export const reviews = pgTable("reviews", {
@@ -182,5 +252,43 @@ export const shopFollowsRelations = relations(shopFollows, ({ one }) => ({
     shop: one(coffee_shops, {
         fields: [shopFollows.shopId],
         references: [coffee_shops.id],
+    }),
+}));
+
+export const rewardsRelations = relations(rewards, ({ one, many }) => ({
+    shop: one(coffee_shops, {
+        fields: [rewards.shopId],
+        references: [coffee_shops.id],
+    }),
+    unlockedBy: many(unlockedRewards),
+}));
+
+export const unlockedRewardsRelations = relations(unlockedRewards, ({ one }) => ({
+    user: one(user, {
+        fields: [unlockedRewards.userId],
+        references: [user.id],
+    }),
+    reward: one(rewards, {
+        fields: [unlockedRewards.rewardId],
+        references: [rewards.id],
+    }),
+}));
+
+export const badgesRelations = relations(badges, ({ one, many }) => ({
+    shop: one(coffee_shops, {
+        fields: [badges.shopId],
+        references: [coffee_shops.id],
+    }),
+    earnedBy: many(userBadges),
+}));
+
+export const userBadgesRelations = relations(userBadges, ({ one }) => ({
+    user: one(user, {
+        fields: [userBadges.userId],
+        references: [user.id],
+    }),
+    badge: one(badges, {
+        fields: [userBadges.badgeId],
+        references: [badges.id],
     }),
 }));

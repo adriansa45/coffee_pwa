@@ -5,6 +5,7 @@ import { authClient } from "@/lib/auth-client";
 import { ArrowLeft, ChevronRight, Loader2, LogOut, Settings, Shield } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { TierProgress } from "@/components/profile/tier-progress";
 
 export default function ProfilePage() {
     const { data: session, isPending } = authClient.useSession();
@@ -53,6 +54,11 @@ export default function ProfilePage() {
                     <p className="text-sm font-bold text-foreground/60 break-all">{user.email}</p>
                 </div>
             </div>
+
+            <TierProgress 
+                totalVisits={Number((user as any).totalVisitsCount || 0)} 
+                currentTier={(user as any).currentTier || "Explorador/a"} 
+            />
 
             <div className="space-y-4">
                 <h3 className="text-xs font-bold text-foreground/40 uppercase tracking-wider ml-1">Cuenta</h3>
