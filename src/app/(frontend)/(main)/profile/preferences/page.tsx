@@ -1,17 +1,15 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { ColorPicker } from "@/components/profile/color-picker";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { ProfilePictureUpload } from "@/components/profile/profile-picture-upload";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useTheme } from "@/components/theme-provider";
 
 export default function PreferencesPage() {
     const { data: session, isPending } = authClient.useSession();
     const user = session?.user;
     const router = useRouter();
-    const { brandColor } = useTheme();
 
     if (isPending) {
         return (
@@ -31,11 +29,11 @@ export default function PreferencesPage() {
             <header className="flex items-center gap-4">
                 <button 
                     onClick={() => router.back()}
-                    className="p-2 rounded-xl bg-white border border-primary/10 shadow-sm active:scale-95 transition-all"
+                    className="p-2 rounded-xl bg-card border border-primary/10 shadow-sm active:scale-95 transition-all text-primary"
                 >
-                    <ChevronLeft className="w-6 h-6" style={{ color: brandColor }} />
+                    <ChevronLeft className="w-6 h-6" />
                 </button>
-                <h1 className="text-2xl font-black tracking-tight" style={{ color: brandColor }}>
+                <h1 className="text-3xl font-bold tracking-tighter text-foreground uppercase">
                     Preferencias
                 </h1>
             </header>
@@ -43,11 +41,11 @@ export default function PreferencesPage() {
             <div className="space-y-6">
                 <ProfilePictureUpload initialImage={user.image} name={user.name} />
                 
-                <ColorPicker />
+                <ThemeToggle />
             </div>
 
-            <p className="text-center text-xs text-foreground/30 px-6 leading-relaxed">
-                Personaliza tu experiencia en Espresso. Estos cambios se aplicarán instantáneamente a tu cuenta.
+            <p className="text-center text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-6 leading-relaxed opacity-40">
+                Personaliza tu experiencia en Espresso. Estos cambios se aplicarán instantáneamente.
             </p>
         </div>
     );

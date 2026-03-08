@@ -26,8 +26,9 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: 2rem;
-  --radius-4xl: 2.5rem;
+  /* Removed 3xl and 4xl to discourage overly rounded elements */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
 
   --animate-smoke: smoke 2s ease-in-out infinite;
 
@@ -50,74 +51,75 @@
 }
 
 :root {
-  --radius: 1rem;
-  --background: #FAFAFA;
-  --foreground: #09090b;
+  --radius: 0.75rem; /* 12px Intermediate */
+  --background: #FCFAF8; /* Very light cream/parchment */
+  --foreground: #2D241E; /* Deep espresso brown */
 
   --card: #FFFFFF;
-  --card-foreground: #09090b;
+  --card-foreground: #2D241E;
 
   --popover: #FFFFFF;
-  --popover-foreground: #09090b;
+  --popover-foreground: #2D241E;
 
-  --primary: hsl(25 40% 33%);
-  /* Coffee Brown */
-  --primary-foreground: #ffffff;
+  /* Gold - Primary / Premium Accent */
+  --primary: hsl(45 90% 45%); 
+  --primary-foreground: #FFFFFF;
 
-  --secondary: #fef3c7;
-  /* Amber 100 */
-  --secondary-foreground: #92400e;
-  /* Amber 800 */
+  /* Earthy Browns - Secondary */
+  --secondary: #E9E1D8; /* Light warm brown latte */
+  --secondary-foreground: #5C4B3D;
 
-  --muted: #f4f4f5;
-  /* Zinc 100 */
-  --muted-foreground: #71717a;
-  /* Zinc 500 */
+  /* Zinc/Neutral replacements with Brownish tones */
+  --muted: #F3EEE9;
+  --muted-foreground: #8B7A6E;
 
-  --accent: #fef3c7;
-  --accent-foreground: #92400e;
+  --accent: #D4AF37; /* Metallic Gold */
+  --accent-foreground: #FFFFFF;
 
-  --destructive: #ef4444;
-  --destructive-foreground: #fafafa;
+  /* Gindo - Reddish/Maroon Accents */
+  --destructive: #5E1914; 
+  --destructive-foreground: #FCFAF8;
 
-  --border: #e4e4e7;
-  /* Zinc 200 */
-  --input: #e4e4e7;
-  --ring: hsl(25 40% 33%);
-  --warm-bg: #fffcf7;
+  /* Green - Success/Fresh */
+  --success: #3D6142;
+  --success-foreground: #FCFAF8;
+
+  --border: #E6DED6;
+  --input: #E6DED6;
+  --ring: hsl(45 90% 45%);
 }
 
 .dark {
-  --background: #09090b;
-  /* Zinc 950 */
-  --foreground: #fafafa;
+  --background: #0E0C0B; /* Deep Black Coffee */
+  --foreground: #E9E1D8; /* Cream text */
 
-  --card: #18181b;
-  /* Zinc 900 */
-  --card-foreground: #fafafa;
+  --card: #14110F; /* Slightly lighter coffee */
+  --card-foreground: #E9E1D8;
 
-  --popover: #18181b;
-  --popover-foreground: #fafafa;
+  --popover: #14110F;
+  --popover-foreground: #E9E1D8;
 
-  --primary: hsl(25 40% 33%);
-  --primary-foreground: #ffffff;
+  --primary: hsl(45 80% 55%); /* Brighter Gold for contrast */
+  --primary-foreground: #0E0C0B;
 
-  --secondary: #27272a;
-  /* Zinc 800 */
-  --secondary-foreground: #fafafa;
+  --secondary: #2D241E; /* Espresso wash */
+  --secondary-foreground: #E9E1D8;
 
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
+  --muted: #1A1614;
+  --muted-foreground: #A6968B;
 
-  --accent: #27272a;
-  --accent-foreground: #fafafa;
+  --accent: #D4AF37;
+  --accent-foreground: #0E0C0B;
 
-  --destructive: #7f1d1d;
-  --destructive-foreground: #fafafa;
+  --destructive: #8B1A10; /* Gindo Maroon - brighter for dark mode */
+  --destructive-foreground: #E9E1D8;
 
-  --border: #27272a;
-  --input: #27272a;
-  --ring: hsl(25 40% 33%);
+  --success: #4E7A53;
+  --success-foreground: #E9E1D8;
+
+  --border: #241F1C;
+  --input: #241F1C;
+  --ring: hsl(45 80% 55%);
 }
 
 @layer base {

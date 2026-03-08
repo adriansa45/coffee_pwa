@@ -10,9 +10,9 @@ export default function Loading() {
                 </div>
 
                 {/* Cup Body */}
-                <div className="absolute inset-0 bg-primary rounded-b-[2rem] border-b-8 border-primary/20 shadow-xl">
+                <div className="absolute inset-0 bg-primary rounded-b-2xl border-b-8 border-primary/20 shadow-xl">
                     {/* Steam/Coffee Light Reflection */}
-                    <div className="absolute top-2 left-3 w-4 h-12 bg-white/10 rounded-full blur-sm" />
+                    <div className="absolute top-2 left-3 w-4 h-12 bg-primary-foreground/10 rounded-full blur-sm" />
                 </div>
 
                 {/* Cup Handle */}

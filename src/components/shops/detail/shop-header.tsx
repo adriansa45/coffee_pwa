@@ -29,14 +29,14 @@ export function ShopHeader({ shopId, name, mainImage, isFollowing }: ShopHeaderP
             <div className="absolute top-10 left-0 right-0 p-6 flex items-center justify-between z-10">
                 <Link
                     href="/shops"
-                    className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-zinc-900 shadow-lg active:scale-95 transition-transform"
+                    className="w-10 h-10 rounded-xl bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground shadow-lg active:scale-95 transition-transform"
                 >
                     <ArrowLeft className="w-5 h-5" />
                 </Link>
             </div>
 
-            {/* Bottom Rounded Corner Effect (Optional, can be handled by container below) */}
-            <div className="absolute bottom-0 left-0 right-0 h-8 bg-background rounded-t-[3rem] z-20" />
+            {/* Bottom Rounded Corner Effect */}
+            <div className="absolute bottom-0 left-0 right-0 h-8 bg-background rounded-t-2xl z-20" />
         </section>
     );
 }

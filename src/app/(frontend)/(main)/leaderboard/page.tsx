@@ -74,7 +74,7 @@ export default function LeaderboardPage() {
         <div className="p-6 pt-24 pb-28 space-y-6">
             <header className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-3">
-                    <Link href="/home" className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+                    <Link href="/home" className="p-2 rounded-xl bg-muted hover:bg-muted/80 text-muted-foreground transition-colors">
                         <ArrowLeft size={20} />
                     </Link>
                     <div>
@@ -85,7 +85,7 @@ export default function LeaderboardPage() {
 
                 <Drawer>
                     <DrawerTrigger asChild>
-                        <button className="w-10 h-10 rounded-xl bg-white border border-gray-200 shadow-sm flex items-center justify-center text-primary hover:bg-primary/5 transition-colors">
+                        <button className="w-10 h-10 rounded-xl bg-card border border-border shadow-sm flex items-center justify-center text-primary hover:bg-primary/10 transition-colors">
                             <Filter size={20} />
                         </button>
                     </DrawerTrigger>
@@ -100,20 +100,20 @@ export default function LeaderboardPage() {
                                     <button
                                         onClick={() => handleShopSelect("all", "Global")}
                                         className={cn(
-                                            "w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors",
-                                            selectedShopId === 'all' ? "bg-primary text-white shadow-md" : "bg-gray-50 text-gray-700 hover:bg-gray-100"
+                                            "w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors",
+                                            selectedShopId === 'all' ? "bg-primary text-primary-foreground shadow-md" : "bg-muted/50 text-muted-foreground hover:bg-muted"
                                         )}
                                     >
                                         🌍 Global (Todas las cafeterías)
                                     </button>
-                                    <div className="h-px bg-gray-100 my-2" />
+                                    <div className="h-px bg-border my-2" />
                                     {shops.map(shop => (
                                         <button
                                             key={shop.id}
                                             onClick={() => handleShopSelect(shop.id, shop.name)}
                                             className={cn(
-                                                "w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors truncate",
-                                                selectedShopId === shop.id ? "bg-primary text-white shadow-md" : "bg-white border border-gray-100 text-gray-700 hover:bg-gray-50"
+                                                "w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors truncate",
+                                                selectedShopId === shop.id ? "bg-primary text-primary-foreground shadow-md" : "bg-card border border-border text-muted-foreground hover:bg-muted/50"
                                             )}
                                         >
                                             {shop.name}
@@ -123,7 +123,7 @@ export default function LeaderboardPage() {
                             </div>
                             <DrawerFooter>
                                 <DrawerClose asChild>
-                                    <Button className="w-full bg-primary text-white font-bold h-12 rounded-xl">Listo</Button>
+                                    <Button className="w-full bg-primary text-primary-foreground font-bold h-12 rounded-xl">Listo</Button>
                                 </DrawerClose>
                             </DrawerFooter>
                         </div>
@@ -142,16 +142,16 @@ export default function LeaderboardPage() {
                         <div className="flex justify-center items-end gap-2 mb-8 px-4">
                             {/* 2nd Place */}
                             <div className="flex flex-col items-center">
-                                <Avatar className="w-14 h-14 border-4 border-gray-200">
+                                <Avatar className="w-14 h-14 border-4 border-muted">
                                     <AvatarImage src={leaderboard[1].userImage || ""} />
                                     <AvatarFallback>{leaderboard[1].userName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <div className="bg-gray-200 w-20 h-24 rounded-t-2xl flex flex-col items-center justify-start pt-2 mt-[-10px] relative z-[-1] shadow-sm">
-                                    <span className="text-2xl font-bold text-gray-500">2</span>
+                                <div className="bg-muted w-20 h-24 rounded-t-xl flex flex-col items-center justify-start pt-2 mt-[-10px] relative z-[-1] shadow-sm">
+                                    <span className="text-2xl font-bold text-muted-foreground/50">2</span>
                                 </div>
                                 <div className="text-center mt-2">
                                     <p className="text-xs font-bold text-foreground w-20 truncate">{leaderboard[1].userName}</p>
-                                    <p className="text-[10px] text-gray-500 font-bold">{leaderboard[1].visitCount} pts</p>
+                                    <p className="text-[10px] text-muted-foreground font-bold">{leaderboard[1].visitCount} pts</p>
                                 </div>
                             </div>
 
@@ -164,7 +164,7 @@ export default function LeaderboardPage() {
                                     </Avatar>
                                     <Trophy className="absolute -top-3 -right-2 text-yellow-500 w-8 h-8 fill-current drop-shadow-sm" />
                                 </div>
-                                <div className="bg-gradient-to-b from-yellow-300 to-yellow-400 w-24 h-32 rounded-t-2xl flex flex-col items-center justify-start pt-3 mt-[-15px] relative z-[-1] shadow-md">
+                                <div className="bg-gradient-to-b from-yellow-300 to-yellow-400 w-24 h-32 rounded-t-xl flex flex-col items-center justify-start pt-3 mt-[-15px] relative z-[-1] shadow-md">
                                     <span className="text-4xl font-bold text-yellow-700/50">1</span>
                                 </div>
                                 <div className="text-center mt-2">
@@ -179,23 +179,23 @@ export default function LeaderboardPage() {
                                     <AvatarImage src={leaderboard[2].userImage || ""} />
                                     <AvatarFallback>{leaderboard[2].userName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <div className="bg-orange-200 w-20 h-16 rounded-t-2xl flex flex-col items-center justify-start pt-2 mt-[-10px] relative z-[-1] shadow-sm">
+                                <div className="bg-orange-200 w-20 h-16 rounded-t-xl flex flex-col items-center justify-start pt-2 mt-[-10px] relative z-[-1] shadow-sm">
                                     <span className="text-2xl font-bold text-orange-700/50">3</span>
                                 </div>
                                 <div className="text-center mt-2">
                                     <p className="text-xs font-bold text-foreground w-20 truncate">{leaderboard[2].userName}</p>
-                                    <p className="text-[10px] text-gray-500 font-bold">{leaderboard[2].visitCount} pts</p>
+                                    <p className="text-[10px] text-muted-foreground font-bold">{leaderboard[2].visitCount} pts</p>
                                 </div>
                             </div>
                         </div>
                     )}
 
                     {/* List for everyone */}
-                    <div className="bg-white rounded-3xl p-2 shadow-sm border border-gray-100">
+                    <div className="bg-card rounded-xl p-2 shadow-sm border border-border">
                         {leaderboard.map((user, index) => (
                             <div key={user.userId} className={cn(
-                                "flex items-center gap-4 p-3 rounded-2xl transition-colors",
-                                index < 3 ? "bg-primary/5 mb-1" : "hover:bg-gray-50"
+                                "flex items-center gap-4 p-3 rounded-xl transition-colors",
+                                index < 3 ? "bg-primary/5 mb-1" : "hover:bg-muted/50"
                             )}>
                                 <span className={cn(
                                     "text-lg font-bold w-6 text-center",
@@ -205,15 +205,15 @@ export default function LeaderboardPage() {
                                 )}>
                                     {index + 1}
                                 </span>
-                                <Avatar className="h-10 w-10 border border-gray-100">
+                                <Avatar className="h-10 w-10 border border-border">
                                     <AvatarImage src={user.userImage || ""} />
-                                    <AvatarFallback className="bg-gray-100 text-gray-500 text-xs font-bold">
+                                    <AvatarFallback className="bg-muted text-muted-foreground text-xs font-bold">
                                         {user.userName?.charAt(0)}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1">
                                     <h4 className="font-bold text-foreground text-sm">{user.userName}</h4>
-                                    <div className="w-full bg-gray-100 h-1.5 rounded-full mt-1.5 overflow-hidden">
+                                    <div className="w-full bg-muted h-1.5 rounded-full mt-1.5 overflow-hidden">
                                         <div
                                             className="bg-primary/60 h-full rounded-full"
                                             style={{ width: `${(user.visitCount / (leaderboard[0]?.visitCount || 1)) * 100}%` }}
@@ -222,16 +222,16 @@ export default function LeaderboardPage() {
                                 </div>
                                 <div className="flex flex-col items-end">
                                     <span className="font-bold text-foreground">{user.visitCount}</span>
-                                    <span className="text-[10px] text-gray-400 uppercase font-bold">Visitas</span>
+                                    <span className="text-[10px] text-muted-foreground uppercase font-bold">Visitas</span>
                                 </div>
                             </div>
                         ))}
                     </div>
 
                     {leaderboard.length === 0 && (
-                        <div className="text-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-                            <Medal className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                            <p className="text-gray-500 font-medium">No hay exploradores en esta categoría aún.</p>
+                        <div className="text-center py-20 bg-muted/30 rounded-xl border border-dashed border-border">
+                            <Medal className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
+                            <p className="text-muted-foreground font-bold">No hay exploradores en esta categoría aún.</p>
                         </div>
                     )}
                 </div>

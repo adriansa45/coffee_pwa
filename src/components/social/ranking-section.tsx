@@ -35,29 +35,29 @@ export function RankingSection({ title, icon, subtitle, users, type }: RankingSe
     return (
         <div className="space-y-4">
             <div className="flex items-center gap-3 px-1">
-                <div className="w-10 h-10 rounded-2xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-900 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-muted border border-border flex items-center justify-center text-foreground">
                     {icon}
                 </div>
                 <div>
-                    <h2 className="text-lg font-bold text-zinc-900 leading-none tracking-tight">{title}</h2>
-                    <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-[0.15em] mt-1">{subtitle}</p>
+                    <h2 className="text-lg font-bold text-foreground leading-none tracking-tight">{title}</h2>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.15em] mt-1">{subtitle}</p>
                 </div>
             </div>
 
-            <div className="bg-white rounded-[32px] border border-zinc-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+            <div className="bg-card rounded-xl border border-border overflow-hidden">
                 {users && users.length > 0 ? (
-                    <div className="divide-y divide-zinc-50">
+                    <div className="divide-y divide-border">
                         {users.map((user, index) => (
                             <Link 
                                 key={user.id} 
                                 href={`/users/${user.id}`}
-                                className="flex items-center gap-4 p-4 hover:bg-zinc-50/80 transition-all group active:scale-[0.99]"
+                                className="flex items-center gap-4 p-4 hover:bg-muted/50 transition-all group active:scale-[0.99]"
                             >
                                 <div className="w-6 flex justify-center shrink-0">
                                     {getRankIcon(index)}
                                 </div>
 
-                                <Avatar className="h-10 w-10 border border-zinc-100 shadow-sm group-hover:scale-105 transition-transform duration-200">
+                                <Avatar className="h-10 w-10 border border-border group-hover:scale-105 transition-transform duration-200">
                                     <AvatarImage src={user.image || ""} />
                                     <AvatarFallback className="bg-primary/5 text-primary text-xs font-bold uppercase">
                                         {user.name?.substring(0, 2).toUpperCase()}
@@ -65,20 +65,20 @@ export function RankingSection({ title, icon, subtitle, users, type }: RankingSe
                                 </Avatar>
 
                                 <div className="flex-1">
-                                    <p className="text-sm font-semibold text-zinc-900 group-hover:text-primary transition-colors">{user.name}</p>
-                                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wide mt-0.5">
+                                    <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{user.name}</p>
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide mt-0.5">
                                         {user.count} {getUnit(user.count)}
                                     </p>
                                 </div>
 
-                                <ChevronRight size={14} className="text-zinc-300 group-hover:text-primary transition-colors translate-x-0 group-hover:translate-x-1" />
+                                <ChevronRight size={14} className="text-muted-foreground/30 group-hover:text-primary transition-colors translate-x-0 group-hover:translate-x-1" />
                             </Link>
                         ))}
                     </div>
                 ) : (
                     <div className="p-10 text-center">
-                        <Coffee className="w-8 h-8 text-zinc-100 mx-auto mb-3" />
-                        <p className="text-xs font-semibold text-zinc-300 uppercase tracking-widest">Aún no hay datos</p>
+                        <Coffee className="w-8 h-8 text-muted/50 mx-auto mb-3" />
+                        <p className="text-xs font-bold text-muted-foreground/40 uppercase tracking-widest">Aún no hay datos</p>
                     </div>
                 )}
             </div>

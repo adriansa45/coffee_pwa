@@ -19,7 +19,6 @@ export function LoginForm() {
     const [error, setError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
-    const { brandColor, setBrandColor } = useTheme();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -65,12 +64,12 @@ export function LoginForm() {
     };
 
     return (
-        <Card className="w-full bg-white border-none shadow-none rounded-[2.5rem] p-4">
+        <Card className="w-full border-none shadow-none p-4">
             <CardHeader className="text-center space-y-1 pb-8">
-                <CardTitle className="text-2xl font-black tracking-tight" style={{ color: brandColor }}>
+                <CardTitle className="text-3xl font-bold tracking-tighter text-foreground uppercase">
                     Inicia sesión
                 </CardTitle>
-                <CardDescription className="text-[#626262] text-base font-bold max-w-[200px] mx-auto leading-tight">
+                <CardDescription className="text-muted-foreground text-base font-bold max-w-[200px] mx-auto leading-tight">
                     ¡Te extrañamos de vuelta!
                 </CardDescription>
             </CardHeader>
@@ -89,7 +88,7 @@ export function LoginForm() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            className="bg-[#f1f4ff] border-none text-black placeholder:text-[#626262] h-16 rounded-xl px-4 text-lg font-medium focus-visible:ring-2 focus-visible:ring-primary/20 transition-all shadow-[0_4px_10px_rgba(0,0,0,0.03)]"
+                            className="h-16 px-4 text-lg font-medium focus-visible:ring-2 focus-visible:ring-primary/20 transition-all shadow-sm"
                         />
                     </div>
                     <div className="space-y-1 relative group">
@@ -100,18 +99,18 @@ export function LoginForm() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            className="bg-[#f1f4ff] border-none text-black placeholder:text-[#626262] h-16 rounded-xl px-4 pr-12 text-lg font-medium focus-visible:ring-2 focus-visible:ring-primary/20 transition-all shadow-[0_4px_10px_rgba(0,0,0,0.03)]"
+                            className="h-16 px-4 pr-12 text-lg font-medium focus-visible:ring-2 focus-visible:ring-primary/20 transition-all shadow-sm"
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-[#626262] hover:text-black transition-colors p-1"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
                         >
                             {showPassword ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
                         </button>
                     </div>
                     <div className="flex justify-end pr-2">
-                        <Link href="/auth/forgot-password" disable-nprogress="true" className="text-[#f35c2e] font-bold text-sm" style={{ color: brandColor }}>
+                        <Link href="/auth/forgot-password" disable-nprogress="true" className="text-primary font-bold text-[10px] uppercase tracking-widest">
                             ¿Olvidaste tu contraseña?
                         </Link>
                     </div>
@@ -119,29 +118,23 @@ export function LoginForm() {
                 <CardFooter className="flex flex-col space-y-8 px-0 pb-4">
                     <Button
                         type="submit"
-                        className="w-full h-14 text-white font-black text-xl rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] border-none"
-                        style={{
-                            backgroundColor: brandColor,
-                            boxShadow: `0 10px 30px ${brandColor}4D` // 30% opacity shadow
-                        }}
+                        className="w-full h-16 text-white font-bold text-xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/20"
                         disabled={loading}
                     >
                         {loading && <Loader2 className="mr-2 h-6 w-6 animate-spin" />}
                         Entrar
                     </Button>
 
-
-
                     <Button
                         type="button"
                         variant="outline"
                         onClick={() => router.push("/home")}
-                        className="w-full h-14 rounded-2xl text-[#626262] font-bold text-base hover:text-black hover:bg-transparent transition-all -mt-4"
+                        className="w-full h-14 text-muted-foreground font-bold text-base hover:text-foreground hover:bg-transparent transition-all -mt-4"
                     >
                         Continuar sin cuenta
                     </Button>
 
-                    <Link href="/auth/signup" className="text-black font-bold text-base hover:underline transition-all">
+                    <Link href="/auth/signup" className="text-foreground font-bold text-base hover:underline transition-all">
                         Crear cuenta nueva
                     </Link>
                     {/* <div className="w-full space-y-6">

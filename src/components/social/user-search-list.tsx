@@ -29,7 +29,7 @@ export function UserSearchList({ initialUsers, query }: { initialUsers: any[], q
                 {initialUsers.map((user) => (
                     <div key={user.id} className="flex items-center gap-4 py-4 group">
                         <Link href={`/users/${user.id}`} className="flex items-center gap-4 flex-1">
-                            <Avatar className="h-12 w-12 border-2 border-white shadow-sm group-hover:scale-105 transition-transform">
+                            <Avatar className="h-12 w-12 border-2 border-border shadow-sm group-hover:scale-105 transition-transform">
                                 <AvatarImage src={user.image || ""} />
                                 <AvatarFallback className="bg-primary/10 text-primary/90 font-semibold">
                                     {user.name?.charAt(0)}

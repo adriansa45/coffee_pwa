@@ -21,7 +21,6 @@ export function SignUpForm() {
     const [error, setError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
-    const { brandColor } = useTheme();
 
     const [acceptedTerms, setAcceptedTerms] = useState(false);
 
@@ -80,12 +79,12 @@ export function SignUpForm() {
     };
 
     return (
-        <Card className="w-full bg-white border-none shadow-none rounded-[2.5rem] p-4">
+        <Card className="w-full border-none shadow-none p-4">
             <CardHeader className="text-center space-y-1 pb-8">
-                <CardTitle className="text-2xl font-black tracking-tight" style={{ color: brandColor }}>
+                <CardTitle className="text-3xl font-bold tracking-tighter text-foreground uppercase">
                     Crea una cuenta
                 </CardTitle>
-                <CardDescription className="text-[#626262] text-base font-bold max-w-[280px] mx-auto leading-tight">
+                <CardDescription className="text-muted-foreground text-base font-bold max-w-[280px] mx-auto leading-tight">
                     Crea una cuenta para poder explorar todas las cafeterías
                 </CardDescription>
             </CardHeader>
@@ -103,7 +102,7 @@ export function SignUpForm() {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
-                            className="bg-[#f1f4ff] border-none text-black placeholder:text-[#626262] h-16 rounded-xl px-4 text-lg font-medium focus-visible:ring-2 focus-visible:ring-primary/20 transition-all shadow-[0_4px_10px_rgba(0,0,0,0.03)]"
+                            className="h-16 px-4 text-lg font-medium focus-visible:ring-2 focus-visible:ring-primary/20 transition-all shadow-sm"
                         />
                     </div>
                     <div className="space-y-1">
@@ -114,7 +113,7 @@ export function SignUpForm() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            className="bg-[#f1f4ff] border-none text-black placeholder:text-[#626262] h-16 rounded-xl px-4 text-lg font-medium focus-visible:ring-2 focus-visible:ring-primary/20 transition-all shadow-[0_4px_10px_rgba(0,0,0,0.03)]"
+                            className="h-16 px-4 text-lg font-medium focus-visible:ring-2 focus-visible:ring-primary/20 transition-all shadow-sm"
                         />
                     </div>
                     <div className="space-y-1 relative group">
@@ -125,12 +124,12 @@ export function SignUpForm() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            className="bg-[#f1f4ff] border-none text-black placeholder:text-[#626262] h-16 rounded-xl px-4 pr-12 text-lg font-medium focus-visible:ring-2 focus-visible:ring-primary/20 transition-all shadow-[0_4px_10px_rgba(0,0,0,0.03)]"
+                            className="h-16 px-4 pr-12 text-lg font-medium focus-visible:ring-2 focus-visible:ring-primary/20 transition-all shadow-sm"
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-[#626262] hover:text-black transition-colors p-1"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
                         >
                             {showPassword ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
                         </button>
@@ -144,7 +143,7 @@ export function SignUpForm() {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
-                            className="bg-[#f1f4ff] border-none text-black placeholder:text-[#626262] h-16 rounded-xl px-4 text-lg font-medium focus-visible:ring-2 focus-visible:ring-primary/20 transition-all shadow-[0_4px_10px_rgba(0,0,0,0.03)]"
+                            className="h-16 px-4 text-lg font-medium focus-visible:ring-2 focus-visible:ring-primary/20 transition-all shadow-sm"
                         />
                     </div>
 
@@ -152,8 +151,8 @@ export function SignUpForm() {
                         {requirements.map((req, i) => {
                             const isMet = req.test(password);
                             return (
-                                <div key={i} className="flex items-center gap-2 text-sm font-medium transition-colors" style={{ color: isMet ? brandColor : '#626262' }}>
-                                    {isMet ? <Check className="w-4 h-4" /> : <div className="w-4 h-4 rounded-full border-2 border-current opacity-20" />}
+                                <div key={i} className={cn("flex items-center gap-2 text-sm font-bold uppercase tracking-widest transition-colors", isMet ? "text-primary" : "text-muted-foreground/30")}>
+                                    {isMet ? <Check className="w-4 h-4 stroke-[3px]" /> : <div className="size-4 rounded-full border-2 border-current opacity-20" />}
                                     <span>{req.label}</span>
                                 </div>
                             );
@@ -169,19 +168,18 @@ export function SignUpForm() {
                                 "mt-1 flex-shrink-0 w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center",
                                 acceptedTerms
                                     ? "bg-primary border-primary text-white"
-                                    : "border-[#626262]/20 bg-[#f1f4ff]"
+                                    : "border-muted-foreground/20 bg-muted"
                             )}
                         >
                             {acceptedTerms && <Check className="w-3.5 h-3.5 stroke-[3px]" />}
                         </button>
-                        <div className="text-sm font-medium leading-normal text-[#626262]">
+                        <div className="text-sm font-medium leading-normal text-muted-foreground">
                             Acepto los{" "}
                             <a
                                 href="https://espresso.ink/terms"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="font-bold underline"
-                                style={{ color: brandColor }}
+                                className="font-bold underline text-primary"
                             >
                                 términos y condiciones
                             </a>
@@ -191,17 +189,13 @@ export function SignUpForm() {
                 <CardFooter className="flex flex-col space-y-8 px-0 pb-4">
                     <Button
                         type="submit"
-                        className="w-full h-16 text-white font-black text-xl rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] border-none disabled:opacity-50 disabled:hover:scale-100"
-                        style={{
-                            backgroundColor: brandColor,
-                            boxShadow: acceptedTerms ? `0 10px 30px ${brandColor}4D` : 'none'
-                        }}
+                        className="w-full h-16 text-white font-bold text-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100 shadow-lg shadow-primary/20"
                         disabled={loading || !acceptedTerms}
                     >
                         {loading && <Loader2 className="mr-2 h-6 w-6 animate-spin" />}
                         Registrarse
                     </Button>
-                    <Link href="/auth/login" className="text-black font-bold text-base hover:underline transition-all">
+                    <Link href="/auth/login" className="text-foreground font-bold text-base hover:underline transition-all">
                         Ya tengo una cuenta
                     </Link>
 

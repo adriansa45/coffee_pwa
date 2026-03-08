@@ -8,7 +8,7 @@ export function CoffeeShopCard({ shop }: { shop: any }) {
     return (
         <Link
             href={`/shops/${shop.id}`}
-            className="group block bg-white rounded-[32px] overflow-hidden border border-primary/10/50 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300"
+            className="group block bg-card rounded-xl overflow-hidden border border-border/10 hover:border-primary/20 transition-all duration-300"
         >
             <div className="relative h-48 w-full bg-primary/5 overflow-hidden">
                 {shop.image ? (
@@ -26,15 +26,15 @@ export function CoffeeShopCard({ shop }: { shop: any }) {
                 {/* Overlay Tags */}
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                     {shop.isVisited && (
-                        <div className="bg-green-500/90 backdrop-blur-md text-white px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-lg">
+                        <div className="bg-success text-success-foreground px-3 py-1 rounded-xl text-[10px] font-bold flex items-center gap-1">
                             <CheckCircle2 size={10} /> Visitada
                         </div>
                     )}
                 </div>
 
                 {/* Rating Badge */}
-                <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-md text-foreground px-3 py-1.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow-lg border border-primary/10">
-                    <Star size={14} className="text-yellow-500 fill-yellow-500" />
+                <div className="absolute bottom-4 right-4 bg-background/95 backdrop-blur-md text-foreground px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 border border-border">
+                    <Star size={14} className="text-primary fill-primary" />
                     <span>{Number(shop.avgRating).toFixed(1)}</span>
                 </div>
             </div>
@@ -46,7 +46,7 @@ export function CoffeeShopCard({ shop }: { shop: any }) {
                     </h3>
                 </div>
 
-                <div className="flex items-center gap-1.5 text-foreground/40 text-xs font-medium mb-4">
+                <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-bold mb-4">
                     <MapPin size={14} />
                     <span className="truncate">{shop.address || "Dirección no disponible"}</span>
                 </div>
@@ -65,7 +65,7 @@ export function CoffeeShopCard({ shop }: { shop: any }) {
                                 <div
                                     key={feature.id}
                                     title={feature.name}
-                                    className="w-7 h-7 rounded-full border flex items-center justify-center transition-transform active:scale-110"
+                                    className="w-7 h-7 rounded-xl border flex items-center justify-center transition-transform active:scale-110"
                                     style={{
                                         backgroundColor: (feature.color || 'var(--primary)') + '10',
                                         color: feature.color || 'var(--primary)',
@@ -75,7 +75,7 @@ export function CoffeeShopCard({ shop }: { shop: any }) {
                                     {IconComponent ? (
                                         <IconComponent size={14} />
                                     ) : (
-                                        <span className="text-[8px] font-bold">{feature.name.substring(0, 1)}</span>
+                                        <span className="text-[10px] font-bold">{feature.name.substring(0, 1)}</span>
                                     )}
                                 </div>
                             );
@@ -84,13 +84,13 @@ export function CoffeeShopCard({ shop }: { shop: any }) {
                 )}
 
                 <div className="flex justify-between items-center pt-4 border-t border-primary/5">
-                    <span className="text-[10px] font-bold text-primary uppercase tracking-wider bg-primary/5 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-bold text-primary uppercase tracking-wider bg-primary/10 px-2 py-1 rounded-xl border border-primary/10">
                         {shop.reviewCount} Reseñas
                     </span>
                     <div className="flex items-center gap-1.5 text-primary/60">
                         <icons.Users size={14} />
-                        <span className="text-[10px] font-bold tracking-wider">
-                            {shop.followerCount || 0} SEGUIDORES
+                        <span className="text-[10px] font-bold tracking-[0.2em] uppercase">
+                            {shop.followerCount || 0} seguidores
                         </span>
                     </div>
                 </div>

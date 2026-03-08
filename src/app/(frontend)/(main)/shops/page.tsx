@@ -23,8 +23,9 @@ export default async function ShopsPage(props: {
     return (
         <div className="min-h-screen bg-background pb-28">
             {/* Header */}
-            <div className=" px-6 pt-16 pb-6 ">
-                <h1 className="text-3xl font-bold">Explorar Cafeterías</h1>
+            <div className="px-6 pt-16 pb-8 flex flex-col gap-1 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <h1 className="text-4xl font-bold text-foreground tracking-tighter uppercase leading-none">Explorar</h1>
+                <p className="text-[10px] font-bold text-primary/60 uppercase tracking-[0.3em]">Encuentra tu próximo destino</p>
             </div>
 
             {/* Content */}

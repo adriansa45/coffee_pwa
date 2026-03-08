@@ -35,7 +35,7 @@ export function ShopLoyalty({ shopId, shopName }: ShopLoyaltyProps) {
         }
     }, [shopId, session?.user?.id]);
 
-    if (loading) return <div className="animate-pulse h-32 bg-zinc-50 rounded-3xl" />;
+    if (loading) return <div className="animate-pulse h-32 bg-muted rounded-xl" />;
     
     if (availableRewards.length === 0) return null;
 
@@ -46,7 +46,7 @@ export function ShopLoyalty({ shopId, shopName }: ShopLoyaltyProps) {
             <div className="flex items-center justify-between">
                 <h3 className="text-[1.25rem] font-bold text-foreground leading-none">Programa de Lealtad</h3>
                 {session?.user && (
-                    <div className="bg-primary/10 text-primary text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider">
+                    <div className="bg-primary/10 text-primary text-[10px] font-bold px-3 py-1.5 rounded-lg uppercase tracking-wider">
                         {currentVisits} {currentVisits === 1 ? 'visita' : 'visitas'}
                     </div>
                 )}
@@ -61,36 +61,36 @@ export function ShopLoyalty({ shopId, shopName }: ShopLoyaltyProps) {
                         <div 
                             key={reward.id} 
                             className={cn(
-                                "p-5 rounded-[2rem] border transition-all relative overflow-hidden",
+                                "p-5 rounded-xl border transition-all relative overflow-hidden",
                                 isUnlocked 
                                     ? "bg-primary/5 border-primary/20 shadow-sm" 
-                                    : "bg-white border-zinc-100"
+                                    : "bg-card border-border"
                             )}
                         >
                             <div className="flex items-start gap-4">
                                 <div className={cn(
-                                    "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0",
-                                    isUnlocked ? "bg-primary text-white" : "bg-zinc-100 text-zinc-400"
+                                    "w-12 h-12 rounded-lg flex items-center justify-center shrink-0",
+                                    isUnlocked ? "bg-primary text-white" : "bg-muted text-muted-foreground"
                                 )}>
                                     {isUnlocked ? <Gift size={24} /> : <Lock size={20} />}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-start">
-                                        <h4 className={cn("font-bold text-sm", isUnlocked ? "text-primary" : "text-zinc-600")}>
+                                        <h4 className={cn("font-bold text-sm", isUnlocked ? "text-primary" : "text-foreground")}>
                                             {reward.name}
                                         </h4>
                                     </div>
-                                    <p className="text-[10px] text-zinc-400 font-medium mb-3">
+                                    <p className="text-[10px] text-muted-foreground font-medium mb-3">
                                         {reward.description || `Desbloquéalo con ${reward.visitsRequired} visitas`}
                                     </p>
                                     
                                     {!isUnlocked && (
                                         <div className="space-y-1.5">
-                                            <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-zinc-300">
+                                            <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">
                                                 <span>Progreso</span>
                                                 <span>{currentVisits} / {reward.visitsRequired}</span>
                                             </div>
-                                            <div className="h-1.5 w-full bg-zinc-50 rounded-full overflow-hidden">
+                                            <div className="h-1.5 w-full bg-muted rounded-md overflow-hidden">
                                                 <div 
                                                     className="h-full bg-primary/40 transition-all duration-1000" 
                                                     style={{ width: `${progress}%` }}
@@ -100,7 +100,7 @@ export function ShopLoyalty({ shopId, shopName }: ShopLoyaltyProps) {
                                     )}
 
                                     {isUnlocked && (
-                                        <div className="flex items-center gap-1.5 text-[10px] font-black text-primary uppercase">
+                                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-primary uppercase">
                                             <CheckCircle2 size={12} />
                                             ¡Desbloqueado!
                                         </div>
@@ -113,7 +113,7 @@ export function ShopLoyalty({ shopId, shopName }: ShopLoyaltyProps) {
             </div>
 
             {!session?.user && (
-                <p className="text-[10px] text-zinc-400 text-center font-medium italic">
+                <p className="text-[10px] text-muted-foreground text-center font-medium italic">
                     Inicia sesión para empezar a acumular visitas y ganar premios.
                 </p>
             )}

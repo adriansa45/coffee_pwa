@@ -31,12 +31,11 @@ export async function registerVisitByCode(userCode: string) {
     const payload = await getPayload();
 
     // 1. Find user by code
-    const users = await payload.find({
-        collection: 'users',
-        where: { userCode: { equals: userCode } },
-    });
+    const [targetUser] = await db.select()
+        .from(user)
+        .where(eq(user.userCode, userCode))
+        .limit(1);
 
-    const targetUser = users.docs[0];
     if (!targetUser) return { success: false, message: "Código de usuario inválido" };
 
     try {

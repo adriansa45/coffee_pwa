@@ -132,11 +132,6 @@ export interface User {
   id: string;
   name?: string | null;
   image?: string | null;
-  role?: ('customer' | 'CafeStaff' | 'CafeAdmin' | 'coffee_shop') | null;
-  userCode?: string | null;
-  totalVisitsCount?: number | null;
-  currentTier?: string | null;
-  shopId?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -387,11 +382,6 @@ export interface UsersSelect<T extends boolean = true> {
   id?: T;
   name?: T;
   image?: T;
-  role?: T;
-  userCode?: T;
-  totalVisitsCount?: T;
-  currentTier?: T;
-  shopId?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

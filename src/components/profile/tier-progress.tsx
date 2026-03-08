@@ -2,13 +2,16 @@
 
 import { Award, ChevronRight, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 interface TierProgressProps {
     totalVisits: number;
     currentTier: string;
+    variant?: "default" | "mini";
 }
 
-export function TierProgress({ totalVisits, currentTier }: TierProgressProps) {
+export function TierProgress({ totalVisits, currentTier, variant = "default" }: TierProgressProps) {
     const tiers = [
         { name: "Explorador/a", min: 0, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100", bar: "bg-emerald-500" },
         { name: "Coffee Lover", min: 11, color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100", bar: "bg-blue-500" },
@@ -32,47 +35,74 @@ export function TierProgress({ totalVisits, currentTier }: TierProgressProps) {
 
     const tierInfo = tiers[currentIdx];
 
+    if (variant === "mini") {
+        return (
+            <Card className="bg-card/40 backdrop-blur-md rounded-xl p-5 border-border flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className={cn("size-10 rounded-xl flex items-center justify-center border border-primary/20 bg-primary/10 text-primary")}>
+                            <Zap size={20} fill="currentColor" />
+                        </div>
+                        <div className="flex flex-col">
+                            <h3 className="text-sm font-bold leading-none text-foreground uppercase">{currentTier}</h3>
+                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Estatus Global</p>
+                        </div>
+                    </div>
+                    <div className="text-right">
+                        <p className="text-xl font-bold text-foreground leading-none">{totalVisits}</p>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Visitas</p>
+                    </div>
+                </div>
+
+                {nextTier && (
+                    <div className="flex flex-col gap-2">
+                        <div className="flex justify-between items-center text-[10px] font-bold">
+                            <span className="text-muted-foreground">Faltan {remaining} para {nextTier.name}</span>
+                            <span className="text-primary font-bold">{Math.round(progress)}%</span>
+                        </div>
+                        <Progress value={progress} className="h-2 bg-muted/50" indicatorClassName="bg-primary" />
+                    </div>
+                )}
+            </Card>
+        );
+    }
+
     return (
-        <div className="bg-white rounded-[2.5rem] p-6 border border-primary/10 shadow-sm space-y-6">
+        <Card className="rounded-xl p-6 border-border flex flex-col gap-6 bg-card">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner border transition-all duration-500", tierInfo.bg, tierInfo.color, tierInfo.border)}>
+                    <div className="size-12 rounded-xl flex items-center justify-center border border-primary/20 bg-primary/10 text-primary transition-all duration-500">
                         <Zap size={24} fill="currentColor" />
                     </div>
-                    <div>
-                        <h3 className={cn("text-lg font-black leading-none", tierInfo.color)}>{currentTier}</h3>
-                        <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mt-1">Estatus Global</p>
+                    <div className="flex flex-col">
+                        <h3 className="text-xl font-bold leading-none text-primary tracking-tight uppercase">{currentTier}</h3>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Estatus Global</p>
                     </div>
                 </div>
                 <div className="text-right">
-                    <p className="text-2xl font-black text-foreground leading-none">{totalVisits}</p>
-                    <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Visitas Totales</p>
+                    <p className="text-3xl font-bold text-foreground leading-none">{totalVisits}</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Visitas Totales</p>
                 </div>
             </div>
 
             {nextTier && (
-                <div className="space-y-3">
+                <div className="flex flex-col gap-3">
                     <div className="flex justify-between items-end">
-                        <p className="text-xs font-bold text-foreground/60">
-                            Faltan <span className="text-foreground">{remaining} visitas</span> para <span className={nextTier.color}>{nextTier.name}</span>
+                        <p className="text-xs font-bold text-muted-foreground">
+                            Faltan <span className="text-foreground">{remaining} visitas</span> para <span className="text-primary">{nextTier.name}</span>
                         </p>
-                        <span className="text-[10px] font-black text-foreground/20">{Math.round(progress)}%</span>
+                        <span className="text-[10px] font-bold text-muted-foreground/40">{Math.round(progress)}%</span>
                     </div>
-                    <div className="h-3 w-full bg-zinc-50 rounded-full border border-zinc-100 overflow-hidden p-0.5 shadow-inner">
-                        <div 
-                            className={cn("h-full rounded-full transition-all duration-1000", tierInfo.bar)} 
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
+                    <Progress value={progress} className="h-3 bg-muted p-0.5 rounded-md" indicatorClassName="bg-primary rounded-sm transition-all duration-1000" />
                 </div>
             )}
 
             {!nextTier && (
-                <div className="p-4 bg-purple-50/50 rounded-2xl border border-purple-100 flex items-center gap-3 animate-pulse">
-                    <Award className="text-purple-600" size={20} />
-                    <p className="text-xs font-bold text-purple-700">¡Has alcanzado el nivel máximo! Eres una verdadera leyenda.</p>
+                <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-center gap-3 animate-pulse">
+                    <Award className="text-primary" size={20} />
+                    <p className="text-xs font-bold text-primary">¡Has alcanzado el nivel máximo! Eres una verdadera leyenda.</p>
                 </div>
             )}
-        </div>
+        </Card>
     );
 }

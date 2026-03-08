@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { registerVisitByCode } from "@/actions/visits";
 import { QRScanner } from "@/components/qr-scanner";
-import { useTheme } from "@/components/theme-provider";
+import { QRScanner } from "@/components/qr-scanner";
 import { 
     QrCode, 
     ArrowLeft, 
@@ -22,7 +22,7 @@ export default function StaffScanPage() {
     const [scannedCode, setScannedCode] = useState<string | null>(null);
     const [isScannerOpen, setIsScannerOpen] = useState(false);
     const [status, setStatus] = useState<{ type: 'success' | 'error' | 'idle' | 'loading', message: string }>({ type: 'idle', message: '' });
-    const { brandColor } = useTheme();
+    const [status, setStatus] = useState<{ type: 'success' | 'error' | 'idle' | 'loading', message: string }>({ type: 'idle', message: '' });
     const router = useRouter();
 
     const handleScan = async (code: string) => {
@@ -56,14 +56,14 @@ export default function StaffScanPage() {
     return (
         <div className="p-6 pt-18 pb-28 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-lg mx-auto min-h-screen flex flex-col justify-center">
             
-            <header className="fixed top-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-md z-40 flex items-center gap-4 border-b border-primary/5">
+            <header className="fixed top-0 left-0 right-0 p-6 bg-card/80 backdrop-blur-md z-40 flex items-center gap-4 border-b border-primary/5">
                 <button 
                     onClick={() => router.back()}
-                    className="p-2 rounded-xl bg-white border border-primary/10 shadow-sm active:scale-95 transition-all"
+                    className="p-2 rounded-xl bg-card border border-primary/10 shadow-sm active:scale-95 transition-all text-primary"
                 >
-                    <ArrowLeft className="w-5 h-5" style={{ color: brandColor }} />
+                    <ArrowLeft className="w-5 h-5" />
                 </button>
-                <h1 className="text-xl font-black tracking-tight" style={{ color: brandColor }}>
+                <h1 className="text-xl font-black tracking-tight text-primary">
                     Registro de Visitas
                 </h1>
             </header>

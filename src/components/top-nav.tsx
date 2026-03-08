@@ -37,26 +37,26 @@ export function TopNav() {
     };
 
     return (
-        <header className="fixed top-0 left-0 right-0 bg-primary border-b border-primary/80 py-2 px-6 flex items-center justify-between z-[2000] shadow-md">
+        <header className="fixed top-0 left-0 right-0 bg-background/80 backdrop-blur-md border-b border-border py-2 px-6 flex items-center justify-between z-[2000]">
             <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center shadow-sm">
-                    <Coffee className="w-5 h-5 text-white" strokeWidth={2.5} />
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Coffee className="w-5 h-5 text-primary" strokeWidth={2.5} />
                 </div>
-                <h1 className="text-lg font-bold text-white tracking-tight">
+                <h1 className="text-lg font-bold text-foreground tracking-tight">
                     {title}
                 </h1>
             </div>
 
             <div className="flex items-center gap-4">
                 {isPending ? (
-                    <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse" />
+                    <div className="w-8 h-8 rounded-lg bg-muted animate-pulse" />
                 ) : user ? (
                     <Drawer>
                         <DrawerTrigger asChild>
-                            <button className="relative h-9 w-9 rounded-full overflow-hidden border border-white/20 hover:ring-2 hover:ring-white/30 transition-all outline-none">
+                            <button className="relative h-9 w-9 rounded-lg overflow-hidden border border-border hover:ring-2 hover:ring-primary/30 transition-all outline-none">
                                 <Avatar className="h-full w-full">
                                     <AvatarImage src={user.image || ""} alt={user.name || "Usuario"} />
-                                    <AvatarFallback className="bg-white/10 text-white text-xs font-bold">
+                                    <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
                                         {(user.name || "U").charAt(0).toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
@@ -127,7 +127,7 @@ export function TopNav() {
                         </DrawerContent>
                     </Drawer>
                 ) : (
-                    <Button asChild variant="ghost" className="text-white hover:bg-white/10 font-bold">
+                    <Button asChild variant="ghost" className="text-foreground hover:bg-primary/10 font-bold">
                         <Link href="/auth/login">
                             <User className="mr-2 h-4 w-4" />
                             Ingresar

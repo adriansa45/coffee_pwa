@@ -23,11 +23,11 @@ export const auth = betterAuth({
                     subject: "Restablece tu contraseña - Espresso",
                     html: `
                         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-                            <h1 style="color: #820E2B;">Espresso</h1>
+                            <h1 style="color: #5E1914;">Espresso</h1>
                             <p>Hola ${user.name || ""},</p>
                             <p>Recibimos una solicitud para restablecer la contraseña de tu cuenta en Espresso.</p>
                             <p>Haz clic en el siguiente enlace para crear una nueva contraseña:</p>
-                            <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #820E2B; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Restablecer contraseña</a>
+                            <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #D4AF37; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Restablecer contraseña</a>
                             <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
                         </div>
                     `,
@@ -64,11 +64,6 @@ export const auth = betterAuth({
                 type: "string",
                 required: false,
                 input: false,
-            },
-            brandColor: {
-                type: "string",
-                required: false,
-                defaultValue: "#820E2B",
             },
             fcmToken: {
                 type: "string",

@@ -1,7 +1,6 @@
 "use client";
 
 import { updateProfileImage } from "@/app/actions/user";
-import { useTheme } from "@/components/theme-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { authClient } from "@/lib/auth-client";
 import { optimizeImage } from "@/lib/image-optimization";
@@ -13,7 +12,6 @@ export function ProfilePictureUpload({ initialImage, name }: { initialImage?: st
     const [image, setImage] = useState(initialImage);
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { brandColor } = useTheme();
     const { refetch } = authClient.useSession();
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +43,7 @@ export function ProfilePictureUpload({ initialImage, name }: { initialImage?: st
     };
 
     return (
-        <div className="flex flex-col items-center space-y-4 py-4 bg-white rounded-3xl border border-primary/10 shadow-sm mb-6">
+        <div className="flex flex-col items-center space-y-4 py-8 bg-card rounded-3xl border border-primary/10 shadow-sm mb-6">
             <div className="relative group">
                 <Avatar className="w-32 h-32 border-4 border-white shadow-xl">
                     <AvatarImage src={image || ""} alt={name || "Usuario"} className="object-cover" />
@@ -57,8 +55,7 @@ export function ProfilePictureUpload({ initialImage, name }: { initialImage?: st
                 <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
-                    className="absolute bottom-0 right-0 p-3 rounded-full shadow-lg transition-all active:scale-90 flex items-center justify-center border-2 border-white"
-                    style={{ backgroundColor: brandColor }}
+                    className="absolute bottom-0 right-0 p-3 rounded-full shadow-lg transition-all active:scale-90 flex items-center justify-center border-2 border-white bg-primary"
                 >
                     {uploading ? (
                         <Loader2 className="w-5 h-5 text-white animate-spin" />

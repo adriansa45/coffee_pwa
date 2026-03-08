@@ -5,7 +5,7 @@ import { authClient } from "@/lib/auth-client";
 import { ArrowLeft, ChevronRight, Loader2, LogOut, Settings, Shield } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { TierProgress } from "@/components/profile/tier-progress";
+import { Card } from "@/components/ui/card";
 
 export default function ProfilePage() {
     const { data: session, isPending } = authClient.useSession();
@@ -42,71 +42,76 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="p-6 pt-18 pb-28 space-y-8">
-            <div className="flex items-center gap-4">
-                <button
-                    onClick={() => router.back()}
-                    className="p-2 -ml-2 rounded-full text-foreground/40 hover:bg-primary/5 hover:text-foreground transition-all"
-                >
-                    <ArrowLeft size={20} />
-                </button>
-                <div className="space-y-1">
-                    <p className="text-sm font-bold text-foreground/60 break-all">{user.email}</p>
+        <div className="min-h-screen bg-background pb-32">
+            {/* Header Area */}
+            <div className="px-6 pt-16 pb-8 flex flex-col gap-1 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="flex items-center gap-4 mb-2">
+                    <button
+                        onClick={() => router.back()}
+                        className="p-2 -ml-2 rounded-xl text-muted-foreground hover:bg-muted/50 transition-all"
+                    >
+                        <ArrowLeft size={20} />
+                    </button>
+                    <div>
+                        <h1 className="text-4xl font-bold text-foreground tracking-tighter uppercase leading-none">Mi Cuenta</h1>
+                        <p className="text-[10px] font-bold text-primary/60 uppercase tracking-[0.3em] mt-1">{user.email}</p>
+                    </div>
                 </div>
             </div>
 
-            <TierProgress 
-                totalVisits={Number((user as any).totalVisitsCount || 0)} 
-                currentTier={(user as any).currentTier || "Explorador/a"} 
-            />
+            <div className="px-6 space-y-10">
+                {/* Account Section */}
+                <div className="flex flex-col gap-4">
+                    <h3 className="text-[10px] font-bold text-primary/40 uppercase tracking-[0.2em] ml-1">Configuración</h3>
+                    <Card className="bg-card/50 backdrop-blur-sm border-border/40 overflow-hidden shadow-xl rounded-xl">
+                        <div className="flex flex-col divide-y divide-border/40">
+                            <Link
+                                href="/profile/preferences"
+                                className="w-full flex items-center justify-between p-5 hover:bg-primary/5 transition-colors group"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                        <Settings className="size-5" />
+                                    </div>
+                                    <span className="text-sm font-bold text-foreground uppercase tracking-tight">Preferencias</span>
+                                </div>
+                                <ChevronRight className="size-4 text-muted-foreground/30 group-hover:translate-x-1 transition-transform" />
+                            </Link>
 
-            <div className="space-y-4">
-                <h3 className="text-xs font-bold text-foreground/40 uppercase tracking-wider ml-1">Cuenta</h3>
-                <div className="bg-white rounded-2xl border border-primary/10 divide-y divide-primary/5 shadow-sm overflow-hidden">
-                    <Link
-                        href="/profile/preferences"
-                        className="w-full flex items-center justify-between p-4 hover:bg-primary/5 transition-colors group"
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                                <Settings className="w-4 h-4" />
-                            </div>
-                            <span className="text-sm font-medium text-foreground/90">Preferencias</span>
+                            <Link
+                                href="/profile/privacy"
+                                className="w-full flex items-center justify-between p-5 hover:bg-primary/5 transition-colors group"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                        <Shield className="size-5" />
+                                    </div>
+                                    <span className="text-sm font-bold text-foreground uppercase tracking-tight">Privacidad</span>
+                                </div>
+                                <ChevronRight className="size-4 text-muted-foreground/30 group-hover:translate-x-1 transition-transform" />
+                            </Link>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-foreground/20 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-
-                    <Link
-                        href="/profile/privacy"
-                        className="w-full flex items-center justify-between p-4 hover:bg-primary/5 transition-colors group"
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                                <Shield className="w-4 h-4" />
-                            </div>
-                            <span className="text-sm font-medium text-foreground/90">Privacidad</span>
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-foreground/20 group-hover:translate-x-1 transition-transform" />
-                    </Link>
+                    </Card>
                 </div>
 
+                {/* Logout Button */}
+                <div className="pt-4 flex flex-col gap-6">
+                    <Button
+                        onClick={handleSignOut}
+                        variant="destructive"
+                        className="w-full py-7 rounded-xl flex gap-3 text-xs font-bold uppercase tracking-[0.25em] shadow-lg shadow-destructive/20 hover:scale-[0.98] transition-all"
+                    >
+                        <LogOut className="size-4" />
+                        Cerrar Sesión
+                    </Button>
 
+                    <footer className="text-center">
+                        <p className="text-[9px] font-bold text-muted-foreground/20 uppercase tracking-[0.3em]">
+                            Coffee PWA &copy; 2026 - Versión 1.0.0 (Beta)
+                        </p>
+                    </footer>
+                </div>
             </div>
-
-            <div className="pt-4">
-                <Button
-                    onClick={handleSignOut}
-                    variant="outline"
-                    className="w-full py-6 border-red-100 text-red-700 bg-red-50 hover:text-red-700 rounded-2xl gap-2 font-bold shadow-sm active:scale-95 transition-all"
-                >
-                    <LogOut className="w-4 h-4" />
-                    Cerrar Sesión
-                </Button>
-            </div>
-
-            <footer className="text-center">
-                <p className="text-[10px] text-foreground/20">Versión 1.0.0 (Beta)</p>
-            </footer>
         </div>
     );
 }

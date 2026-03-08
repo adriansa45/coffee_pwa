@@ -4,6 +4,7 @@ import { DiscoverSearch } from "@/components/social/discover-search";
 import { RankingSection } from "@/components/social/ranking-section";
 import { Star, Coffee, Users, Search as SearchIcon, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { Card } from "@/components/ui/card";
 
 export default async function DiscoverPage(props: {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -22,31 +23,31 @@ export default async function DiscoverPage(props: {
     }
 
     return (
-        <div className="min-h-screen bg-white pb-28">
+        <div className="min-h-screen bg-background pb-28">
             {/* Header Area */}
-            <div className="px-6 pt-16 pb-8">
+            <div className="px-6 pt-16 pb-8 flex flex-col gap-1">
                 {query ? (
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 animate-in fade-in slide-in-from-left-4 duration-500">
                         <Link 
                             href="/discover"
-                            className="p-2 -ml-2 rounded-full text-zinc-400 hover:bg-zinc-50 transition-all"
+                            className="p-2 -ml-2 rounded-xl text-muted-foreground hover:bg-muted/50 transition-all"
                         >
                             <ArrowLeft size={20} />
                         </Link>
                         <div>
-                            <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">Búsqueda</h1>
-                            <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mt-1">Resultados para "{query}"</p>
+                            <h1 className="text-3xl font-bold text-foreground tracking-tighter uppercase">Búsqueda</h1>
+                            <p className="text-[10px] font-bold text-primary/60 uppercase tracking-[0.25em] mt-1">Resultados para "{query}"</p>
                         </div>
                     </div>
                 ) : (
-                    <div>
-                        <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">Comunidad</h1>
-                        <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mt-1">Conoce a otros exploradores</p>
+                    <div className="flex flex-col gap-1 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <h1 className="text-4xl font-bold text-foreground tracking-tighter uppercase">Comunidad</h1>
+                        <p className="text-[10px] font-bold text-primary/60 uppercase tracking-[0.3em]">Conoce a otros exploradores</p>
                     </div>
                 )}
             </div>
 
-            {/* Search Bar - Always visible or slightly different in results view? */}
+            {/* Search Bar */}
             <div className="px-6 mb-10">
                 <DiscoverSearch />
             </div>
@@ -54,15 +55,15 @@ export default async function DiscoverPage(props: {
             {/* Content Area */}
             <div className="px-6">
                 {query ? (
-                    <div className="bg-white rounded-[32px] border border-zinc-100 p-6 shadow-sm min-h-[400px]">
+                    <Card className="bg-card/50 backdrop-blur-sm border-border/40 p-6 shadow-xl min-h-[400px]">
                         <UserSearchList initialUsers={searchResults} query={query} />
-                    </div>
+                    </Card>
                 ) : (
-                    <div className="space-y-12">
+                    <div className="flex flex-col gap-14">
                         <RankingSection 
                             title="Top Reseñadores"
                             subtitle="Más críticas compartidas"
-                            icon={<Star className="fill-amber-400 text-amber-400" size={20} />}
+                            icon={<Star className="fill-primary text-primary" size={20} />}
                             users={rankings?.topReviewers || []}
                             type="reviews"
                         />
@@ -70,7 +71,7 @@ export default async function DiscoverPage(props: {
                         <RankingSection 
                             title="Top Exploradores"
                             subtitle="Más cafeterías visitadas"
-                            icon={<Coffee className="text-emerald-500" size={20} />}
+                            icon={<Coffee className="text-primary" size={20} />}
                             users={rankings?.topExplorers || []}
                             type="visits"
                         />
@@ -78,7 +79,7 @@ export default async function DiscoverPage(props: {
                         <RankingSection 
                             title="Más Seguidos"
                             subtitle="Inspirando a la comunidad"
-                            icon={<Users className="text-blue-500" size={20} />}
+                            icon={<Users className="text-primary" size={20} />}
                             users={rankings?.topFollowed || []}
                             type="followers"
                         />

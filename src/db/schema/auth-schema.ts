@@ -13,9 +13,16 @@ export const user = pgTable("user", {
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
   role: text("role").default("customer"),
-  userCode: text("user_code"),
+  userCode: text("user_code").$defaultFn(() => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 6; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  }),
   shopId: text("shop_id"),
-  brandColor: text("brand_color").default("#820E2B"),
+  // brandColor: text("brand_color").default("#820E2B"),
   fcmToken: text("fcm_token"),
   totalVisitsCount: text("total_visits_count").default("0"),
   currentTier: text("current_tier").default("Explorador/a"),

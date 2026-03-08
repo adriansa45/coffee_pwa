@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { eq, count, desc, and } from "drizzle-orm";
 import { Coffee, ChevronRight, Award, Trophy } from "lucide-react";
 import Link from "next/link";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -51,91 +52,97 @@ export default async function PassportPage() {
     if (!data) return null;
 
     return (
-        <div className="p-6 pt-24 pb-28 space-y-8 animate-in fade-in duration-500">
-            <header className="space-y-1">
-                <h1 className="text-3xl font-black tracking-tight text-foreground">Tu Pasaporte</h1>
-                <p className="text-sm font-medium text-foreground/40">
-                    Has acumulado <span className="text-primary font-bold">{data.totalVisits}</span> visitas en total
+        <div className="min-h-screen bg-background pb-32">
+            {/* Header Area */}
+            <header className="px-6 pt-16 pb-8 flex flex-col gap-1 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <h1 className="text-4xl font-black text-foreground tracking-tighter uppercase leading-none">Mi Pasaporte</h1>
+                <p className="text-[10px] font-black text-primary/60 uppercase tracking-[0.3em] mt-1">
+                    Has acumulado <span className="text-primary">{data.totalVisits}</span> visitas en total
                 </p>
             </header>
 
-            {/* Resume Section */}
-            <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white p-4 rounded-3xl border border-primary/10 shadow-sm space-y-2">
-                    <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                        <Award size={20} />
-                    </div>
-                    <div>
-                        <p className="text-2xl font-black">{data.unlocked.length}</p>
-                        <p className="text-[10px] font-bold text-foreground/40 uppercase tracking-wider">Premios</p>
-                    </div>
-                </div>
-                <div className="bg-white p-4 rounded-3xl border border-primary/10 shadow-sm space-y-2">
-                    <div className="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600">
-                        <Trophy size={20} />
-                    </div>
-                    <div>
-                        <p className="text-2xl font-black">{data.shopStats.length}</p>
-                        <p className="text-[10px] font-bold text-foreground/40 uppercase tracking-wider">Cafeterías</p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Shops List */}
-            <div className="space-y-4">
-                <h3 className="text-sm font-bold text-foreground/40 uppercase tracking-wider ml-1">Tus Cafeterías</h3>
-                <div className="space-y-3">
-                    {data.shopStats.map((stat) => (
-                        <Link 
-                            key={stat.shopId} 
-                            href={`/shops/${stat.shopId}`}
-                            className="flex items-center justify-between p-4 bg-white rounded-2xl border border-primary/5 hover:border-primary/20 transition-all group"
-                        >
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-xl bg-zinc-50 flex items-center justify-center border border-zinc-100 group-hover:bg-primary/5 transition-colors">
-                                    <Coffee className="text-zinc-400 group-hover:text-primary transition-colors" size={24} />
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-sm">{stat.shopName}</h4>
-                                    <p className="text-[10px] text-foreground/40 font-medium truncate max-w-[150px]">{stat.address}</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-primary font-black text-sm">{stat.visitCount}</span>
-                                <ChevronRight size={16} className="text-foreground/20" />
-                            </div>
-                        </Link>
-                    ))}
-                    {data.shopStats.length === 0 && (
-                        <div className="p-8 text-center bg-zinc-50 rounded-3xl border-2 border-dashed border-zinc-200">
-                            <p className="text-xs text-zinc-400 font-medium">Empieza a escanear QRs para llenar tu pasaporte</p>
+            <div className="px-6 flex flex-col gap-10">
+                {/* Resume Section */}
+                <div className="grid grid-cols-2 gap-5">
+                    <Card className="p-5 border-border/40 bg-card/50 backdrop-blur-sm shadow-xl flex flex-col gap-3">
+                        <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
+                            <Award size={22} />
                         </div>
-                    )}
+                        <div className="flex flex-col">
+                            <p className="text-3xl font-black text-foreground leading-none">{data.unlocked.length}</p>
+                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-1">Premios</p>
+                        </div>
+                    </Card>
+                    <Card className="p-5 border-border/40 bg-card/50 backdrop-blur-sm shadow-xl flex flex-col gap-3">
+                        <div className="size-10 rounded-xl bg-accent/20 flex items-center justify-center text-accent shadow-inner">
+                            <Trophy size={22} />
+                        </div>
+                        <div className="flex flex-col">
+                            <p className="text-3xl font-black text-foreground leading-none">{data.shopStats.length}</p>
+                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-1">Cafeterías</p>
+                        </div>
+                    </Card>
                 </div>
-            </div>
 
-            {/* Unlocked Rewards List */}
-            {data.unlocked.length > 0 && (
-                <div className="space-y-4">
-                    <h3 className="text-sm font-bold text-foreground/40 uppercase tracking-wider ml-1">Recompensas Desbloqueadas</h3>
-                    <div className="space-y-3">
-                        {data.unlocked.map((reward) => (
-                            <div key={reward.id} className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white shrink-0">
-                                    <Award size={20} />
-                                </div>
-                                <div className="flex-1">
-                                    <h4 className="font-bold text-sm text-primary">{reward.rewardName}</h4>
-                                    <p className="text-[10px] font-bold opacity-60 uppercase">{reward.shopName}</p>
-                                </div>
-                                <div className="text-[10px] font-bold text-primary/40">
-                                    {new Date(reward.unlockedAt).toLocaleDateString()}
-                                </div>
-                            </div>
+                {/* Shops List */}
+                <div className="flex flex-col gap-4">
+                    <h3 className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] ml-1">Tus Cafeterías</h3>
+                    <div className="flex flex-col gap-3">
+                        {data.shopStats.map((stat) => (
+                            <Link 
+                                key={stat.shopId} 
+                                href={`/shops/${stat.shopId}`}
+                                className="block group"
+                            >
+                                <Card className="flex items-center justify-between p-4 border-border/40 bg-card/50 backdrop-blur-sm group-hover:border-primary/30 transition-all duration-300">
+                                    <div className="flex items-center gap-4">
+                                        <div className="size-12 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500">
+                                            <Coffee className="size-6 transition-transform duration-500 group-hover:scale-110" />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <h4 className="font-black text-sm uppercase text-foreground group-hover:text-primary transition-colors">{stat.shopName}</h4>
+                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wide truncate max-w-[150px]">{stat.address}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-primary font-black text-lg">{stat.visitCount}</span>
+                                        <ChevronRight size={16} className="text-muted-foreground/30 group-hover:translate-x-1 transition-transform" />
+                                    </div>
+                                </Card>
+                            </Link>
                         ))}
+                        {data.shopStats.length === 0 && (
+                            <div className="p-10 text-center bg-muted/20 rounded-[32px] border-2 border-dashed border-border/40 flex flex-col items-center gap-2">
+                                <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest text-center">Empieza a escanear QRs para llenar tu pasaporte</p>
+                            </div>
+                        )}
                     </div>
                 </div>
-            )}
+
+                {/* Unlocked Rewards List */}
+                {data.unlocked.length > 0 && (
+                    <div className="flex flex-col gap-4">
+                        <h3 className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] ml-1">Recompensas</h3>
+                        <div className="flex flex-col gap-3">
+                            {data.unlocked.map((reward) => (
+                                <Card key={reward.id} className="p-4 bg-primary/10 border-primary/20 flex items-center gap-4 relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 size-16 bg-primary/5 rounded-bl-full -mr-4 -mt-4 group-hover:size-20 transition-all duration-700" />
+                                    <div className="size-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground shrink-0 shadow-lg shadow-primary/20 z-10">
+                                        <Award size={22} strokeWidth={2.5} />
+                                    </div>
+                                    <div className="flex-1 z-10">
+                                        <h4 className="font-black text-sm text-foreground uppercase tracking-tight">{reward.rewardName}</h4>
+                                        <p className="text-[10px] font-black text-primary/60 uppercase tracking-widest">{reward.shopName}</p>
+                                    </div>
+                                    <div className="text-[9px] font-black text-primary/40 uppercase z-10">
+                                        {new Date(reward.unlockedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

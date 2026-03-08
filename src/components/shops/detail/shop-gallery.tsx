@@ -46,7 +46,7 @@ export function ShopGallery({ shopName, gallery }: ShopGalleryProps) {
     return (
         <div className="space-y-4 pt-4">
             <div className="flex items-center justify-between px-2">
-                <h3 className="text-xl font-black">Fotos <span className="text-sm font-bold text-zinc-400">({gallery.length})</span></h3>
+                <h3 className="text-xl font-bold">Fotos <span className="text-sm font-bold text-muted-foreground">({gallery.length})</span></h3>
                 <button className="text-primary text-sm font-bold uppercase tracking-wider">Ver todas</button>
             </div>
 
@@ -55,7 +55,7 @@ export function ShopGallery({ shopName, gallery }: ShopGalleryProps) {
                     <div 
                         key={img.id}
                         onClick={() => setSelectedIndex(index)}
-                        className="relative min-w-[240px] h-[180px] rounded-[1rem] overflow-hidden flex-shrink-0 shadow-lg active:scale-95 transition-all cursor-pointer border-4 border-white"
+                        className="relative min-w-[240px] h-[180px] rounded-xl overflow-hidden flex-shrink-0 shadow-lg active:scale-95 transition-all cursor-pointer border-4 border-card"
                     >
                         <Image
                             src={img.url || "/images/coffee-placeholder.jpg"}
@@ -111,13 +111,13 @@ export function ShopGallery({ shopName, gallery }: ShopGalleryProps) {
                             <>
                                 <button
                                     onClick={handlePrev}
-                                    className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/5 hover:bg-white/12 backdrop-blur-2xl text-white flex items-center justify-center active:scale-90 transition-all z-50 border border-white/10"
+                                    className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-xl bg-card/20 hover:bg-card/40 backdrop-blur-2xl text-white flex items-center justify-center active:scale-90 transition-all z-50 border border-white/10"
                                 >
                                     <ChevronLeft size={32} />
                                 </button>
                                 <button
                                     onClick={handleNext}
-                                    className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/5 hover:bg-white/12 backdrop-blur-2xl text-white flex items-center justify-center active:scale-90 transition-all z-50 border border-white/10"
+                                    className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-xl bg-card/20 hover:bg-card/40 backdrop-blur-2xl text-white flex items-center justify-center active:scale-90 transition-all z-50 border border-white/10"
                                 >
                                     <ChevronRight size={32} />
                                 </button>
@@ -128,20 +128,20 @@ export function ShopGallery({ shopName, gallery }: ShopGalleryProps) {
                         <div className="absolute top-8 right-8 flex gap-4 z-50" onClick={(e) => e.stopPropagation()}>
                             <button
                                 onClick={toggleZoom}
-                                className="w-14 h-14 rounded-full bg-white/5 hover:bg-white/12 backdrop-blur-2xl text-white flex items-center justify-center active:scale-90 transition-all border border-white/10"
+                                className="w-14 h-14 rounded-xl bg-card/20 hover:bg-card/40 backdrop-blur-2xl text-white flex items-center justify-center active:scale-90 transition-all border border-white/10"
                             >
                                 {zoom === 1 ? <ZoomIn size={28} /> : <ZoomOut size={28} />}
                             </button>
                             <button
                                 onClick={() => setSelectedIndex(null)}
-                                className="w-14 h-14 rounded-full bg-white/5 hover:bg-white/12 backdrop-blur-2xl text-white flex items-center justify-center active:scale-90 transition-all border border-white/10"
+                                className="w-14 h-14 rounded-xl bg-card/20 hover:bg-card/40 backdrop-blur-2xl text-white flex items-center justify-center active:scale-90 transition-all border border-white/10"
                             >
                                 <X size={28} />
                             </button>
                         </div>
 
                         {/* Image Counter Badge */}
-                        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 px-6 py-2.5 rounded-full bg-white/5 backdrop-blur-3xl text-white text-xs font-black border border-white/10 tracking-[0.2em] uppercase">
+                        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 px-6 py-2.5 rounded-xl bg-card/20 backdrop-blur-3xl text-white text-xs font-bold border border-white/10 tracking-[0.2em] uppercase">
                             {selectedIndex !== null ? selectedIndex + 1 : 0} <span className="text-white/30 mx-2">|</span> {gallery.length}
                         </div>
                     </div>

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { getShopDashboardMetrics } from "@/actions/loyalty";
 import { authClient } from "@/lib/auth-client";
-import { useTheme } from "@/components/theme-provider";
 import { 
     Users, 
     Calendar, 
@@ -23,7 +22,6 @@ export default function ShopAdminDashboard() {
     const { data: session, isPending: authPending } = authClient.useSession();
     const [metrics, setMetrics] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-    const { brandColor } = useTheme();
     const router = useRouter();
 
     const shopId = (session?.user as any)?.shopId;
@@ -56,12 +54,12 @@ export default function ShopAdminDashboard() {
                 <div className="flex items-center gap-4">
                     <Link 
                         href="/home"
-                        className="p-2 rounded-xl bg-white border border-primary/10 shadow-sm active:scale-95 transition-all"
+                        className="p-2 rounded-xl bg-card border border-primary/10 shadow-sm active:scale-95 transition-all text-primary"
                     >
-                        <ArrowLeft className="w-5 h-5" style={{ color: brandColor }} />
+                        <ArrowLeft className="w-5 h-5" />
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-black tracking-tight" style={{ color: brandColor }}>
+                        <h1 className="text-2xl font-black tracking-tight text-primary">
                             Admin Dashboard
                         </h1>
                         <p className="text-xs font-bold text-foreground/40 uppercase tracking-widest leading-none mt-1">
@@ -112,11 +110,11 @@ export default function ShopAdminDashboard() {
                 {/* Top Clients */}
                 <div className="space-y-4">
                     <h3 className="text-sm font-bold text-foreground/40 uppercase tracking-wider ml-1">Top Clientes</h3>
-                    <div className="bg-white rounded-[2.5rem] border border-primary/10 shadow-sm overflow-hidden divide-y divide-primary/5">
+                    <div className="bg-card rounded-[2.5rem] border border-primary/10 shadow-sm overflow-hidden divide-y divide-primary/5">
                         {metrics?.topClients?.map((client: any, i: number) => (
                             <div key={client.userId} className="flex items-center justify-between p-4 px-6 hover:bg-primary/5 transition-colors">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-2xl bg-zinc-50 border border-zinc-100 flex items-center justify-center font-bold text-xs text-foreground/40 overflow-hidden">
+                                    <div className="w-10 h-10 rounded-2xl bg-muted/50 border border-border flex items-center justify-center font-bold text-xs text-foreground/40 overflow-hidden">
                                         {client.image ? (
                                             <img src={client.image} alt={client.name} className="w-full h-full object-cover" />
                                         ) : (
@@ -143,14 +141,14 @@ export default function ShopAdminDashboard() {
                 {/* Popular Rewards */}
                 <div className="space-y-4">
                     <h3 className="text-sm font-bold text-foreground/40 uppercase tracking-wider ml-1">Premios Desbloqueados</h3>
-                    <div className="bg-white rounded-[2.5rem] border border-primary/10 shadow-sm p-6 space-y-6">
+                    <div className="bg-card rounded-[2.5rem] border border-primary/10 shadow-sm p-6 space-y-6">
                         {metrics?.rewardStats?.map((reward: any) => (
                             <div key={reward.rewardName} className="space-y-2">
                                 <div className="flex justify-between items-end">
                                     <span className="text-sm font-bold">{reward.rewardName}</span>
                                     <span className="text-xs font-black text-primary bg-primary/10 px-2 py-1 rounded-lg">{reward.unlockCount}</span>
                                 </div>
-                                <div className="h-2 w-full bg-zinc-50 rounded-full overflow-hidden">
+                                <div className="h-2 w-full bg-muted/50 rounded-full overflow-hidden">
                                     <div 
                                         className="h-full bg-primary transition-all duration-1000" 
                                         style={{ width: `${(reward.unlockCount / (metrics?.totalVisits || 1)) * 100}%` }}
@@ -180,18 +178,18 @@ export default function ShopAdminDashboard() {
                  </Link>
 
                  <div className="grid grid-cols-1 gap-4">
-                    <button className="flex items-center justify-between p-6 bg-white rounded-2xl border border-primary/10 shadow-sm hover:border-primary/30 transition-all font-bold group">
+                    <button className="flex items-center justify-between p-6 bg-card rounded-2xl border border-primary/10 shadow-sm hover:border-primary/30 transition-all font-bold group">
                         <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
                                 <Award size={20} />
                             </div>
                             <span>Gestionar Premios</span>
                         </div>
                         <MoreHorizontal className="text-foreground/20 group-hover:text-primary transition-colors" />
                     </button>
-                    <button className="flex items-center justify-between p-6 bg-white rounded-2xl border border-primary/10 shadow-sm hover:border-primary/30 transition-all font-bold group">
+                    <button className="flex items-center justify-between p-6 bg-card rounded-2xl border border-primary/10 shadow-sm hover:border-primary/30 transition-all font-bold group">
                         <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center">
                                 <Trophy size={20} />
                             </div>
                             <span>Editar Insignias</span>
@@ -206,8 +204,8 @@ export default function ShopAdminDashboard() {
 
 function StatCard({ title, value, icon: Icon, color, bg }: any) {
     return (
-        <div className="bg-white p-5 rounded-3xl border border-primary/10 shadow-sm space-y-3 hover:border-primary/30 transition-all">
-            <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center", bg, color)}>
+        <div className="bg-card p-5 rounded-3xl border border-primary/10 shadow-sm space-y-3 hover:border-primary/30 transition-all">
+            <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center", bg.replace('bg-', 'bg-opacity-10 bg-'), color)}>
                 <Icon size={20} />
             </div>
             <div>

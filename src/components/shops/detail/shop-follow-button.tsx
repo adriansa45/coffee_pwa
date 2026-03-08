@@ -53,14 +53,14 @@ export function ShopFollowButton({ shopId, initialIsFollowing = false }: ShopFol
                 onClick={toggleFollow}
                 disabled={isPending}
                 className={cn(
-                    "h-8 px-3 rounded-full flex items-center gap-1.5 transition-all active:scale-95 border shadow-sm font-bold text-[10px] uppercase tracking-wider",
+                    "h-8 px-3 rounded-xl flex items-center gap-1.5 transition-all active:scale-95 border shadow-sm font-bold text-[10px] uppercase tracking-wider",
                     optimisticFollowing
-                        ? "bg-rose-50 border-rose-100 text-rose-600 shadow-rose-100/50"
-                        : "bg-zinc-50 border-zinc-100 text-zinc-400 hover:text-rose-500 hover:border-rose-100 hover:bg-rose-50/50",
+                        ? "bg-destructive/10 border-destructive/20 text-destructive shadow-destructive/5"
+                        : "bg-muted border-border text-muted-foreground hover:text-destructive hover:border-destructive/20 hover:bg-destructive/5",
                     isPending && "opacity-70 cursor-not-allowed"
                 )}
             >
-                <Heart className={cn("w-3.5 h-3.5 transition-transform", optimisticFollowing && "fill-rose-500 scale-110")} />
+                <Heart className={cn("w-3.5 h-3.5 transition-transform", optimisticFollowing && "fill-destructive scale-110")} />
                 <span>{optimisticFollowing ? "Dejar de seguir" : "Seguir"}</span>
             </button>
             <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />

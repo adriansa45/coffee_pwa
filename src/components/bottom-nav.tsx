@@ -5,16 +5,17 @@ import { cn } from "@/lib/utils";
 import { Coffee, Home, LogIn, Map, QrCode, Search, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const customerNavItems = [
     { name: "Inicio", href: "/home", icon: Home },
-    { name: "Mapa", href: "/map", icon: Map },
-    { name: "Cafeterías", href: "/shops", icon: Coffee },
-    { name: "Descubrir", href: "/discover", icon: Search },
+    { name: "Explorar", href: "/shops", icon: Search },
+    { name: "", href: "/scan", icon: QrCode }, // Placeholder for central action
+    { name: "Pasaporte", href: "/passport", icon: Coffee },
 ];
 
 const shopNavItems = [
-    { name: "Escanear", href: "/shop", icon: QrCode },
+    { name: "", href: "/shop", icon: QrCode },
 ];
 
 export function BottomNav() {
@@ -22,6 +23,11 @@ export function BottomNav() {
     const router = useRouter();
     const { data: session } = authClient.useSession();
     const user = session?.user;
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Determine which nav items to show based on role
     const role = user ? (user as any).role : "customer";
@@ -44,26 +50,66 @@ export function BottomNav() {
         });
     };
 
+    if (!mounted) {
+        return (
+            <div className="fixed bottom-0 left-0 right-0 h-20 bg-background border-t flex items-center justify-between px-2 z-[1000]">
+                {/* Skeleton/Placeholder to avoid layout shift */}
+                {customerNavItems.map((item, index) => (
+                    <div key={index} className="flex-1 flex flex-col items-center justify-center gap-1 opacity-20">
+                        <div className="size-6 bg-muted rounded-full" />
+                        <div className="h-2 w-8 bg-muted rounded" />
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
     return (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[min(calc(100%-3rem),400px)] glass rounded-full px-6 py-3 flex justify-around items-center z-[1000] shadow-2xl border-white/10">
-            {navItems.map((item) => {
+        <div className="fixed bottom-0 left-0 right-0 h-20 bg-background border-t  flex items-center justify-between px-2 z-[1000] animate-in fade-in slide-in-from-bottom-5 duration-500">
+            {navItems.map((item, index) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href || (item.name === "Inicio" && pathname === "/");
+                const isCenter = index === 2;
+
+                if (isCenter) {
+                    return (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className="flex-1 flex flex-col items-center justify-center group"
+                        >
+                            <div className={cn(
+                                "size-16 rounded-full flex items-center justify-center transition-all duration-300",
+                                isActive ? "bg-primary text-primary-foreground scale-110" : "bg-primary text-primary-foreground hover:scale-105"
+                            )}>
+                                <Icon className="size-8 stroke-[2.5px]" />
+                            </div>
+                            <span className={cn(
+                                "mt-1.5 text-xs uppercase tracking-widest transition-colors duration-300",
+                                isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                            )}>
+                                {item.name}
+                            </span>
+                        </Link>
+                    );
+                }
+
                 return (
                     <Link
                         key={item.href}
                         href={item.href}
                         className={cn(
-                            "relative flex flex-col items-center gap-1 transition-all duration-300",
-                            isActive ? "text-primaryScale" : "text-muted-foreground hover:text-foreground"
+                            "flex-1 flex flex-col items-center justify-center gap-1 transition-all duration-300 h-full",
+                            isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
                         )}
                     >
-                        <div className={cn(
-                            "p-2 rounded-full transition-all duration-300",
-                            isActive ? "bg-primary/20 text-primary scale-110" : "hover:bg-white/5"
+                        <Icon className={cn("size-6 transition-all duration-300", isActive ? "stroke-[2.5px]" : "stroke-2")} />
+                        <span className={cn(
+                            "text-[9px] uppercase tracking-widest transition-colors duration-300",
+                            isActive ? "text-primary" : "text-muted-foreground"
                         )}>
-                            <Icon className={cn("w-5 h-5", isActive ? "stroke-[2.5px]" : "stroke-2")} />
-                        </div>
+                            {item.name}
+                        </span>
                     </Link>
                 );
             })}
@@ -72,16 +118,17 @@ export function BottomNav() {
                 <Link
                     href={`/users/${user.id}`}
                     className={cn(
-                        "relative flex flex-col items-center gap-1 transition-all duration-300",
-                        pathname === `/users/${user.id}` ? "text-primaryScale" : "text-muted-foreground hover:text-foreground"
+                        "flex-1 flex flex-col items-center justify-center gap-1 transition-all duration-300 h-full",
+                        pathname === `/users/${user.id}` ? "text-primary" : "text-muted-foreground hover:text-foreground"
                     )}
                 >
-                    <div className={cn(
-                        "p-2 rounded-full transition-all duration-300",
-                        pathname === `/users/${user.id}` ? "bg-primary/20 text-primary scale-110" : "hover:bg-white/5"
+                    <UserRound className={cn("size-6 transition-all duration-300", pathname === `/users/${user.id}` ? "stroke-[2.5px]" : "stroke-2")} />
+                    <span className={cn(
+                        "text-[9px] uppercase tracking-widest transition-colors duration-300",
+                        pathname === `/users/${user.id}` ? "text-primary" : "text-muted-foreground"
                     )}>
-                        <UserRound className={cn("w-5 h-5", pathname === `/users/${user.id}` ? "stroke-[2.5px]" : "stroke-2")} />
-                    </div>
+                        Perfil
+                    </span>
                 </Link>
             )}
         </div>
