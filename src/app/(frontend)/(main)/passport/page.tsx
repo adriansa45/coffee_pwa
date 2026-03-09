@@ -8,6 +8,9 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
+import { user } from "@/db/schema/auth-schema";
+import { PassportQR } from "@/components/passport/passport-qr";
+
 export const dynamic = "force-dynamic";
 
 async function getPassportData() {
@@ -16,6 +19,14 @@ async function getPassportData() {
     });
 
     if (!session) return null;
+
+    // Fetch user code directly to ensure we have it
+    const [dbUser] = await db.select({
+        userCode: user.userCode
+    })
+    .from(user)
+    .where(eq(user.id, session.user.id))
+    .limit(1);
 
     // Get visits grouped by shop
     const shopStats = await db.select({
@@ -43,7 +54,12 @@ async function getPassportData() {
     .where(eq(unlockedRewards.userId, session.user.id))
     .orderBy(desc(unlockedRewards.unlockedAt));
 
-    return { shopStats, unlocked, totalVisits: shopStats.reduce((acc, s) => acc + s.visitCount, 0) };
+    return { 
+        shopStats, 
+        unlocked, 
+        totalVisits: shopStats.reduce((acc, s) => acc + s.visitCount, 0),
+        userCode: dbUser?.userCode || null
+    };
 }
 
 export default async function PassportPage() {
@@ -62,6 +78,9 @@ export default async function PassportPage() {
             </header>
 
             <div className="px-6 flex flex-col gap-10">
+                {/* QR Section - PRIMERO LO QUE SE VE */}
+                <PassportQR userCode={data.userCode} />
+
                 {/* Resume Section */}
                 <div className="grid grid-cols-2 gap-5">
                     <Card className="p-5 border-border/40 bg-card/50 backdrop-blur-sm shadow-xl flex flex-col gap-3">

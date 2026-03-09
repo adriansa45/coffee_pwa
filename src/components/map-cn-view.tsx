@@ -79,7 +79,7 @@ export default function MapCnView({ initialShops }: MapCnViewProps) {
             <Map
                 center={[-100.31, 25.68]}
                 zoom={12}
-                theme="light"
+                theme="dark"
                 className="w-full h-full z-0"
             >
                 <MapControls position="bottom-right" showZoom={false} />
@@ -132,8 +132,7 @@ export default function MapCnView({ initialShops }: MapCnViewProps) {
             </Map>
 
             {/* UI Overlays */}
-            <UserQRDrawer />
-
+            
             <Drawer>
                 <DrawerTrigger asChild>
                     <button className="absolute bottom-24 right-5 z-[50] w-14 h-14 bg-primary text-white rounded-full shadow-xl flex items-center justify-center transition-transform hover:scale-105 active:scale-95">

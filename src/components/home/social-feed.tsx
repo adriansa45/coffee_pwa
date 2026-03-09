@@ -47,9 +47,9 @@ export function SocialFeed({ activities }: SocialFeedProps) {
                     <Card key={activity.id} className="p-4 bg-card border-border flex flex-col gap-3">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <Avatar className="size-10 border border-border">
+                                <Avatar className="size-8 border border-border">
                                     <AvatarImage src={activity.userImage || ""} />
-                                    <AvatarFallback className="bg-primary/5 text-primary text-xs font-bold uppercase">
+                                    <AvatarFallback className="bg-primary/5 text-primary text-[10px] font-bold uppercase">
                                         {activity.userName.substring(0, 2).toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
@@ -61,10 +61,27 @@ export function SocialFeed({ activities }: SocialFeedProps) {
                                 </div>
                             </div>
                             <div className={cn(
-                                "px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest border",
-                                activity.type === 'visit' ? "bg-success/10 text-success border-success/20" : "bg-primary/10 text-primary border-primary/20"
+                                "px-2 py-1.5 rounded-full border shadow-sm transition-all duration-300",
+                                activity.type === 'visit' 
+                                    ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" 
+                                    : "bg-primary/10 text-primary border-primary/20"
                             )}>
-                                {activity.type === 'visit' ? 'Visita' : 'Reseña'}
+                                {activity.type === 'visit' ? (
+                                    <Coffee size={10} className="text-emerald-500" />
+                                ) : (
+                                    <div className="flex items-center gap-0.5">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star 
+                                                key={i} 
+                                                size={8} 
+                                                className={cn(
+                                                    "fill-muted-foreground/20 text-muted-foreground/20",
+                                                    i < Math.round(Number(activity.rating || 0)) && "fill-primary text-primary"
+                                                )} 
+                                            />
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -77,25 +94,11 @@ export function SocialFeed({ activities }: SocialFeedProps) {
                                 )}
                             </p>
 
-                            {activity.type === 'review' && (
-                                <div className="flex flex-col gap-2 bg-muted/30 p-3 rounded-xl border border-border/50">
-                                    <div className="flex items-center gap-1">
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star 
-                                                key={i} 
-                                                size={10} 
-                                                className={cn(
-                                                    "fill-muted-foreground/20 text-muted-foreground/20",
-                                                    i < Math.round(Number(activity.rating || 0)) && "fill-primary text-primary"
-                                                )} 
-                                            />
-                                        ))}
-                                    </div>
-                                    {activity.comment && (
-                                        <p className="text-[11px] text-muted-foreground italic leading-relaxed">
-                                            "{activity.comment}"
-                                        </p>
-                                    )}
+                            {activity.type === 'review' && activity.comment && (
+                                <div className="mt-1">
+                                    <p className="text-[11px] text-muted-foreground italic leading-relaxed">
+                                        "{activity.comment}"
+                                    </p>
                                 </div>
                             )}
                         </div>

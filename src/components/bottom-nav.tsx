@@ -10,8 +10,8 @@ import { useEffect, useState } from "react";
 const customerNavItems = [
     { name: "Inicio", href: "/home", icon: Home },
     { name: "Explorar", href: "/shops", icon: Search },
-    { name: "", href: "/scan", icon: QrCode }, // Placeholder for central action
-    { name: "Pasaporte", href: "/passport", icon: Coffee },
+    { name: "", href: "/passport", icon: QrCode }, // QR central manda al pasaporte
+    { name: "Mapa", href: "/map", icon: Map },
 ];
 
 const shopNavItems = [

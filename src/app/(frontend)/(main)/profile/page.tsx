@@ -107,7 +107,7 @@ export default function ProfilePage() {
 
                     <footer className="text-center">
                         <p className="text-[9px] font-bold text-muted-foreground/20 uppercase tracking-[0.3em]">
-                            Coffee PWA &copy; 2026 - Versión 1.0.0 (Beta)
+                            Espresso  &copy; 2026 - Versión 1.0.0 (Beta)
                         </p>
                     </footer>
                 </div>

@@ -54,7 +54,7 @@ export default async function ShopDetailPage(props: { params: Promise<{ id: stri
     // mainImage is a number (Media ID), and gallery is an array of Media objects from the query
     // The gallery is already populated as Media objects from the _rels join in getCoffeeShopById
     const gallery = shop.gallery as Media[] | undefined;
-    const mainImageUrl = gallery?.[0]?.url || "/images/coffee-placeholder.jpg";
+    const mainImageUrl = gallery?.[0]?.url || "/images/placeholder.jpg";
 
     return (
         <div className="min-h-screen bg-background pb-28">

@@ -58,10 +58,17 @@ export function ShopGallery({ shopName, gallery }: ShopGalleryProps) {
                         className="relative min-w-[240px] h-[180px] rounded-xl overflow-hidden flex-shrink-0 shadow-lg active:scale-95 transition-all cursor-pointer border-4 border-card"
                     >
                         <Image
-                            src={img.url || "/images/coffee-placeholder.jpg"}
+                            src={img.url || "/images/placeholder.jpg"}
                             alt={`${shopName} gallery ${index}`}
                             fill
                             className="object-cover"
+                            unoptimized={(img.url || '').startsWith('/api/') || (img.url || '').includes('localhost')}
+                            onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                if (target.src !== "/images/placeholder.jpg") {
+                                    target.src = "/images/placeholder.jpg";
+                                }
+                            }}
                         />
                         <div className="absolute inset-0 bg-black/5 hover:bg-transparent transition-colors" />
                     </div>
@@ -103,6 +110,13 @@ export function ShopGallery({ shopName, gallery }: ShopGalleryProps) {
                                 fill
                                 className="object-contain"
                                 priority
+                                unoptimized={(gallery[selectedIndex ?? 0]?.url || '').startsWith('/api/') || (gallery[selectedIndex ?? 0]?.url || '').includes('localhost')}
+                                onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    if (target.src !== "/images/placeholder.jpg") {
+                                        target.src = "/images/placeholder.jpg";
+                                    }
+                                }}
                             />
                         </div>
 

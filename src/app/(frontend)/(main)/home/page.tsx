@@ -17,11 +17,11 @@ export default async function HomePage() {
 
     // Fetch popular shops
     const popularResponse = await getTopRatedCoffeeShops(8);
-    const popularShops = popularResponse.success ? popularResponse.data : [];
+    const popularShops = (popularResponse as any).data || [];
 
     // Fetch recently visited shops (using getCoffeeShops with "collected" filter if logged in, or just recent ones)
     const recentResponse = await getCoffeeShops({ limit: 8, sortBy: "name", sortOrder: "asc" });
-    const nearbyShops = recentResponse.success ? recentResponse.data : [];
+    const nearbyShops = (recentResponse as any).data || [];
 
     // Fetch friends activity
     const activityResponse = await getFriendsActivity(5);
@@ -54,18 +54,22 @@ export default async function HomePage() {
             </div>
 
             <main className="flex flex-col gap-12 mt-4 px-6">
-                {/* Popular Shops Carousel */}
+                {/* Combined Shop Carousel with Tabs */}
                 <ShopCarousel 
-                    shops={popularShops} 
-                    title="Populares" 
-                    subtitle="Los favoritos de la comunidad"
-                />
-
-                {/* Nearby / Explore Shops Carousel */}
-                <ShopCarousel 
-                    shops={nearbyShops} 
-                    title="Cerca de ti" 
-                    subtitle="Cafeterías que debes conocer"
+                    sections={[
+                        {
+                            id: "popular",
+                            title: "Populares",
+                            subtitle: "Los favoritos de la comunidad",
+                            shops: popularShops
+                        },
+                        {
+                            id: "nearby",
+                            title: "Cerca de ti",
+                            subtitle: "Cafeterías que debes conocer",
+                            shops: nearbyShops
+                        }
+                    ]}
                 />
 
                 {/* Social Feed */}
